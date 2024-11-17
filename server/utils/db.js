@@ -1,12 +1,22 @@
 import sqlite3 from 'sqlite3';
 import path from 'path';
+import fs from 'fs';
 
 const config = useRuntimeConfig();
+const dbDirectory = path.resolve(process.cwd(), 'db');
+const dbFilePath = path.join(dbDirectory, 'links.db');
+
+// Ensure the database directory exists
+if (!fs.existsSync(dbDirectory)) {
+  fs.mkdirSync(dbDirectory, { recursive: true });
+}
 
 // Create database connection
-const db = new sqlite3.Database(
-  path.resolve(process.cwd(), config.public.dbPath)
-);
+const db = new sqlite3.Database(dbFilePath, (err) => {
+  if (err) {
+    console.error('Error opening database:', err.message);
+  }
+});
 
 // Initialize the database table
 db.serialize(() => {
