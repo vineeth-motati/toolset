@@ -1,5 +1,13 @@
+import tailwindTypography from '@tailwindcss/typography';
+
 export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss'],
+
+  tailwindcss: {
+    config: {
+      plugins: [tailwindTypography()],
+    },
+  },
 
   app: {
     head: {
