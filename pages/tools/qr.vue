@@ -24,6 +24,13 @@
         >
           Download QR Code
         </button>
+        <button
+          v-if="qrCodeDataUrl"
+          @click="shareQRCode"
+          class="px-4 py-2 ml-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+        >
+          Share QR Code
+        </button>
       </div>
     </div>
   </div>
@@ -36,6 +43,9 @@ import { ref, watch } from 'vue';
 const text = ref('');
 const qrCodeDataUrl = ref('');
 
+const { generateShareLink, getSharedData } = useShareLink();
+const toast = useToast();
+
 watch(text, async (newText) => {
   if (newText) {
     qrCodeDataUrl.value = await QRCode.toDataURL(newText);
@@ -43,6 +53,23 @@ watch(text, async (newText) => {
     qrCodeDataUrl.value = '';
   }
 });
+
+onMounted(async () => {
+  const shared = await getSharedData();
+  if (shared?.qrCode) {
+    text.value = shared.qrCode;
+  }
+});
+
+const shareQRCode = async () => {
+  const link = await generateShareLink('/tools/qr', { qrCode: text.value });
+  if (link) {
+    navigator.clipboard.writeText(link);
+    toast.success('Share link copied to clipboard!');
+  } else {
+    toast.error('Failed to generate share link');
+  }
+};
 
 const downloadQRCode = () => {
   const link = document.createElement('a');

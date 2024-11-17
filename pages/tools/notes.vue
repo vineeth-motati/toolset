@@ -1,17 +1,17 @@
 <template>
-  <div class="max-w-4xl mx-auto">
+  <div class="mx-auto max-w-4xl">
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-bold">Notes</h1>
       <div class="flex gap-2">
         <button
           @click="addNote"
-          class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+          class="px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700"
         >
           New Note
         </button>
         <button
           @click="shareNotes"
-          class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
         >
           Share Notes
         </button>
@@ -20,21 +20,21 @@
 
     <draggable
       v-model="notes"
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+      class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
       item-key="id"
       :animation="150"
     >
       <template #item="{ element: note }">
-        <div class="bg-white rounded-lg shadow p-4">
+        <div class="p-4 bg-white rounded-lg shadow">
           <input
             v-model="note.title"
-            class="w-full text-lg font-semibold mb-2 px-2 py-1 border-b"
+            class="px-2 py-1 mb-2 w-full text-lg font-semibold border-b"
             placeholder="Note title"
           />
           <div class="flex gap-2 mb-2">
             <button
               @click="note.isPreview = !note.isPreview"
-              class="text-sm px-2 py-1 rounded"
+              class="px-2 py-1 text-sm rounded"
               :class="
                 note.isPreview ? 'bg-blue-100 text-blue-700' : 'bg-gray-100'
               "
@@ -44,13 +44,13 @@
           </div>
           <div
             v-if="note.isPreview"
-            class="prose prose-sm max-w-none h-32 overflow-y-auto px-2 py-1"
+            class="overflow-y-auto px-2 py-1 max-w-none h-32 prose prose-sm"
             v-html="renderMarkdown(note.content)"
           ></div>
           <textarea
             v-else
             v-model="note.content"
-            class="w-full h-32 px-2 py-1 border rounded font-mono"
+            class="px-2 py-1 w-full h-32 font-mono rounded border"
             placeholder="Note content (Markdown supported)"
           ></textarea>
           <div class="flex justify-between mt-2">
@@ -92,8 +92,8 @@ marked.setOptions({
 
 const notes = useLocalStorage('notes', []);
 
-onMounted(() => {
-  const shared = getSharedData();
+onMounted(async () => {
+  const shared = await getSharedData();
   if (shared?.notes) {
     notes.value = shared.notes.map((note) => ({
       ...note,
@@ -122,10 +122,14 @@ const deleteNote = (id) => {
   toast.success('Note deleted');
 };
 
-const shareNotes = () => {
-  const link = generateShareLink('/tools/notes', { notes: notes.value });
-  navigator.clipboard.writeText(link);
-  toast.success('Share link copied to clipboard!');
+const shareNotes = async () => {
+  const link = await generateShareLink('/tools/notes', { notes: notes.value });
+  if (link) {
+    navigator.clipboard.writeText(link);
+    toast.success('Share link copied to clipboard!');
+  } else {
+    toast.error('Failed to generate share link');
+  }
 };
 </script>
 

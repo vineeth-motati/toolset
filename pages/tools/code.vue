@@ -80,7 +80,7 @@ const cssEditorContainer = ref(null);
 const jsEditorContainer = ref(null);
 const previewFrame = ref(null);
 const editors = ref({});
-const code = useLocalStorage('code-editor', {
+const code = useLocalStorage('code', {
   html: '<div class="container">\n  <h1>Hello World</h1>\n  <p>Start coding here!</p>\n</div>',
   css: '.container {\n  padding: 20px;\n}\n\nh1 {\n  color: #2563eb;\n}',
   javascript: 'console.log("Hello from JavaScript!");',
@@ -155,7 +155,7 @@ const runCode = () => {
 };
 
 onMounted(async () => {
-  const shared = getSharedData();
+  const shared = await getSharedData();
   if (shared?.code) {
     code.value = shared.code;
   }
@@ -164,10 +164,14 @@ onMounted(async () => {
   runCode();
 });
 
-const shareCode = () => {
-  const link = generateShareLink('/tools/code', { code: code.value });
-  navigator.clipboard.writeText(link);
-  toast.success('Share link copied to clipboard!');
+const shareCode = async () => {
+  const link = await generateShareLink('/tools/code', { code: code.value });
+  if (link) {
+    navigator.clipboard.writeText(link);
+    toast.success('Share link copied to clipboard!');
+  } else {
+    toast.error('Failed to generate share link.');
+  }
 };
 
 onUnmounted(() => {

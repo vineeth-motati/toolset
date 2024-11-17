@@ -1,34 +1,36 @@
-import { nanoid } from 'nanoid';
-
 export const useShareLink = () => {
+  const { $axios } = useNuxtApp();
   const config = useRuntimeConfig();
 
-  const generateShareLink = (toolPath: string, data: any) => {
-    const id = nanoid(10);
-    const shareData = JSON.stringify(data);
-
-    // In a real app, you'd save this to a database
-    // For demo, we'll use URL parameters
-    const params = new URLSearchParams({ data: shareData });
-    return `${config.public.baseUrl}${toolPath}?share=${id}&${params.toString()}`;
+  const generateShareLink = async (
+    toolPath: string,
+    data: Record<string, any>
+  ) => {
+    try {
+      const response = await $axios.post('/api/share', { data }); // Send structured data
+      const { id } = response.data;
+      const baseUrl = config.public.baseUrl;
+      return `${baseUrl}${toolPath}?share=${id}`;
+    } catch (err) {
+      console.error('Error generating share link:', err);
+      return null;
+    }
   };
 
-  const getSharedData = () => {
+  const getSharedData = async () => {
     const route = useRoute();
-    const sharedData = route.query.data;
+    const id = route.query.share;
 
-    if (sharedData) {
+    if (id) {
       try {
-        const data = JSON.parse(sharedData as string);
-        const query = { ...route.query };
-        delete query.data;
-        navigateTo({ path: route.path , query });
-        return data;
-      } catch (e) {
-        console.error('Failed to parse shared data:', e);
+        const response = await $axios.get(`/api/share/${id}`);
+        return response.data;
+      } catch (err) {
+        console.error('Failed to fetch shared data:', err);
         return null;
       }
     }
+
     return null;
   };
 
