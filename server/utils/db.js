@@ -9,15 +9,12 @@ const dbFilePath = path.join(dbDirectory, 'links.db');
 // Ensure the database directory exists
 if (!fs.existsSync(dbDirectory)) {
   fs.mkdirSync(dbDirectory, { recursive: true });
-  console.log(`Created directory: ${dbDirectory}`);
 }
 
 // Create database connection
 const db = new sqlite3.Database(dbFilePath, (err) => {
   if (err) {
     console.error('Error opening database:', err.message);
-  } else {
-    console.log(`Connected to SQLite database at ${dbFilePath}`);
   }
 });
 

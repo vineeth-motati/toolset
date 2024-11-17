@@ -1,6 +1,7 @@
+import { getBaseUrl } from '~/utils/baseUrl';
+
 export const useShareLink = () => {
   const { $axios } = useNuxtApp();
-  const config = useRuntimeConfig();
 
   const generateShareLink = async (
     toolPath: string,
@@ -9,7 +10,7 @@ export const useShareLink = () => {
     try {
       const response = await $axios.post('/api/share', { data }); // Send structured data
       const { id } = response.data;
-      const baseUrl = config.public.baseUrl;
+      const baseUrl = getBaseUrl();
       return `${baseUrl}${toolPath}?share=${id}`;
     } catch (err) {
       console.error('Error generating share link:', err);

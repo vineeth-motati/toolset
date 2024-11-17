@@ -13,8 +13,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      baseUrl: process.env.BASE_URL || 'http://localhost:3000',
-      dbPath: process.env.DB_PATH || 'db/links.db',
+      baseUrl: process.env.BASE_URL || '',
     },
   },
 
