@@ -79,7 +79,7 @@ import { useLocalStorage } from '@vueuse/core';
 const { generateShareLink, getSharedData } = useShareLink();
 const toast = useToast();
 
-const board = useLocalStorage('kanban-board', [
+const board = useLocalStorage('kanban', [
   { title: 'To Do', items: [] },
   { title: 'In Progress', items: [] },
   { title: 'Done', items: [] },
@@ -92,10 +92,10 @@ const activeColumnIndex = ref(0);
 const isEditing = ref(false);
 const activeTask = ref(null);
 
-onMounted(() => {
-  const shared = getSharedData();
-  if (shared) {
-    board.value = shared;
+onMounted(async () => {
+  const shared = await getSharedData();
+  if (shared?.kanban) {
+    board.value = shared.kanban;
   }
 });
 
@@ -146,9 +146,15 @@ const confirmTask = () => {
   closeModal();
 };
 
-const shareBoard = () => {
-  const link = generateShareLink('/tools/kanban', board.value);
-  navigator.clipboard.writeText(link);
-  toast.success('Share link copied to clipboard!');
+const shareBoard = async () => {
+  const link = await generateShareLink('/tools/kanban', {
+    kanban: board.value,
+  });
+  if (link) {
+    navigator.clipboard.writeText(link);
+    toast.success('Share link copied to clipboard!');
+  } else {
+    toast.error('Failed to generate share link');
+  }
 };
 </script>
