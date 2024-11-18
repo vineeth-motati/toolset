@@ -10,31 +10,31 @@ const dbPath = path.join(dbDirectory, 'links.db');
 
 // Ensure the directory exists (create it in production)
 if (isProduction && !fs.existsSync(dbDirectory)) {
-  fs.mkdirSync(dbDirectory, { recursive: true });
+    fs.mkdirSync(dbDirectory, { recursive: true });
 }
 
 // Copy the database file to `/tmp` in production, if it doesn't already exist
 if (isProduction && !fs.existsSync(dbPath)) {
-  const sourceDbPath = path.resolve(process.cwd(), 'db/links.db');
-  if (fs.existsSync(sourceDbPath)) {
-    fs.copyFileSync(sourceDbPath, dbPath);
-  } else {
-    console.error('Source database file not found:', sourceDbPath);
-  }
+    const sourceDbPath = path.resolve(process.cwd(), 'db/links.db');
+    if (fs.existsSync(sourceDbPath)) {
+        fs.copyFileSync(sourceDbPath, dbPath);
+    } else {
+        console.error('Source database file not found:', sourceDbPath);
+    }
 }
 
 // Initialize SQLite database connection
 const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) {
-    console.error('Error opening database:', err.message);
-  } else {
-    console.log(`Connected to SQLite database at ${dbPath}`);
-  }
+    if (err) {
+        console.error('Error opening database:', err.message);
+    } else {
+        console.log(`Connected to SQLite database at ${dbPath}`);
+    }
 });
 
 // Create table if it doesn't exist
 db.serialize(() => {
-  db.run(`
+    db.run(`
     CREATE TABLE IF NOT EXISTS shared_links (
       id TEXT PRIMARY KEY,
       data TEXT NOT NULL,
