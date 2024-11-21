@@ -83,5 +83,11 @@ const tools = [
         icon: 'mdi:animation',
         description: 'Create custom animations with ease',
     },
+    {
+        name: 'Color Palette',
+        path: '/tools/palette',
+        icon: 'mdi:palette',
+        description: 'Generate color palettes from any color',
+    },
 ];
 </script>

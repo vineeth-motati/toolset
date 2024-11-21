@@ -1,11 +1,17 @@
 import express from 'express';
 import { nanoid } from 'nanoid';
 import db from './db.mjs';
-
+import cors from 'cors';
 const app = express();
 
 // Parse JSON request bodies
 app.use(express.json());
+
+// Enable CORS
+app.use(cors());
+
+// Enable CORS for all OPTIONS requests
+app.options('*', cors());
 
 // Define API routes
 app.post('/api/share', (req, res) => {
