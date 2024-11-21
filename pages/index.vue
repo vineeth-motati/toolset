@@ -1,6 +1,8 @@
 <template>
     <div class="mx-auto max-w-4xl">
-        <h1 class="mb-8 text-4xl font-bold text-center">Welcome to ToolSet</h1>
+        <h1 class="mb-8 text-4xl font-bold text-center">
+            Welcome to Tools-Set
+        </h1>
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             <NuxtLink
                 v-for="tool in tools"

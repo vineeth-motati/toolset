@@ -11,7 +11,7 @@ export default defineNuxtConfig({
 
     app: {
         head: {
-            title: 'ToolSet',
+            title: 'Tools-Set',
             meta: [
                 { charset: 'utf-8' },
                 {

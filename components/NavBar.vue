@@ -3,7 +3,7 @@
         <div class="container px-4 mx-auto">
             <div class="flex justify-between items-center h-16">
                 <NuxtLink to="/" class="text-xl font-bold text-gray-800"
-                    >ToolSet</NuxtLink
+                    >Tools-Set</NuxtLink
                 >
                 <div class="flex space-x-4">
                     <NuxtLink

@@ -1,5 +1,5 @@
 {
-    "name": "toolset",
+    "name": "tools-set",
     "private": true,
     "type": "module",
     "scripts": {
