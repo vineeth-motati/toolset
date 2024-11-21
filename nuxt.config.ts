@@ -24,7 +24,7 @@ export default defineNuxtConfig({
 
     runtimeConfig: {
         public: {
-            baseUrl: process.env.BASE_URL || '',
+            baseUrl: process.env.BASE_URL || 'https://tools-set.vercel.app',
         },
     },
 
