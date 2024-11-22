@@ -200,7 +200,6 @@ function hslToHex(h, s, l) {
 
 const generatePalette = () => {
     try {
-        debugger;
         const values = new Values(palette.value.baseColor);
 
         switch (palette.value.schemeType) {

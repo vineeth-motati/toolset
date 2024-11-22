@@ -57,7 +57,9 @@
                 </div>
 
                 <div v-if="timingFunction === 'cubic-bezier'" class="space-y-2">
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Cubic-Bezier Points</label>
+                    <label class="block mb-2 text-sm font-medium text-gray-700"
+                        >Cubic-Bezier Points</label
+                    >
                     <div class="flex space-x-2">
                         <input
                             v-model="cubicBezier[0]"
@@ -97,7 +99,6 @@
                         />
                     </div>
                 </div>
-
 
                 <div>
                     <label class="block mb-2 text-sm font-medium text-gray-700">
@@ -214,7 +215,9 @@
                     </div>
 
                     <div>
-                        <label class="block mb-2 text-sm font-medium text-gray-700">
+                        <label
+                            class="block mb-2 text-sm font-medium text-gray-700"
+                        >
                             Add Keyframe at Percentage
                         </label>
                         <div class="flex gap-2">
@@ -323,7 +326,6 @@ const keyframes = useLocalStorage('keyframes', [
     },
 ]);
 
-
 const timingFunctions = [
     'linear',
     'ease',
@@ -360,23 +362,26 @@ onMounted(async () => {
         animationName.value = shared.animationName;
         duration.value = shared.duration;
         timingFunction.value = shared.timingFunction;
-        cubicBezier.value = shared.cubicBezier || [0.25, 0.1, 0.25, 1]; 
+        cubicBezier.value = shared.cubicBezier || [0.25, 0.1, 0.25, 1];
         iterationCount.value = shared.iterationCount;
         direction.value = shared.direction;
         keyframes.value = shared.keyframes;
     }
 });
 
-
 const addKeyframe = (customPercentage) => {
     const percentage = parseInt(customPercentage, 10);
     if (isNaN(percentage) || percentage < 0 || percentage > 100) {
+        console.error('Invalid percentage');
         toast.error('Percentage must be a number between 0 and 100');
         return;
     }
 
-    const exists = keyframes.value.some((keyframe) => keyframe.percentage === percentage);
+    const exists = keyframes.value.some(
+        (keyframe) => keyframe.percentage === percentage
+    );
     if (exists) {
+        console.error('Keyframe with this percentage already exists');
         toast.error('Keyframe with this percentage already exists');
         return;
     }
@@ -385,7 +390,7 @@ const addKeyframe = (customPercentage) => {
     const lastKeyframe = keyframes.value[keyframes.value.length - 1] || {};
     keyframes.value.push({
         percentage,
-        properties: { ...lastKeyframe.properties || {} },
+        properties: { ...(lastKeyframe.properties || {}) },
     });
 
     // Sort keyframes by percentage
@@ -394,12 +399,12 @@ const addKeyframe = (customPercentage) => {
     toast.success(`Keyframe at ${percentage}% added`);
 };
 
-
 const removeKeyframe = (index) => {
     if (keyframes.value.length > 2) {
         keyframes.value.splice(index, 1);
         toast.success('Keyframe removed');
     } else {
+        console.error('At least two keyframes are required');
         toast.error('At least two keyframes are required.');
     }
 };
@@ -409,7 +414,9 @@ const updateKeyframeProperty = (index, property, value) => {
 };
 
 const generatedCSS = computed(() => {
-    const sortedKeyframes = [...keyframes.value].sort((a, b) => a.percentage - b.percentage);
+    const sortedKeyframes = [...keyframes.value].sort(
+        (a, b) => a.percentage - b.percentage
+    );
 
     const keyframeRules = sortedKeyframes
         .map((keyframe) => {
@@ -423,9 +430,10 @@ const generatedCSS = computed(() => {
         })
         .join('\n\n');
 
-        const timing = timingFunction.value === 'cubic-bezier'
-        ? `cubic-bezier(${cubicBezier.value.join(', ')})`
-        : timingFunction.value;
+    const timing =
+        timingFunction.value === 'cubic-bezier'
+            ? `cubic-bezier(${cubicBezier.value.join(', ')})`
+            : timingFunction.value;
 
     return `
 @keyframes ${animationName.value} {
@@ -437,25 +445,23 @@ ${keyframeRules}
 }`;
 });
 
-
-
 const previewStyles = computed(() => {
-    const timing = timingFunction.value === 'cubic-bezier'
-        ? `cubic-bezier(${cubicBezier.value.join(', ')})`
-        : timingFunction.value;
+    const timing =
+        timingFunction.value === 'cubic-bezier'
+            ? `cubic-bezier(${cubicBezier.value.join(', ')})`
+            : timingFunction.value;
 
     return {
         animation: `${animationName.value} ${duration.value}s ${timing} ${iterationCount.value} ${direction.value}`,
     };
 });
 
-
 const resetAnimation = () => {
     if (previewElement.value) {
         const element = previewElement.value;
-        element.style.animation = 'none'; 
-        void element.offsetHeight; 
-        element.style.animation = null; 
+        element.style.animation = 'none';
+        void element.offsetHeight;
+        element.style.animation = null;
     }
 };
 
@@ -464,10 +470,11 @@ const playAnimation = () => {
     if (previewElement.value) {
         const element = previewElement.value;
         element.style.animation = 'none';
-        void element.offsetHeight; 
-        const timing = timingFunction.value === 'cubic-bezier'
-            ? `cubic-bezier(${cubicBezier.value.join(', ')})`
-            : timingFunction.value;
+        void element.offsetHeight;
+        const timing =
+            timingFunction.value === 'cubic-bezier'
+                ? `cubic-bezier(${cubicBezier.value.join(', ')})`
+                : timingFunction.value;
         element.style.animation = `${animationName.value} ${duration.value}s ${timing} ${iterationCount.value} ${direction.value}`;
     }
 };
@@ -493,6 +500,7 @@ const shareAnimation = async () => {
         navigator.clipboard.writeText(link);
         toast.success('Share link copied to clipboard!');
     } else {
+        console.error('Failed to generate share link.');
         toast.error('Failed to generate share link.');
     }
 };
@@ -509,12 +517,11 @@ watch(
                 document.head.appendChild(styleElement);
             }
             console.log('Updating <style> element content');
-            styleElement.textContent = css; 
+            styleElement.textContent = css;
         } catch (error) {
-            console.error('Error updating style element:', error); 
+            console.error('Error updating style element:', error);
         }
     },
     { immediate: true }
 );
-
 </script>
