@@ -23,6 +23,7 @@
         "browser-image-compression": "^2.0.2",
         "cors": "^2.8.5",
         "dompurify": "^3.0.9",
+        "exceljs": "^4.4.0",
         "express": "^4.21.1",
         "highlight.js": "^11.9.0",
         "isomorphic-dompurify": "^2.16.0",
@@ -38,8 +39,7 @@
         "sqlite3": "^5.1.7",
         "values.js": "^2.1.1",
         "vue3-smooth-dnd": "^0.0.6",
-        "vuedraggable": "^4.1.0",
-        "xlsx": "^0.18.5"
+        "vuedraggable": "^4.1.0"
     },
     "devDependencies": {
         "@iconify/vue": "^4.1.2",

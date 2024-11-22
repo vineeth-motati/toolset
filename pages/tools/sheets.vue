@@ -39,7 +39,7 @@ import { useToast } from '~/composables/useToast';
 import { useShareLink } from '~/composables/useShareLink';
 import { useSheetsFormulas } from '~/composables/useSheetsFormulas';
 import Papa from 'papaparse';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 
 const toast = useToast();
 const { generateShareLink, getSharedData } = useShareLink();
@@ -166,6 +166,7 @@ const updateCellFormat = (format) => {
 };
 
 const importFile = async (file) => {
+    debugger;
     try {
         if (file.type === 'text/csv') {
             const text = await file.text();
@@ -183,7 +184,7 @@ const importFile = async (file) => {
             });
         } else {
             const data = await readExcelFile(file);
-            if (data && data.length > 0) {
+            if (data && data.data.length > 0) {
                 activeSheet.value.data = data.data;
                 activeSheet.value.formats = data.formats || {};
                 toast.success('Excel file imported successfully');
@@ -195,47 +196,38 @@ const importFile = async (file) => {
     }
 };
 
-const readExcelFile = (file) => {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+const readExcelFile = async (file) => {
+    try {
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.load(await file.arrayBuffer());
+        const worksheet = workbook.worksheets[0];
 
-                // Extract cell data
-                const jsonData = XLSX.utils.sheet_to_json(firstSheet, {
-                    header: 1,
-                });
+        // Extract cell data
+        const jsonData = [];
+        const formats = {};
 
-                // Extract cell formats
-                const formats = {};
-                Object.keys(firstSheet).forEach((cell) => {
-                    if (cell[0] !== '!') {
-                        const cellData = firstSheet[cell];
-                        if (cellData.s) {
-                            // Style information
-                            const [col, row] = XLSX.utils.decode_cell(cell);
-                            formats[`${row},${col}`] = {
-                                bold: cellData.s.font?.bold,
-                                italic: cellData.s.font?.italic,
-                                underline: cellData.s.font?.underline,
-                                fontSize: cellData.s.font?.sz,
-                                align: cellData.s.alignment?.horizontal,
-                            };
-                        }
-                    }
-                });
+        worksheet.eachRow((row, rowIndex) => {
+            const rowData = [];
+            row.eachCell((cell, colIndex) => {
+                rowData.push(cell.value || '');
+                if (cell.style) {
+                    formats[`${rowIndex - 1},${colIndex - 1}`] = {
+                        bold: cell.style.font?.bold || false,
+                        italic: cell.style.font?.italic || false,
+                        underline: cell.style.font?.underline || false,
+                        fontSize: cell.style.font?.size || null,
+                        align: cell.style.alignment?.horizontal || null,
+                    };
+                }
+            });
+            jsonData.push(rowData);
+        });
 
-                resolve({ data: jsonData, formats });
-            } catch (error) {
-                reject(error);
-            }
-        };
-        reader.onerror = reject;
-        reader.readAsArrayBuffer(file);
-    });
+        return { data: jsonData, formats };
+    } catch (error) {
+        console.error('Excel Import Error:', error);
+        return null;
+    }
 };
 
 const exportFile = async (format) => {
@@ -245,31 +237,37 @@ const exportFile = async (format) => {
             downloadFile(csv, 'sheets.csv', 'text/csv');
             toast.success('Exported as CSV');
         } else {
-            const ws = XLSX.utils.aoa_to_sheet(activeSheet.value.data);
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet(activeSheet.value.name);
 
-            // Apply formats
-            Object.entries(activeSheet.value.formats).forEach(
-                ([key, format]) => {
-                    const [row, col] = key.split(',').map(Number);
-                    const cellRef = XLSX.utils.encode_cell({ r: row, c: col });
-                    if (!ws[cellRef]) ws[cellRef] = { t: 's', v: '' };
-                    ws[cellRef].s = {
-                        font: {
+            // Populate data and formats
+            activeSheet.value.data.forEach((row, rowIndex) => {
+                const excelRow = worksheet.addRow(row);
+                row.forEach((_, colIndex) => {
+                    const format =
+                        activeSheet.value.formats[`${rowIndex},${colIndex}`];
+                    if (format) {
+                        const cell = excelRow.getCell(colIndex + 1);
+                        cell.font = {
                             bold: format.bold,
                             italic: format.italic,
                             underline: format.underline,
-                            sz: format.fontSize,
-                        },
-                        alignment: {
+                            size: format.fontSize,
+                        };
+                        cell.alignment = {
                             horizontal: format.align,
-                        },
-                    };
-                }
-            );
+                        };
+                    }
+                });
+            });
 
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, activeSheet.value.name);
-            XLSX.writeFile(wb, 'sheets.xlsx');
+            // Export to Excel
+            const buffer = await workbook.xlsx.writeBuffer();
+            downloadFile(
+                buffer,
+                'sheets.xlsx',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            );
             toast.success('Exported as Excel');
         }
     } catch (error) {
