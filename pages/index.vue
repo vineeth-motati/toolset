@@ -89,5 +89,11 @@ const tools = [
         icon: 'mdi:palette',
         description: 'Generate color palettes from any color',
     },
+    {
+        name: 'Sheets',
+        path: '/tools/sheets',
+        icon: 'mdi:table',
+        description: 'Create and edit spreadsheets',
+    },
 ];
 </script>

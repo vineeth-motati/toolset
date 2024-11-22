@@ -229,6 +229,7 @@ async function shareConversion() {
             toast.error('Failed to generate share link.');
         }
     } catch (error) {
+        console.error('Error sharing conversion:', error);
         toast.error('An error occurred while sharing the conversion.');
     }
 }

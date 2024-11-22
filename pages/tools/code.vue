@@ -170,6 +170,7 @@ const shareCode = async () => {
         navigator.clipboard.writeText(link);
         toast.success('Share link copied to clipboard!');
     } else {
+        console.error('Failed to generate share link.');
         toast.error('Failed to generate share link.');
     }
 };
