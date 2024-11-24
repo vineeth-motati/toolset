@@ -4,13 +4,13 @@
     >
         <div class="flex items-center space-x-4">
             <!-- Sheet Management -->
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-1">
                 <button
                     v-for="sheet in sheets"
                     :key="sheet.id"
                     @click="$emit('switch-sheet', sheet.id)"
                     :class="[
-                        'px-3 py-1 rounded text-sm',
+                        'px-4 py-2  rounded text-sm',
                         activeSheet?.id === sheet.id
                             ? 'bg-blue-100 text-blue-700'
                             : 'hover:bg-gray-100',
@@ -20,9 +20,9 @@
                 </button>
                 <button
                     @click="$emit('add-sheet')"
-                    class="p-1 rounded hover:bg-gray-100"
+                    class="p-2 rounded hover:bg-gray-100"
                 >
-                    <PlusIcon class="w-5 h-5" />
+                    <Icon icon="mdi:plus" class="w-5 h-5" />
                 </button>
             </div>
 
@@ -30,7 +30,7 @@
             <div class="flex items-center space-x-2">
                 <select
                     v-model="fontSize"
-                    class="px-2 py-1 text-sm rounded border"
+                    class="px-4 py-2 text-sm rounded border"
                     @change="updateFormat({ fontSize })"
                 >
                     <option v-for="size in fontSizes" :key="size" :value="size">
@@ -44,7 +44,7 @@
                         :key="align.value"
                         @click="updateFormat({ align: align.value })"
                         :class="[
-                            'p-1 hover:bg-gray-100 ',
+                            'p-2 hover:bg-gray-100',
                             {
                                 'bg-blue-50 ':
                                     currentFormat?.align === align.value,
@@ -52,7 +52,7 @@
                         ]"
                         :title="align.label"
                     >
-                        <component :is="align.icon" class="w-4 h-4" />
+                        <Icon :icon="align.icon" class="w-4 h-4" />
                     </button>
                 </div>
 
@@ -62,14 +62,14 @@
                         :key="style.value"
                         @click="toggleStyle(style.value)"
                         :class="[
-                            'p-1 hover:bg-gray-100 ',
+                            'p-2 hover:bg-gray-100',
                             {
                                 'bg-blue-50 ': currentFormat?.[style.value],
                             },
                         ]"
                         :title="style.label"
                     >
-                        <component :is="style.icon" class="w-4 h-4" />
+                        <Icon :icon="style.icon" class="w-4 h-4" />
                     </button>
                 </div>
             </div>
@@ -85,13 +85,13 @@
                 />
                 <button
                     @click="$refs.fileInput.click()"
-                    class="px-3 py-1 text-sm text-white bg-green-600 rounded hover:bg-green-700"
+                    class="px-4 py-2 text-sm text-white bg-green-600 rounded hover:bg-green-700"
                 >
                     Import
                 </button>
                 <Menu as="div" class="relative">
                     <MenuButton
-                        class="px-3 py-1 text-sm text-white bg-blue-600 rounded hover:bg-blue-700"
+                        class="px-4 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700"
                     >
                         Export
                     </MenuButton>
@@ -136,16 +136,9 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, watch } from 'vue';
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue';
-import {
-    PlusIcon,
-    ArrowsUpDownIcon,
-    ArrowsRightLeftIcon,
-    BoldIcon,
-    ItalicIcon,
-    UnderlineIcon,
-} from '@heroicons/vue/24/outline';
+import { Icon } from '@iconify/vue';
 
 const props = defineProps({
     activeSheet: Object,
@@ -168,15 +161,15 @@ const fontSize = ref('14');
 const fontSizes = [8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 28, 32];
 
 const alignments = [
-    { value: 'left', label: 'Align Left', icon: ArrowsRightLeftIcon },
-    { value: 'center', label: 'Align Center', icon: ArrowsUpDownIcon },
-    { value: 'right', label: 'Align Right', icon: ArrowsRightLeftIcon },
+    { value: 'left', label: 'Align Left', icon: 'mdi:format-align-left' },
+    { value: 'center', label: 'Align Center', icon: 'mdi:format-align-center' },
+    { value: 'right', label: 'Align Right', icon: 'mdi:format-align-right' },
 ];
 
 const styles = [
-    { value: 'bold', label: 'Bold', icon: BoldIcon },
-    { value: 'italic', label: 'Italic', icon: ItalicIcon },
-    { value: 'underline', label: 'Underline', icon: UnderlineIcon },
+    { value: 'bold', label: 'Bold', icon: 'mdi:format-bold' },
+    { value: 'italic', label: 'Italic', icon: 'mdi:format-italic' },
+    { value: 'underline', label: 'Underline', icon: 'mdi:format-underline' },
 ];
 
 const handleFileImport = (event) => {
