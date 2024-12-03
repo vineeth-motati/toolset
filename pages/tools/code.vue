@@ -20,35 +20,41 @@
 
             <!-- Editors -->
             <div class="flex flex-col flex-1 gap-4">
-                <div class="relative flex-1 rounded-md border">
+                <div class="overflow-hidden relative flex-1 rounded-md border">
                     <div
                         class="z-10 px-4 py-2 text-sm font-medium bg-gray-100 border-b border-gray-300"
                     >
                         HTML
                     </div>
-                    <div class="absolute inset-x-0 bottom-0 top-[40px]">
+                    <div
+                        class="absolute inset-x-0 bottom-0 top-[40px] overflow-y-auto"
+                    >
                         <div ref="htmlEditorContainer" class="h-full"></div>
                     </div>
                 </div>
 
-                <div class="relative flex-1 rounded-md border">
+                <div class="overflow-hidden relative flex-1 rounded-md border">
                     <div
                         class="z-10 px-4 py-2 text-sm font-medium bg-gray-100 border-b border-gray-300"
                     >
                         CSS
                     </div>
-                    <div class="absolute inset-x-0 bottom-0 top-[40px]">
+                    <div
+                        class="absolute inset-x-0 bottom-0 top-[40px] overflow-y-auto"
+                    >
                         <div ref="cssEditorContainer" class="h-full"></div>
                     </div>
                 </div>
 
-                <div class="relative flex-1 rounded-md border">
+                <div class="overflow-hidden relative flex-1 rounded-md border">
                     <div
                         class="z-10 px-4 py-2 text-sm font-medium bg-gray-100 border-b border-gray-300"
                     >
                         JavaScript
                     </div>
-                    <div class="absolute inset-x-0 bottom-0 top-[40px]">
+                    <div
+                        class="absolute inset-x-0 bottom-0 top-[40px] overflow-y-auto"
+                    >
                         <div ref="jsEditorContainer" class="h-full"></div>
                     </div>
                 </div>
