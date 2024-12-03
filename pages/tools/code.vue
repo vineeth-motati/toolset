@@ -68,7 +68,11 @@
 </template>
 
 <script setup>
-import loader from '@monaco-editor/loader';
+import ace from 'ace-builds';
+import 'ace-builds/src-noconflict/theme-monokai';
+import 'ace-builds/src-noconflict/mode-javascript';
+import 'ace-builds/src-noconflict/mode-html';
+import 'ace-builds/src-noconflict/mode-css';
 import { useLocalStorage } from '@vueuse/core';
 import { debounce } from 'lodash-es';
 
@@ -86,25 +90,28 @@ const code = useLocalStorage('code', {
     javascript: 'console.log("Hello from JavaScript!");',
 });
 
-const setupEditors = async () => {
-    const monaco = await loader.init();
-
+// Set up Ace Editor
+const setupEditors = () => {
     const createEditor = (container, language, initialValue) => {
         if (!container) return null;
 
-        const editor = monaco.editor.create(container, {
+        const editor = ace.edit(container, {
+            mode: `ace/mode/${language}`,
+            theme: 'ace/theme/monokai',
             value: initialValue,
-            language,
-            theme: 'vs-dark',
-            automaticLayout: true,
-            minimap: { enabled: false },
+            fontSize: 16,
+            showPrintMargin: false,
+            wrap: true,
+            highlightActiveLine: true,
+            minLines: 10,
+            maxLines: 40,
         });
 
         const updateCode = debounce((value) => {
             code.value[language] = value;
         }, 300);
 
-        editor.onDidChangeModelContent(() => {
+        editor.on('change', () => {
             updateCode(editor.getValue());
         });
 
@@ -160,7 +167,7 @@ onMounted(async () => {
         code.value = shared.code;
     }
 
-    await setupEditors();
+    setupEditors();
     runCode();
 });
 
@@ -176,7 +183,7 @@ const shareCode = async () => {
 };
 
 onUnmounted(() => {
-    Object.values(editors.value).forEach((editor) => editor?.dispose());
+    Object.values(editors.value).forEach((editor) => editor?.destroy());
 });
 </script>
 
