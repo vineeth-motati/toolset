@@ -18,7 +18,7 @@
                         Animation Name
                     </label>
                     <input
-                        v-model="animationName"
+                        v-model="animationState.animationName"
                         type="text"
                         class="px-3 py-2 w-full rounded-md border"
                         placeholder="myAnimation"
@@ -30,7 +30,7 @@
                         Duration (seconds)
                     </label>
                     <input
-                        v-model="duration"
+                        v-model="animationState.duration"
                         type="number"
                         step="0.1"
                         min="0"
@@ -43,7 +43,7 @@
                         Timing Function
                     </label>
                     <select
-                        v-model="timingFunction"
+                        v-model="animationState.timingFunction"
                         class="px-3 py-2 w-full rounded-md border"
                     >
                         <option
@@ -56,13 +56,16 @@
                     </select>
                 </div>
 
-                <div v-if="timingFunction === 'cubic-bezier'" class="space-y-2">
+                <div
+                    v-if="animationState.timingFunction === 'cubic-bezier'"
+                    class="space-y-2"
+                >
                     <label class="block mb-2 text-sm font-medium text-gray-700"
                         >Cubic-Bezier Points</label
                     >
                     <div class="flex space-x-2">
                         <input
-                            v-model="cubicBezier[0]"
+                            v-model="animationState.cubicBezier[0]"
                             type="number"
                             step="0.01"
                             min="0"
@@ -71,7 +74,7 @@
                             placeholder="P1x"
                         />
                         <input
-                            v-model="cubicBezier[1]"
+                            v-model="animationState.cubicBezier[1]"
                             type="number"
                             step="0.01"
                             min="0"
@@ -80,7 +83,7 @@
                             placeholder="P1y"
                         />
                         <input
-                            v-model="cubicBezier[2]"
+                            v-model="animationState.cubicBezier[2]"
                             type="number"
                             step="0.01"
                             min="0"
@@ -89,7 +92,7 @@
                             placeholder="P2x"
                         />
                         <input
-                            v-model="cubicBezier[3]"
+                            v-model="animationState.cubicBezier[3]"
                             type="number"
                             step="0.01"
                             min="0"
@@ -105,7 +108,7 @@
                         Iteration Count
                     </label>
                     <select
-                        v-model="iterationCount"
+                        v-model="animationState.iterationCount"
                         class="px-3 py-2 w-full rounded-md border"
                     >
                         <option :value="1">1</option>
@@ -120,7 +123,7 @@
                         Direction
                     </label>
                     <select
-                        v-model="direction"
+                        v-model="animationState.direction"
                         class="px-3 py-2 w-full rounded-md border"
                     >
                         <option value="normal">Normal</option>
@@ -134,23 +137,83 @@
 
                 <!-- Keyframe Properties -->
                 <div class="space-y-4">
-                    <h3 class="font-medium">Keyframe Properties</h3>
+                    <h3 class="font-medium">Keyframe Timeline</h3>
+                    <!-- Timeline visualization -->
+                    <div class="relative mb-8">
+                        <div
+                            class="relative h-2 bg-gray-200 rounded-full"
+                            @mousemove="handleTimelineMouseMove"
+                            @mouseleave="handleTimelineMouseLeave"
+                            @dblclick="handleTimelineDoubleClick"
+                        >
+                            <!-- Hover marker placeholder -->
+                            <div
+                                v-if="shouldShowCustomPercentage"
+                                :style="`left: ${customPercentage}%`"
+                                class="absolute z-20 -mt-1 w-4 h-4 bg-gray-400 rounded-full transform -translate-x-1/2 pointer-events-none"
+                            >
+                                <!-- Hover percentage indicator -->
+                                <div
+                                    v-if="shouldShowCustomPercentage"
+                                    class="absolute -top-8 z-20 px-2 py-1 text-xs text-white bg-gray-800 rounded transform -translate-x-1/4 pointer-events-none"
+                                >
+                                    {{ customPercentage }}%
+                                </div>
+                            </div>
 
+                            <!-- Keyframe markers -->
+                            <div
+                                v-for="keyframe in sortedKeyframes"
+                                :key="keyframe.percentage"
+                                :style="`left: ${keyframe.percentage}%`"
+                                class="absolute -mt-1 w-4 h-4 bg-blue-500 rounded-full transform -translate-x-1/2 cursor-pointer hover:bg-blue-600 group"
+                                @click="toggleKeyframeSelection(keyframe)"
+                                @mouseenter="handleKeyframeMouseEnter(keyframe)"
+                            >
+                                <div
+                                    class="absolute -top-8 left-1/2 px-2 py-1 text-xs text-white bg-gray-800 rounded opacity-0 transition-opacity transform -translate-x-1/2 group-hover:opacity-100"
+                                    :class="{
+                                        'opacity-100':
+                                            selectedKeyframe === keyframe,
+                                    }"
+                                >
+                                    {{ keyframe.percentage }}%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Selected keyframe editor -->
                     <div
-                        v-for="(keyframe, index) in keyframes"
-                        :key="index"
-                        class="p-4 rounded-md border"
+                        v-if="selectedKeyframe"
+                        class="p-4 bg-gray-50 rounded-lg border"
                     >
                         <div class="flex justify-between items-center mb-4">
                             <span class="font-medium"
-                                >{{ keyframe.percentage }}%</span
+                                >Keyframe at
+                                {{ selectedKeyframe.percentage }}%</span
                             >
-                            <button
-                                @click="removeKeyframe(index)"
-                                class="text-red-600 hover:text-red-800"
-                            >
-                                <Icon icon="mdi:close" class="w-5 h-5" />
-                            </button>
+                            <div class="flex gap-2">
+                                <button
+                                    v-if="animationState.keyframes.length > 2"
+                                    @click="
+                                        removeKeyframe(
+                                            animationState.keyframes.indexOf(
+                                                selectedKeyframe
+                                            )
+                                        )
+                                    "
+                                    class="p-1 text-red-600 rounded hover:text-red-800"
+                                >
+                                    <Icon icon="mdi:delete" class="w-5 h-5" />
+                                </button>
+                                <button
+                                    @click="selectedKeyframe = null"
+                                    class="p-1 text-gray-600 rounded hover:text-gray-800"
+                                >
+                                    <Icon icon="mdi:close" class="w-5 h-5" />
+                                </button>
+                            </div>
                         </div>
 
                         <div class="space-y-4">
@@ -166,10 +229,16 @@
                                 <div class="flex gap-2">
                                     <input
                                         v-if="prop.type === 'color'"
-                                        :value="keyframe.properties[prop.name]"
+                                        :value="
+                                            selectedKeyframe.properties[
+                                                prop.name
+                                            ]
+                                        "
                                         @input="
                                             updateKeyframeProperty(
-                                                index,
+                                                animationState.keyframes.indexOf(
+                                                    selectedKeyframe
+                                                ),
                                                 prop.name,
                                                 $event.target.value
                                             )
@@ -179,10 +248,16 @@
                                     />
                                     <input
                                         v-else
-                                        :value="keyframe.properties[prop.name]"
+                                        :value="
+                                            selectedKeyframe.properties[
+                                                prop.name
+                                            ]
+                                        "
                                         @input="
                                             updateKeyframeProperty(
-                                                index,
+                                                animationState.keyframes.indexOf(
+                                                    selectedKeyframe
+                                                ),
                                                 prop.name,
                                                 $event.target.value
                                             )
@@ -195,7 +270,7 @@
                                     <select
                                         v-if="prop.units"
                                         v-model="
-                                            keyframe.properties[
+                                            selectedKeyframe.properties[
                                                 prop.name + 'Unit'
                                             ]
                                         "
@@ -214,6 +289,7 @@
                         </div>
                     </div>
 
+                    <!-- Add keyframe input -->
                     <div>
                         <label
                             class="block mb-2 text-sm font-medium text-gray-700"
@@ -300,31 +376,33 @@ import { Icon } from '@iconify/vue';
 const toast = useToast();
 const { generateShareLink, getSharedData } = useShareLink();
 
-const animationName = useLocalStorage('animationName', 'myAnimation');
-const duration = useLocalStorage('duration', 1);
-const timingFunction = useLocalStorage('timingFunction', 'ease');
-const cubicBezier = useLocalStorage('cubicBezier', [0.25, 0.1, 0.25, 1]);
-const iterationCount = useLocalStorage('iterationCount', '1');
-const direction = useLocalStorage('direction', 'normal');
-const customPercentage = ref(0);
-const keyframes = useLocalStorage('keyframes', [
-    {
-        percentage: 0,
-        properties: {
-            transform: 'scale(1)',
-            backgroundColor: '#3B82F6',
-            opacity: '1',
+const animationState = useLocalStorage('animationState', {
+    animationName: 'myAnimation',
+    duration: 1,
+    timingFunction: 'ease',
+    cubicBezier: [0.25, 0.1, 0.25, 1],
+    iterationCount: '1',
+    direction: 'normal',
+    keyframes: [
+        {
+            percentage: 0,
+            properties: {
+                transform: 'scale(1)',
+                backgroundColor: '#3B82F6',
+                opacity: '1',
+            },
         },
-    },
-    {
-        percentage: 100,
-        properties: {
-            transform: 'scale(1.5)',
-            backgroundColor: '#EF4444',
-            opacity: '0.8',
+        {
+            percentage: 100,
+            properties: {
+                transform: 'scale(1.5)',
+                backgroundColor: '#EF4444',
+                opacity: '0.8',
+            },
         },
-    },
-]);
+    ],
+});
+const customPercentage = ref(null);
 
 const timingFunctions = [
     'linear',
@@ -355,17 +433,18 @@ const availableProperties = [
 ];
 
 const previewElement = ref(null);
+const selectedKeyframe = ref(null);
+
+const sortedKeyframes = computed(() => {
+    return [...animationState.value.keyframes].sort(
+        (a, b) => a.percentage - b.percentage
+    );
+});
 
 onMounted(async () => {
     const shared = await getSharedData();
     if (shared) {
-        animationName.value = shared.animationName;
-        duration.value = shared.duration;
-        timingFunction.value = shared.timingFunction;
-        cubicBezier.value = shared.cubicBezier || [0.25, 0.1, 0.25, 1];
-        iterationCount.value = shared.iterationCount;
-        direction.value = shared.direction;
-        keyframes.value = shared.keyframes;
+        animationState.value = shared;
     }
 });
 
@@ -377,7 +456,7 @@ const addKeyframe = (customPercentage) => {
         return;
     }
 
-    const exists = keyframes.value.some(
+    const exists = animationState.value.keyframes.some(
         (keyframe) => keyframe.percentage === percentage
     );
     if (exists) {
@@ -386,23 +465,26 @@ const addKeyframe = (customPercentage) => {
         return;
     }
 
-    // Add new keyframe
-    const lastKeyframe = keyframes.value[keyframes.value.length - 1] || {};
-    keyframes.value.push({
+    const lastKeyframe =
+        animationState.value.keyframes[
+            animationState.value.keyframes.length - 1
+        ] || {};
+    const newKeyframe = {
         percentage,
         properties: { ...(lastKeyframe.properties || {}) },
-    });
-
-    // Sort keyframes by percentage
-    keyframes.value.sort((a, b) => a.percentage - b.percentage);
+    };
+    animationState.value.keyframes.push(newKeyframe);
+    animationState.value.keyframes.sort((a, b) => a.percentage - b.percentage);
 
     toast.success(`Keyframe at ${percentage}% added`);
+    return newKeyframe;
 };
 
 const removeKeyframe = (index) => {
-    if (keyframes.value.length > 2) {
-        keyframes.value.splice(index, 1);
+    if (animationState.value.keyframes.length > 2) {
+        animationState.value.keyframes.splice(index, 1);
         toast.success('Keyframe removed');
+        toggleKeyframeSelection(null);
     } else {
         console.error('At least two keyframes are required');
         toast.error('At least two keyframes are required.');
@@ -410,11 +492,11 @@ const removeKeyframe = (index) => {
 };
 
 const updateKeyframeProperty = (index, property, value) => {
-    keyframes.value[index].properties[property] = value;
+    animationState.value.keyframes[index].properties[property] = value;
 };
 
 const generatedCSS = computed(() => {
-    const sortedKeyframes = [...keyframes.value].sort(
+    const sortedKeyframes = [...animationState.value.keyframes].sort(
         (a, b) => a.percentage - b.percentage
     );
 
@@ -431,28 +513,28 @@ const generatedCSS = computed(() => {
         .join('\n\n');
 
     const timing =
-        timingFunction.value === 'cubic-bezier'
-            ? `cubic-bezier(${cubicBezier.value.join(', ')})`
-            : timingFunction.value;
+        animationState.value.timingFunction === 'cubic-bezier'
+            ? `cubic-bezier(${animationState.value.cubicBezier.join(', ')})`
+            : animationState.value.timingFunction;
 
     return `
-@keyframes ${animationName.value} {
+@keyframes ${animationState.value.animationName} {
 ${keyframeRules}
 }
 
-.${animationName.value} {
-  animation: ${animationName.value} ${duration.value}s ${timing} ${iterationCount.value} ${direction.value};
+.${animationState.value.animationName} {
+  animation: ${animationState.value.animationName} ${animationState.value.duration}s ${timing} ${animationState.value.iterationCount} ${animationState.value.direction};
 }`;
 });
 
 const previewStyles = computed(() => {
     const timing =
-        timingFunction.value === 'cubic-bezier'
-            ? `cubic-bezier(${cubicBezier.value.join(', ')})`
-            : timingFunction.value;
+        animationState.value.timingFunction === 'cubic-bezier'
+            ? `cubic-bezier(${animationState.value.cubicBezier.join(', ')})`
+            : animationState.value.timingFunction;
 
     return {
-        animation: `${animationName.value} ${duration.value}s ${timing} ${iterationCount.value} ${direction.value}`,
+        animation: `${animationState.value.animationName} ${animationState.value.duration}s ${timing} ${animationState.value.iterationCount} ${animationState.value.direction}`,
     };
 });
 
@@ -472,10 +554,10 @@ const playAnimation = () => {
         element.style.animation = 'none';
         void element.offsetHeight;
         const timing =
-            timingFunction.value === 'cubic-bezier'
-                ? `cubic-bezier(${cubicBezier.value.join(', ')})`
-                : timingFunction.value;
-        element.style.animation = `${animationName.value} ${duration.value}s ${timing} ${iterationCount.value} ${direction.value}`;
+            animationState.value.timingFunction === 'cubic-bezier'
+                ? `cubic-bezier(${animationState.value.cubicBezier.join(', ')})`
+                : animationState.value.timingFunction;
+        element.style.animation = `${animationState.value.animationName} ${animationState.value.duration}s ${timing} ${animationState.value.iterationCount} ${animationState.value.direction}`;
     }
 };
 
@@ -485,17 +567,10 @@ const copyCode = () => {
 };
 
 const shareAnimation = async () => {
-    const animationData = {
-        animationName: animationName.value,
-        duration: duration.value,
-        timingFunction: timingFunction.value,
-        cubicBezier: cubicBezier.value,
-        iterationCount: iterationCount.value,
-        direction: direction.value,
-        keyframes: keyframes.value,
-    };
-
-    const link = await generateShareLink('/tools/animation', animationData);
+    const link = await generateShareLink(
+        '/tools/animation',
+        animationState.value
+    );
     if (link) {
         navigator.clipboard.writeText(link);
         toast.success('Share link copied to clipboard!');
@@ -512,11 +587,9 @@ watch(
     (css) => {
         try {
             if (!styleElement) {
-                console.log('Creating new <style> element');
                 styleElement = document.createElement('style');
                 document.head.appendChild(styleElement);
             }
-            console.log('Updating <style> element content');
             styleElement.textContent = css;
         } catch (error) {
             console.error('Error updating style element:', error);
@@ -524,4 +597,53 @@ watch(
     },
     { immediate: true }
 );
+
+const toggleKeyframeSelection = (keyframe) => {
+    selectedKeyframe.value =
+        keyframe === selectedKeyframe.value ? null : keyframe;
+};
+
+// Timeline related computed properties
+const shouldShowCustomPercentage = computed(() => {
+    return (
+        customPercentage.value !== null &&
+        !sortedKeyframes.value.some(
+            (kf) => kf.percentage === customPercentage.value
+        )
+    );
+});
+
+// Timeline event handlers
+const handleTimelineMouseMove = (e) => {
+    if (e.target === e.currentTarget) {
+        const rect = e.target.getBoundingClientRect();
+        const percentage = calculatePercentageFromMousePosition(
+            e.clientX,
+            rect
+        );
+        customPercentage.value = clampPercentage(percentage);
+    }
+};
+
+const handleTimelineMouseLeave = () => {
+    customPercentage.value = null;
+};
+
+const handleTimelineDoubleClick = () => {
+    const newKeyframe = addKeyframe(customPercentage.value);
+    toggleKeyframeSelection(newKeyframe);
+};
+
+const handleKeyframeMouseEnter = (keyframe) => {
+    customPercentage.value = keyframe.percentage;
+};
+
+// Helper functions
+const calculatePercentageFromMousePosition = (clientX, rect) => {
+    return Math.round(((clientX - rect.left) / rect.width) * 100);
+};
+
+const clampPercentage = (percentage) => {
+    return Math.max(0, Math.min(100, percentage));
+};
 </script>
