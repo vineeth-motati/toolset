@@ -3,17 +3,25 @@
         <!-- Header -->
         <div class="flex justify-between items-center mb-6">
             <div>
-                <h1 class="text-2xl font-bold">API</h1>
+                <h1 class="text-2xl font-bold">API Tester</h1>
                 <p class="text-gray-600">
                     Interact with APIs, test endpoints, and debug HTTP requests.
                 </p>
             </div>
-            <button
-                @click="shareApi"
-                class="px-4 py-2 text-white bg-purple-600 rounded-lg hover:bg-purple-700"
-            >
-                Share API
-            </button>
+            <div class="flex gap-2">
+                <button
+                    @click="openCurlModal"
+                    class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+                >
+                    Import from cURL
+                </button>
+                <button
+                    @click="shareApi"
+                    class="px-4 py-2 text-white bg-purple-600 rounded-lg hover:bg-purple-700"
+                >
+                    Share API
+                </button>
+            </div>
         </div>
 
         <!-- Main Layout -->
@@ -66,6 +74,56 @@
                             <option value="text/plain">Plain Text</option>
                         </select>
                     </div>
+                </div>
+
+                <!-- Authorization Section -->
+                <div class="mb-4">
+                    <label class="block mb-2 text-sm font-medium text-gray-700"
+                        >Authorization</label
+                    >
+                    <select
+                        v-model="api.auth.type"
+                        class="px-3 py-2 w-full rounded-lg border outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                        <option value="">None</option>
+                        <option value="Bearer">Bearer Token</option>
+                        <option value="Basic">Basic Auth</option>
+                        <option value="Custom">Custom Header</option>
+                    </select>
+                </div>
+
+                <div v-if="api.auth.type === 'Bearer'" class="mb-4">
+                    <input
+                        v-model="api.auth.token"
+                        type="text"
+                        class="px-3 py-2 w-full rounded-lg border outline-none focus:ring-2 focus:ring-indigo-500"
+                        placeholder="Enter Bearer Token"
+                    />
+                </div>
+                <div
+                    v-if="api.auth.type === 'Basic'"
+                    class="grid grid-cols-2 gap-4 mb-4"
+                >
+                    <input
+                        v-model="api.auth.username"
+                        type="text"
+                        class="px-3 py-2 rounded-lg border outline-none focus:ring-2 focus:ring-indigo-500"
+                        placeholder="Username"
+                    />
+                    <input
+                        v-model="api.auth.password"
+                        type="password"
+                        class="px-3 py-2 rounded-lg border outline-none focus:ring-2 focus:ring-indigo-500"
+                        placeholder="Password"
+                    />
+                </div>
+                <div v-if="api.auth.type === 'Custom'" class="mb-4">
+                    <input
+                        v-model="api.auth.customHeader"
+                        type="text"
+                        class="px-3 py-2 w-full rounded-lg border outline-none focus:ring-2 focus:ring-indigo-500"
+                        placeholder='Enter Custom Header (e.g., "X-API-Key: key")'
+                    />
                 </div>
 
                 <div class="mb-4">
@@ -129,7 +187,7 @@
                     <div v-else>
                         <h3 class="mb-1 font-medium">Body:</h3>
                         <pre
-                            class="overflow-x-auto p-3 font-mono text-sm bg-gray-100 rounded-lg"
+                            class="overflow-auto p-3 max-h-96 font-mono text-sm bg-gray-100 rounded-lg"
                             >{{
                                 JSON.stringify(api.response.data, null, 2)
                             }}</pre
@@ -140,10 +198,30 @@
                     {{ api.error }}
                 </div>
                 <div v-else>
-                    <p class="text-gray-600">No response yet.</p>
+                    <p class="text-gray-600">
+                        {{ api.loading ? 'Sending request...' : 'No response' }}
+                    </p>
                 </div>
             </div>
         </div>
+
+        <UiModal
+            :isOpen="isCurlModalOpen"
+            title="Import cURL Command"
+            @close="closeCurlModal"
+            @confirm="importCurl"
+        >
+            <div>
+                <label class="block mb-2 text-sm font-medium text-gray-700">
+                    Paste cURL Command
+                </label>
+                <textarea
+                    v-model="curlCommand"
+                    class="px-3 py-2 w-full h-24 font-mono rounded-lg border outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="Paste cURL command here"
+                ></textarea>
+            </div>
+        </UiModal>
     </div>
 </template>
 
@@ -163,7 +241,99 @@ const api = useLocalStorage('api', {
     response: null,
     error: null,
     loading: false,
+    auth: {
+        type: '', // None, Bearer, Basic, Custom
+        token: '',
+        username: '',
+        password: '',
+        customHeader: '',
+    },
 });
+
+let isCurlModalOpen = ref(false);
+let curlCommand = ref('');
+
+const openCurlModal = () => {
+    isCurlModalOpen.value = true;
+};
+
+const closeCurlModal = () => {
+    isCurlModalOpen.value = false;
+};
+
+const parseCurlCommand = (curl) => {
+    const args = curl.match(/(?:[^\s"]+|"[^"]*")+/g);
+    if (!args || args[0] !== 'curl') {
+        throw new Error('Invalid cURL command.');
+    }
+
+    let endpoint = '';
+    let method = 'GET'; // Default to GET
+    const headers = {};
+    let body = null;
+
+    for (let i = 1; i < args.length; i++) {
+        const arg = args[i];
+
+        switch (arg) {
+            case '-X': // HTTP method
+                method = args[++i].toUpperCase();
+                break;
+            case '-H': // Header
+                const header = args[++i].replace(/^['"]|['"]$/g, '');
+                const [key, value] = header.split(/:\s*/);
+                if (key && value) {
+                    headers[key] = value;
+                }
+                break;
+            case '-d': // Data/Body
+                const data = args[++i].replace(/^['"]|['"]$/g, '');
+                try {
+                    body = JSON.parse(data);
+                } catch {
+                    body = data;
+                }
+                break;
+            default:
+                if (!arg.startsWith('-') && !endpoint) {
+                    endpoint = arg.replace(/^['"]|['"]$/g, '');
+                }
+        }
+    }
+
+    if (!endpoint) {
+        throw new Error('No URL found in the cURL command.');
+    }
+
+    return {
+        endpoint,
+        method,
+        headers,
+        body,
+    };
+};
+
+const importCurl = () => {
+    try {
+        const parsedCurl = parseCurlCommand(curlCommand.value);
+
+        if (parsedCurl) {
+            api.value.endpoint = parsedCurl.endpoint;
+            api.value.method = parsedCurl.method;
+            api.value.headers = JSON.stringify(parsedCurl.headers, null, 2);
+            api.value.body = parsedCurl.body
+                ? JSON.stringify(parsedCurl.body, null, 2)
+                : '';
+            toast.success('cURL imported successfully!');
+        } else {
+            toast.error('Failed to parse cURL command.');
+        }
+    } catch (error) {
+        toast.error('Error parsing cURL command: ' + error.message);
+    } finally {
+        closeCurlModal();
+    }
+};
 
 const sendRequest = async () => {
     try {
@@ -171,13 +341,42 @@ const sendRequest = async () => {
         api.value.response = null;
         api.value.error = null;
 
+        // Parse Headers
         const parsedHeaders = JSON.parse(api.value.headers || '{}');
+
+        // Check if Authorization header is already present in Headers field
+        const hasAuthorizationHeader = Object.keys(parsedHeaders).some(
+            (key) => key.toLowerCase() === 'authorization'
+        );
+
+        // Add Authorization Header if not already specified in the Headers field
+        if (!hasAuthorizationHeader) {
+            if (api.value.auth.type === 'Bearer') {
+                parsedHeaders['Authorization'] =
+                    `Bearer ${api.value.auth.token}`;
+            } else if (api.value.auth.type === 'Basic') {
+                const credentials = btoa(
+                    `${api.value.auth.username}:${api.value.auth.password}`
+                );
+                parsedHeaders['Authorization'] = `Basic ${credentials}`;
+            } else if (api.value.auth.type === 'Custom') {
+                const [headerName, headerValue] = api.value.auth.customHeader
+                    .split(':')
+                    .map((s) => s.trim());
+                if (headerName && headerValue) {
+                    parsedHeaders[headerName] = headerValue;
+                }
+            }
+        }
+
+        // Parse Body
         const parsedBody =
             ['POST', 'PUT', 'PATCH'].includes(api.value.method) &&
             api.value.body
                 ? JSON.parse(api.value.body || '{}')
                 : undefined;
 
+        // Make the Request
         const res = await $axios({
             url: api.value.endpoint,
             method: api.value.method,
@@ -188,8 +387,8 @@ const sendRequest = async () => {
             data: parsedBody,
         });
 
+        // Handle Response
         const contentType = res.headers['content-type'];
-
         api.value.response = {
             status: res.status,
             headers: res.headers,
@@ -229,7 +428,7 @@ onMounted(async () => {
     const sharedData = await getSharedData();
     if (sharedData?.api) {
         Object.assign(api.value, sharedData.api);
-        toast.success('Loaded shared API tester state successfully!');
+        toast.success('Loaded shared API state successfully!');
     }
 });
 </script>
