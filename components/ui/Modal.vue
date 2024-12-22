@@ -13,8 +13,8 @@
                 <div class="fixed inset-0 bg-black/25" />
             </TransitionChild>
 
-            <div class="fixed inset-0 overflow-y-auto">
-                <div class="flex min-h-full items-center justify-center p-4">
+            <div class="overflow-y-auto fixed inset-0">
+                <div class="flex justify-center items-center p-4 min-h-full">
                     <TransitionChild
                         as="template"
                         enter="duration-300 ease-out"
@@ -25,7 +25,7 @@
                         leave-to="opacity-0 scale-95"
                     >
                         <DialogPanel
-                            class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+                            class="overflow-hidden p-6 w-full max-w-md text-left align-middle bg-white rounded-2xl shadow-xl transition-all transform"
                         >
                             <DialogTitle
                                 as="h3"
@@ -38,11 +38,11 @@
                                 <slot></slot>
                             </div>
 
-                            <div class="mt-4 flex justify-end space-x-2">
+                            <div class="flex justify-end mt-4 space-x-2">
                                 <button
                                     v-if="showCancel"
                                     type="button"
-                                    class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                    class="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-md border border-gray-300 hover:bg-gray-50"
                                     @click="close"
                                 >
                                     Cancel
@@ -50,7 +50,7 @@
                                 <button
                                     v-if="showConfirm"
                                     type="button"
-                                    class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                                    class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md border border-transparent hover:bg-blue-700"
                                     @click="confirm"
                                 >
                                     {{ confirmText }}
