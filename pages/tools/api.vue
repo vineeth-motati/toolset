@@ -201,9 +201,6 @@
                     <p class="text-gray-600">
                         {{ api.loading ? 'Sending request...' : 'No response' }}
                     </p>
-                    <pre
-                        >{{ api }}                     
-                    </pre>
                 </div>
             </div>
         </div>
