@@ -95,5 +95,11 @@ const tools = [
         icon: 'mdi:table',
         description: 'Create and edit spreadsheets',
     },
+    {
+        name: 'API',
+        path: '/tools/api',
+        icon: 'mdi:api',
+        description: 'Interact with APIs and make HTTP requests',
+    },
 ];
 </script>

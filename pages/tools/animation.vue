@@ -227,7 +227,7 @@
 
                         <div class="space-y-4">
                             <div
-                                v-for="prop in availableProperties"
+                                v-for="prop in filteredAvailableProperties"
                                 :key="prop.name"
                             >
                                 <label
@@ -470,6 +470,15 @@ const availableProperties = [
         placeholder: '1',
     },
 ];
+
+// Filtered Available Properties
+const filteredAvailableProperties = computed(() => {
+    return availableProperties.filter((prop) => {
+        return Object.keys(selectedKeyframe.value.properties).includes(
+            prop.name
+        );
+    });
+});
 
 // Preview Element Reference
 const previewElement = ref(null);
