@@ -1,6 +1,15 @@
 <template>
     <div class="mx-auto max-w-7xl">
-        <h1 class="mb-6 text-2xl font-bold">JSON Viewer</h1>
+        <div class="flex justify-between items-center">
+            <h1 class="mb-6 text-2xl font-bold">JSON Viewer</h1>
+            <!-- Share JSON Button -->
+            <button
+                @click="shareJson"
+                class="flex gap-2 items-center px-3 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700"
+            >
+                Share JSON
+            </button>
+        </div>
 
         <div class="bg-white rounded-lg shadow">
             <!-- Tabs -->
@@ -30,7 +39,7 @@
                             v-for="action in actions"
                             :key="action.id"
                             @click="handleAction(action.id)"
-                            class="flex gap-2 items-center px-3 py-1 text-sm rounded hover:bg-gray-100"
+                            class="flex gap-1 items-center px-3 py-1 text-sm rounded hover:bg-gray-100"
                         >
                             <Icon
                                 :icon="action.icon"
@@ -144,14 +153,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-if="selectedItem">
-                                <td class="py-2 font-mono">
-                                    {{ selectedItem.key }}
-                                </td>
-                                <td class="py-2">
-                                    <pre class="whitespace-pre-wrap">{{
-                                        selectedItem.value
-                                    }}</pre>
+                            <tr
+                                v-for="(value, key) in selectedItem.value || {}"
+                                :key="key"
+                            >
+                                <td class="py-2 font-mono">{{ key }}</td>
+                                <td class="py-2 text-gray-600">
+                                    {{ value }}
                                 </td>
                             </tr>
                         </tbody>
@@ -159,37 +167,163 @@
                 </div>
             </div>
         </div>
+
+        <!-- Load JSON Data Modal -->
+        <UiModal
+            :isOpen="isLoadJsonModalOpen"
+            title="Load JSON Data"
+            @close="closeLoadJsonModal"
+            @confirm="confirmLoadJson"
+        >
+            <div class="flex flex-col gap-4">
+                <!-- Load from File -->
+                <div>
+                    <h3 class="text-lg font-medium">Load from File</h3>
+                    <p class="text-sm text-gray-600">
+                        Upload a JSON file to load its content.
+                    </p>
+                    <input
+                        type="file"
+                        accept="application/json"
+                        @change="handleFileUpload"
+                        class="block px-3 py-2 mt-2 w-full rounded-md border"
+                    />
+                </div>
+
+                <!-- Load from URL -->
+                <div>
+                    <h3 class="text-lg font-medium">Load from URL</h3>
+                    <p class="text-sm text-gray-600">
+                        Enter a URL to fetch and load JSON data.
+                    </p>
+                    <input
+                        v-model="loadJsonUrl"
+                        type="text"
+                        placeholder="Enter JSON URL"
+                        class="block px-3 py-2 mt-2 w-full rounded-md border"
+                    />
+                </div>
+            </div>
+        </UiModal>
     </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { Icon } from '@iconify/vue';
+import { useLocalStorage } from '@vueuse/core';
 import { useToast } from '~/composables/useToast';
+import { useShareLink } from '~/composables/useShareLink';
 import JSON5 from 'json5';
 
 const toast = useToast();
+const { generateShareLink, getSharedData } = useShareLink();
 
+const isLoadJsonModalOpen = ref(false);
+const loadJsonUrl = ref('');
+
+const openLoadJsonModal = () => {
+    isLoadJsonModalOpen.value = true;
+};
+
+const closeLoadJsonModal = () => {
+    isLoadJsonModalOpen.value = false;
+};
+
+const confirmLoadJson = () => {
+    if (loadJsonUrl.value) {
+        loadJsonFromUrl(loadJsonUrl.value);
+    }
+    closeLoadJsonModal();
+};
+
+const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const parsed = JSON5.parse(e.target.result);
+            jsonText.value = JSON.stringify(parsed, null, 2);
+            toast.success('JSON loaded from file!');
+        } catch (error) {
+            toast.error('Invalid JSON file');
+        }
+    };
+    reader.readAsText(file);
+};
+
+const loadJsonFromUrl = async (url) => {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Failed to fetch JSON');
+
+        const data = await response.json();
+        jsonText.value = JSON.stringify(data, null, 2);
+        toast.success('JSON loaded from URL!');
+    } catch (error) {
+        toast.error('Failed to load JSON from URL');
+    }
+};
+
+// Tabs and actions
 const tabs = [
     { id: 'text', name: 'Text' },
     { id: 'viewer', name: 'Viewer' },
 ];
-
 const actions = [
-    { id: 'paste', name: 'Paste', icon: 'mdi:content-paste' },
-    { id: 'copy', name: 'Copy', icon: 'mdi:content-copy' },
-    { id: 'format', name: 'Format', icon: 'mdi:format-align-left' },
+    { id: 'paste', name: 'Paste', icon: 'qlementine-icons:paste-16' },
+    { id: 'copy', name: 'Copy', icon: 'solar:copy-outline' },
+    { id: 'format', name: 'Format', icon: 'ic:sharp-format-align-left' },
     {
         id: 'minify',
         name: 'Remove white space',
-        icon: 'mdi:format-align-justify',
+        icon: 'gg:format-justify',
     },
-    { id: 'clear', name: 'Clear', icon: 'mdi:delete' },
-    { id: 'load', name: 'Load JSON data', icon: 'mdi:file-upload' },
+    { id: 'clear', name: 'Clear', icon: 'mdi:delete-empty-outline' },
+    { id: 'load', name: 'Load JSON data', icon: 'solar:upload-linear' },
 ];
 
+// Active tab and JSON data
 const activeTab = ref('text');
-const jsonText = ref('');
+const jsonText = useLocalStorage('jsonText', ''); // Save JSON data to local storage
+
+// Sharing functionality
+const shareJson = async () => {
+    const json = jsonText.value.trim();
+    if (!json) {
+        toast.error('No JSON data to share');
+        return;
+    }
+
+    try {
+        // Generate a shareable link
+        const link = await generateShareLink('/tools/json-viewer', {
+            json: json,
+        });
+        if (link) {
+            navigator.clipboard.writeText(link);
+            toast.success('Share link copied to clipboard!');
+        } else {
+            toast.error('Failed to generate share link');
+        }
+    } catch (error) {
+        console.error('Error sharing JSON:', error.message);
+        toast.error('An error occurred while generating the share link');
+    }
+};
+
+// Load shared data (if any) on mount
+onMounted(async () => {
+    const shared = await getSharedData();
+    if (shared?.json) {
+        jsonText.value = shared.json;
+        toast.success('Shared JSON loaded');
+    }
+});
+
+// JSON parsing, search, and other methods remain the same
 const searchQuery = ref('');
 const searchResults = ref([]);
 const currentSearchIndex = ref(-1);
@@ -298,27 +432,7 @@ function handleAction(action) {
             break;
 
         case 'load':
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'application/json';
-            input.onchange = (e) => {
-                const file = e.target.files[0];
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    try {
-                        const parsed = JSON5.parse(e.target.result);
-                        jsonText.value = JSON.stringify(parsed, null, 2);
-                    } catch (error) {
-                        toast.error('Invalid JSON-like input');
-                        console.error(
-                            'Error loading JSON-like input:',
-                            error.message
-                        );
-                    }
-                };
-                reader.readAsText(file);
-            };
-            input.click();
+            openLoadJsonModal();
             break;
     }
 }
