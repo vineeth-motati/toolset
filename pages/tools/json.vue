@@ -143,7 +143,7 @@
                 </div>
 
                 <!-- Details View -->
-                <div class="p-4 rounded-lg border">
+                <div class="p-4 rounded-lg border" v-if="selectedItem">
                     <h3 class="mb-4 text-lg font-medium">Details</h3>
                     <table class="w-full">
                         <thead>
