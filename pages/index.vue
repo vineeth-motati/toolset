@@ -101,5 +101,11 @@ const tools = [
         icon: 'mdi:api',
         description: 'Interact with APIs and make HTTP requests',
     },
+    {
+        name: 'JSON Formatter',
+        path: '/tools/json',
+        icon: 'mdi:json',
+        description: 'Format and validate JSON data',
+    },
 ];
 </script>
