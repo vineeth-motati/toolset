@@ -136,18 +136,12 @@
         </div>
 
         <div class="mb-4">
-            <label class="block mb-2 font-medium">gap</label>
-            <div class="flex items-center">
-                <input
-                    v-model="gapValue"
-                    type="range"
-                    min="0"
-                    max="50"
-                    class="flex-grow mr-2"
-                    @input="updateGap"
-                />
-                <span class="w-16 text-right">{{ container.gap }}</span>
-            </div>
+            <DimensionInput
+                v-model="container.gap"
+                label="gap"
+                placeholder="10"
+                @update:modelValue="emitContainerUpdate"
+            />
         </div>
 
         <hr class="my-6 border-gray-200" />
@@ -281,9 +275,7 @@ const emit = defineEmits([
 const container = reactive({ ...props.containerStyles });
 const defaults = reactive({ ...props.itemDefaults });
 
-// Extract numeric value from gap for the slider
-const gapValue = ref(parseInt(props.containerStyles.gap) || 10);
-
+// Direction icons
 const directionIcons = {
     row: 'mdi:arrow-right',
     'row-reverse': 'mdi:arrow-left',
@@ -296,7 +288,6 @@ watch(
     () => props.containerStyles,
     (newVal) => {
         Object.assign(container, newVal);
-        gapValue.value = parseInt(newVal.gap) || 10;
     },
     { deep: true }
 );
@@ -312,11 +303,6 @@ watch(
 // Methods
 const updateContainerProp = (prop, value) => {
     container[prop] = value;
-    emitContainerUpdate();
-};
-
-const updateGap = () => {
-    container.gap = `${gapValue.value}px`;
     emitContainerUpdate();
 };
 

@@ -49,7 +49,7 @@
                         <!-- Display property -->
                         <div class="mb-4">
                             <label class="block mb-2 font-medium"
-                                >display</label
+                                >Display</label
                             >
                             <select
                                 v-model="flexbox.containerStyles.display"
@@ -69,7 +69,7 @@
                         <!-- Direction buttons in a more compact layout -->
                         <div class="mb-4">
                             <label class="block mb-2 font-medium"
-                                >flex-direction</label
+                                >Flex Direction</label
                             >
                             <div class="grid grid-cols-2 gap-2">
                                 <button
@@ -105,7 +105,7 @@
                         <!-- Flex-wrap with more compact layout -->
                         <div class="mb-4">
                             <label class="block mb-2 font-medium"
-                                >flex-wrap</label
+                                >Flex Wrap</label
                             >
                             <div class="grid grid-cols-3 gap-2">
                                 <button
@@ -138,7 +138,7 @@
                             <!-- Justify Content -->
                             <div>
                                 <label class="block mb-2 font-medium"
-                                    >justify-content</label
+                                    >Justify Content</label
                                 >
                                 <select
                                     v-model="
@@ -173,7 +173,7 @@
                             <!-- Align Items -->
                             <div>
                                 <label class="block mb-2 font-medium"
-                                    >align-items</label
+                                    >Align Items</label
                                 >
                                 <select
                                     v-model="flexbox.containerStyles.alignItems"
@@ -199,7 +199,7 @@
                             <!-- Align Content -->
                             <div>
                                 <label class="block mb-2 font-medium"
-                                    >align-content</label
+                                    >Align Content</label
                                 >
                                 <select
                                     v-model="
@@ -231,22 +231,14 @@
 
                             <!-- Gap slider -->
                             <div>
-                                <label class="block mb-2 font-medium"
-                                    >gap</label
-                                >
-                                <div class="flex items-center">
-                                    <input
-                                        v-model="gapValue"
-                                        type="range"
-                                        min="0"
-                                        max="50"
-                                        class="flex-grow mr-2"
-                                        @input="updateGap"
-                                    />
-                                    <span class="w-12 text-right">{{
-                                        flexbox.containerStyles.gap
-                                    }}</span>
-                                </div>
+                                <DimensionInput
+                                    v-model="flexbox.containerStyles.gap"
+                                    label="Gap"
+                                    placeholder="10px"
+                                    @update:modelValue="
+                                        updateContainerStyles({ gap: $event })
+                                    "
+                                />
                             </div>
                         </div>
                     </div>
@@ -418,7 +410,7 @@
 
                             <!-- Add width and height controls here -->
                             <div class="mt-4">
-                                <h3 class="font-medium mb-2">Dimensions</h3>
+                                <h3 class="mb-2 font-medium">Dimensions</h3>
                                 <div class="grid grid-cols-2 gap-4">
                                     <!-- Width -->
                                     <div>
