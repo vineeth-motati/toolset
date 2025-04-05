@@ -22,8 +22,8 @@
             <!-- Controls Panel -->
             <FlexboxControls
                 class="p-4 bg-white rounded-lg shadow lg:w-1/3"
-                :container-styles="containerStyles"
-                :item-defaults="itemDefaults"
+                :container-styles="flexbox.containerStyles"
+                :item-defaults="flexbox.itemDefaults"
                 @update:container="updateContainerStyles"
                 @update:items="updateItemDefaults"
                 @add-item="addFlexItem"
@@ -34,9 +34,9 @@
             <div class="flex flex-col lg:w-2/3">
                 <FlexboxPreview
                     class="flex-grow p-4 mb-4 bg-white rounded-lg shadow"
-                    :container-styles="containerStyles"
-                    :flex-items="flexItems"
-                    @update:items="flexItems = $event"
+                    :container-styles="flexbox.containerStyles"
+                    :flex-items="flexbox.items"
+                    @update:items="flexbox.items = $event"
                     @delete-item="deleteFlexItem"
                     @duplicate-item="duplicateFlexItem"
                     @update-item="updateFlexItem"
@@ -45,8 +45,8 @@
                 <FlexboxCodeGenerator
                     v-if="showCode"
                     class="p-4 bg-white rounded-lg shadow"
-                    :container-styles="containerStyles"
-                    :flex-items="flexItems"
+                    :container-styles="flexbox.containerStyles"
+                    :flex-items="flexbox.items"
                 />
             </div>
         </div>
@@ -54,7 +54,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useLocalStorage } from '@vueuse/core';
 import { Icon } from '@iconify/vue';
 import { v4 as uuidv4 } from 'uuid';
@@ -67,116 +67,9 @@ const { generateShareLink, getSharedData } = useShareLink();
 // UI state
 const showCode = ref(false);
 
-// Flexbox state
-const containerStyles = reactive({
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'nowrap',
-    justifyContent: 'flex-start',
-    alignItems: 'stretch',
-    alignContent: 'stretch',
-    gap: '10px',
-    padding: '20px',
-    minHeight: '300px',
-    backgroundColor: '#f3f4f6',
-});
-
-const itemDefaults = reactive({
-    flexGrow: 0,
-    flexShrink: 1,
-    flexBasis: 'auto',
-    alignSelf: 'auto',
-});
-
-const flexItems = ref([
-    {
-        id: uuidv4(),
-        content: 'Item 1',
-        styles: {
-            flexGrow: 0,
-            flexShrink: 1,
-            flexBasis: 'auto',
-            alignSelf: 'auto',
-            order: 0,
-            backgroundColor: '#60a5fa',
-        },
-    },
-    {
-        id: uuidv4(),
-        content: 'Item 2',
-        styles: {
-            flexGrow: 0,
-            flexShrink: 1,
-            flexBasis: 'auto',
-            alignSelf: 'auto',
-            order: 0,
-            backgroundColor: '#93c5fd',
-        },
-    },
-    {
-        id: uuidv4(),
-        content: 'Item 3',
-        styles: {
-            flexGrow: 0,
-            flexShrink: 1,
-            flexBasis: 'auto',
-            alignSelf: 'auto',
-            order: 0,
-            backgroundColor: '#bfdbfe',
-        },
-    },
-]);
-
-// Methods - everything but sharing methods remain the same
-const updateContainerStyles = (styles) => {
-    Object.assign(containerStyles, styles);
-};
-
-const updateItemDefaults = (defaults) => {
-    Object.assign(itemDefaults, defaults);
-};
-
-const addFlexItem = () => {
-    const newItem = {
-        id: uuidv4(),
-        content: `Item ${flexItems.value.length + 1}`,
-        styles: {
-            ...JSON.parse(JSON.stringify(itemDefaults)),
-            backgroundColor: getRandomColor(),
-            order: 0,
-        },
-    };
-    flexItems.value.push(newItem);
-};
-
-const deleteFlexItem = (id) => {
-    flexItems.value = flexItems.value.filter((item) => item.id !== id);
-};
-
-const duplicateFlexItem = (id) => {
-    const item = flexItems.value.find((item) => item.id === id);
-    if (item) {
-        const newItem = {
-            ...JSON.parse(JSON.stringify(item)),
-            id: uuidv4(),
-            content: `${item.content} (copy)`,
-        };
-        flexItems.value.push(newItem);
-    }
-};
-
-const updateFlexItem = (id, updates) => {
-    const index = flexItems.value.findIndex((item) => item.id === id);
-    if (index !== -1) {
-        flexItems.value[index] = {
-            ...flexItems.value[index],
-            ...updates,
-        };
-    }
-};
-
-const resetFlexbox = () => {
-    Object.assign(containerStyles, {
+// Use a single state object pattern, matching other tools in the application
+const flexbox = useLocalStorage('flexbox', {
+    containerStyles: {
         display: 'flex',
         flexDirection: 'row',
         flexWrap: 'nowrap',
@@ -187,32 +80,151 @@ const resetFlexbox = () => {
         padding: '20px',
         minHeight: '300px',
         backgroundColor: '#f3f4f6',
-    });
-
-    Object.assign(itemDefaults, {
+    },
+    itemDefaults: {
         flexGrow: 0,
         flexShrink: 1,
         flexBasis: 'auto',
         alignSelf: 'auto',
-    });
-
-    flexItems.value = [
+    },
+    items: [
         {
             id: uuidv4(),
             content: 'Item 1',
-            styles: { ...itemDefaults, backgroundColor: '#60a5fa', order: 0 },
+            styles: {
+                flexGrow: 0,
+                flexShrink: 1,
+                flexBasis: 'auto',
+                alignSelf: 'auto',
+                order: 0,
+                backgroundColor: '#60a5fa',
+            },
         },
         {
             id: uuidv4(),
             content: 'Item 2',
-            styles: { ...itemDefaults, backgroundColor: '#93c5fd', order: 0 },
+            styles: {
+                flexGrow: 0,
+                flexShrink: 1,
+                flexBasis: 'auto',
+                alignSelf: 'auto',
+                order: 0,
+                backgroundColor: '#93c5fd',
+            },
         },
         {
             id: uuidv4(),
             content: 'Item 3',
-            styles: { ...itemDefaults, backgroundColor: '#bfdbfe', order: 0 },
+            styles: {
+                flexGrow: 0,
+                flexShrink: 1,
+                flexBasis: 'auto',
+                alignSelf: 'auto',
+                order: 0,
+                backgroundColor: '#bfdbfe',
+            },
         },
-    ];
+    ],
+});
+
+// Methods - updated to work with the consolidated state object
+const updateContainerStyles = (styles) => {
+    Object.assign(flexbox.value.containerStyles, styles);
+};
+
+const updateItemDefaults = (defaults) => {
+    Object.assign(flexbox.value.itemDefaults, defaults);
+};
+
+const addFlexItem = () => {
+    const newItem = {
+        id: uuidv4(),
+        content: `Item ${flexbox.value.items.length + 1}`,
+        styles: {
+            ...JSON.parse(JSON.stringify(flexbox.value.itemDefaults)),
+            backgroundColor: getRandomColor(),
+            order: 0,
+        },
+    };
+    flexbox.value.items.push(newItem);
+};
+
+const deleteFlexItem = (id) => {
+    flexbox.value.items = flexbox.value.items.filter((item) => item.id !== id);
+};
+
+const duplicateFlexItem = (id) => {
+    const item = flexbox.value.items.find((item) => item.id === id);
+    if (item) {
+        const newItem = {
+            ...JSON.parse(JSON.stringify(item)),
+            id: uuidv4(),
+            content: `${item.content} (copy)`,
+        };
+        flexbox.value.items.push(newItem);
+    }
+};
+
+const updateFlexItem = (id, updates) => {
+    const index = flexbox.value.items.findIndex((item) => item.id === id);
+    if (index !== -1) {
+        flexbox.value.items[index] = {
+            ...flexbox.value.items[index],
+            ...updates,
+        };
+    }
+};
+
+const resetFlexbox = () => {
+    flexbox.value = {
+        containerStyles: {
+            display: 'flex',
+            flexDirection: 'row',
+            flexWrap: 'nowrap',
+            justifyContent: 'flex-start',
+            alignItems: 'stretch',
+            alignContent: 'stretch',
+            gap: '10px',
+            padding: '20px',
+            minHeight: '300px',
+            backgroundColor: '#f3f4f6',
+        },
+        itemDefaults: {
+            flexGrow: 0,
+            flexShrink: 1,
+            flexBasis: 'auto',
+            alignSelf: 'auto',
+        },
+        items: [
+            {
+                id: uuidv4(),
+                content: 'Item 1',
+                styles: {
+                    ...flexbox.value.itemDefaults,
+                    backgroundColor: '#60a5fa',
+                    order: 0,
+                },
+            },
+            {
+                id: uuidv4(),
+                content: 'Item 2',
+                styles: {
+                    ...flexbox.value.itemDefaults,
+                    backgroundColor: '#93c5fd',
+                    order: 0,
+                },
+            },
+            {
+                id: uuidv4(),
+                content: 'Item 3',
+                styles: {
+                    ...flexbox.value.itemDefaults,
+                    backgroundColor: '#bfdbfe',
+                    order: 0,
+                },
+            },
+        ],
+    };
 };
 
 const getRandomColor = () => {
@@ -233,36 +245,27 @@ const getRandomColor = () => {
     return colors[Math.floor(Math.random() * colors.length)];
 };
 
-// Updated sharing functionality using the existing composables
+// Updated sharing functionality using the consolidated state object
 const shareFlexbox = async () => {
-    const state = {
-        container: containerStyles,
-        items: flexItems.value,
-        defaults: itemDefaults,
-    };
-
-    const link = await generateShareLink('/tools/flexbox', state);
-    if (link) {
-        navigator.clipboard.writeText(link);
-        toast.success('Share link copied to clipboard!');
-    } else {
-        toast.error('Failed to generate share link');
+    try {
+        const link = await generateShareLink('/tools/flexbox', flexbox.value);
+        if (link) {
+            await navigator.clipboard.writeText(link);
+            toast.success('Share link copied to clipboard!');
+        } else {
+            toast.error('Failed to generate share link');
+        }
+    } catch (error) {
+        console.error('Error sharing flexbox:', error);
+        toast.error('An error occurred while sharing');
     }
 };
 
-// Load shared data
+// Load shared data consistently with other tools
 onMounted(async () => {
     const shared = await getSharedData();
     if (shared) {
-        if (shared.container) {
-            Object.assign(containerStyles, shared.container);
-        }
-        if (shared.items) {
-            flexItems.value = shared.items;
-        }
-        if (shared.defaults) {
-            Object.assign(itemDefaults, shared.defaults);
-        }
+        Object.assign(flexbox.value, shared);
         toast.success('Loaded shared flexbox layout!');
     }
 });
