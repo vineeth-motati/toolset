@@ -437,26 +437,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="grid grid-cols-2 gap-2 mt-4">
-                                <button
-                                    @click="duplicateSelectedItem"
-                                    class="px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
-                                >
-                                    <Icon
-                                        icon="mdi:content-duplicate"
-                                        class="mr-1"
-                                    />
-                                    Duplicate
-                                </button>
-                                <button
-                                    @click="deleteSelectedItem"
-                                    class="px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700"
-                                >
-                                    <Icon icon="mdi:delete" class="mr-1" />
-                                    Delete
-                                </button>
-                            </div>
                         </div>
                         <div v-else class="py-8 text-center text-gray-500">
                             <Icon
@@ -478,7 +458,45 @@
                     class="flex-1 mb-4 overflow-hidden bg-white rounded-lg shadow"
                 >
                     <div class="flex flex-col h-full p-4">
-                        <h2 class="mb-2 text-lg font-semibold">Preview</h2>
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-lg font-semibold">Preview</h2>
+                            <div class="flex gap-2">
+                                <button
+                                    v-if="selectedItem"
+                                    @click="duplicateSelectedItem"
+                                    class="flex items-center px-3 py-1.5 text-sm font-medium text-indigo-700 bg-indigo-100 border border-indigo-300 rounded-md hover:bg-indigo-200 transition-colors"
+                                >
+                                    <Icon
+                                        icon="mdi:content-duplicate"
+                                        class="w-4 h-4 mr-1"
+                                    />
+                                    Duplicate
+                                </button>
+                                <button
+                                    v-if="selectedItem"
+                                    @click="deleteSelectedItem"
+                                    class="flex items-center px-3 py-1.5 text-sm font-medium text-red-700 bg-red-100 border border-red-300 rounded-md hover:bg-red-200 transition-colors"
+                                >
+                                    <Icon
+                                        icon="mdi:delete"
+                                        class="w-4 h-4 mr-1"
+                                    />
+                                    Delete
+                                </button>
+                                <button
+                                    @click="addFlexItem"
+                                    class="flex items-center px-3 py-1.5 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition-colors"
+                                    title="Add new item"
+                                >
+                                    <Icon
+                                        icon="mdi:plus"
+                                        class="w-4 h-4 mr-1"
+                                    />
+                                    Add Item
+                                </button>
+                            </div>
+                        </div>
+
                         <div
                             class="relative flex-1 overflow-hidden border border-gray-300 rounded-lg"
                         >
@@ -500,23 +518,7 @@
             </div>
         </div>
 
-        <!-- Fixed Action Buttons -->
-        <div class="fixed flex flex-col gap-2 right-8 bottom-8">
-            <button
-                @click="addFlexItem"
-                class="p-3 text-white bg-indigo-600 rounded-full shadow-lg hover:bg-indigo-700"
-                title="Add new item"
-            >
-                <Icon icon="mdi:plus" class="w-6 h-6" />
-            </button>
-            <button
-                @click="resetFlexbox"
-                class="p-3 text-white bg-gray-600 rounded-full shadow-lg hover:bg-gray-700"
-                title="Reset flexbox"
-            >
-                <Icon icon="mdi:refresh" class="w-6 h-6" />
-            </button>
-        </div>
+        <!-- No need for fixed action buttons anymore, removing them -->
 
         <!-- Code Modal -->
         <Modal
