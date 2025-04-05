@@ -1,4 +1,3 @@
-<!-- src/components/animation.vue -->
 <template>
     <div class="p-4 mx-auto max-w-6xl">
         <!-- Header -->

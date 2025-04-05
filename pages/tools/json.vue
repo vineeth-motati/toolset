@@ -299,7 +299,7 @@ const shareJson = async () => {
 
     try {
         // Generate a shareable link
-        const link = await generateShareLink('/tools/json-viewer', {
+        const link = await generateShareLink('/tools/json', {
             json: json,
         });
         if (link) {
