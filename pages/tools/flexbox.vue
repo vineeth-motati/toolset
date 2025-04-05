@@ -556,8 +556,6 @@
             </div>
         </div>
 
-        <!-- No need for fixed action buttons anymore, removing them -->
-
         <!-- Code Modal -->
         <Modal
             :is-open="showCode"
