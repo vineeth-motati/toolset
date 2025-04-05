@@ -416,6 +416,36 @@
                                 </div>
                             </div>
 
+                            <!-- Add width and height controls here -->
+                            <div class="mt-4">
+                                <h3 class="font-medium mb-2">Dimensions</h3>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <!-- Width -->
+                                    <div>
+                                        <DimensionInput
+                                            v-model="selectedItem.styles.width"
+                                            label="Width"
+                                            placeholder="150"
+                                            @update:modelValue="
+                                                updateSelectedItem
+                                            "
+                                        />
+                                    </div>
+
+                                    <!-- Height -->
+                                    <div>
+                                        <DimensionInput
+                                            v-model="selectedItem.styles.height"
+                                            label="Height"
+                                            placeholder="150"
+                                            @update:modelValue="
+                                                updateSelectedItem
+                                            "
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="grid grid-cols-2 gap-2 mt-4">
                                 <button
                                     @click="duplicateSelectedItem"
@@ -521,6 +551,7 @@ import { useShareLink } from '~/composables/useShareLink';
 import { useToast } from '~/composables/useToast';
 import { cloneDeep } from 'lodash-es';
 import Modal from '~/components/ui/Modal.vue';
+import DimensionInput from '~/components/ui/DimensionInput.vue';
 
 const toast = useToast();
 const { generateShareLink, getSharedData } = useShareLink();
@@ -567,6 +598,8 @@ const flexbox = useLocalStorage('flexbox', {
         flexShrink: 1,
         flexBasis: 'auto',
         alignSelf: 'auto',
+        width: '150px',
+        height: '150px',
     },
     items: [
         {
@@ -579,6 +612,8 @@ const flexbox = useLocalStorage('flexbox', {
                 alignSelf: 'auto',
                 order: 0,
                 backgroundColor: '#60a5fa',
+                width: '150px',
+                height: '150px',
             },
         },
         {
@@ -591,6 +626,8 @@ const flexbox = useLocalStorage('flexbox', {
                 alignSelf: 'auto',
                 order: 0,
                 backgroundColor: '#93c5fd',
+                width: '150px',
+                height: '150px',
             },
         },
         {
@@ -603,6 +640,8 @@ const flexbox = useLocalStorage('flexbox', {
                 alignSelf: 'auto',
                 order: 0,
                 backgroundColor: '#bfdbfe',
+                width: '150px',
+                height: '150px',
             },
         },
     ],
@@ -675,6 +714,8 @@ const resetFlexbox = () => {
             flexShrink: 1,
             flexBasis: 'auto',
             alignSelf: 'auto',
+            width: '150px',
+            height: '150px',
         },
         items: [
             {
@@ -684,6 +725,8 @@ const resetFlexbox = () => {
                     ...flexbox.value.itemDefaults,
                     backgroundColor: '#60a5fa',
                     order: 0,
+                    width: '150px',
+                    height: '150px',
                 },
             },
             {
@@ -693,6 +736,8 @@ const resetFlexbox = () => {
                     ...flexbox.value.itemDefaults,
                     backgroundColor: '#93c5fd',
                     order: 0,
+                    width: '150px',
+                    height: '150px',
                 },
             },
             {
@@ -702,6 +747,8 @@ const resetFlexbox = () => {
                     ...flexbox.value.itemDefaults,
                     backgroundColor: '#bfdbfe',
                     order: 0,
+                    width: '150px',
+                    height: '150px',
                 },
             },
         ],

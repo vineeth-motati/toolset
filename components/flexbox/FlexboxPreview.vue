@@ -5,8 +5,8 @@
         <div
             class="relative flex-grow overflow-hidden border border-gray-300 rounded-lg"
         >
-            <!-- Apply container styles directly to the transition-group -->
-            <transition-group
+            <!-- Use TransitionGroup instead of Transition for list animations -->
+            <TransitionGroup
                 name="fade-scale"
                 tag="div"
                 class="relative w-full h-full flex-container"
@@ -20,7 +20,7 @@
                     :is-selected="selectedItemId === item.id"
                     @click="$emit('select-item', item)"
                 />
-            </transition-group>
+            </TransitionGroup>
         </div>
     </div>
 </template>

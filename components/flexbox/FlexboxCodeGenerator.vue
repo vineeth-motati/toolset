@@ -124,6 +124,12 @@ const cssCode = computed(() => {
         if (item.styles.backgroundColor) {
             code += `  background-color: ${item.styles.backgroundColor};\n`;
         }
+        if (item.styles.width) {
+            code += `  width: ${item.styles.width};\n`;
+        }
+        if (item.styles.height) {
+            code += `  height: ${item.styles.height};\n`;
+        }
         code += `}\n\n`;
     });
 

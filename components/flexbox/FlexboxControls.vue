@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col h-full overflow-y-auto">
-        <h2 class="text-lg font-semibold mb-4">Container Properties</h2>
+        <h2 class="mb-4 text-lg font-semibold">Container Properties</h2>
 
         <div class="mb-4">
             <label class="block mb-2 font-medium">display</label>
@@ -152,7 +152,7 @@
 
         <hr class="my-6 border-gray-200" />
 
-        <h2 class="text-lg font-semibold mb-4">Item Defaults</h2>
+        <h2 class="mb-4 text-lg font-semibold">Item Defaults</h2>
 
         <div class="mb-4">
             <label class="block mb-2 font-medium">flex-grow</label>
@@ -218,17 +218,36 @@
             </select>
         </div>
 
-        <div class="mt-6 flex gap-2">
+        <!-- Add width and height default controls -->
+        <div class="mb-4">
+            <DimensionInput
+                v-model="defaults.width"
+                label="Default width"
+                placeholder="150"
+                @update:modelValue="emitItemDefaultsUpdate"
+            />
+        </div>
+
+        <div class="mb-4">
+            <DimensionInput
+                v-model="defaults.height"
+                label="Default height"
+                placeholder="150"
+                @update:modelValue="emitItemDefaultsUpdate"
+            />
+        </div>
+
+        <div class="flex gap-2 mt-6">
             <button
                 @click="$emit('add-item')"
-                class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md flex-grow"
+                class="flex-grow px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
             >
                 <Icon icon="mdi:plus" class="mr-1" /> Add Item
             </button>
 
             <button
                 @click="$emit('reset')"
-                class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md"
+                class="px-4 py-2 text-white bg-gray-600 rounded-md hover:bg-gray-700"
             >
                 <Icon icon="mdi:refresh" class="mr-1" /> Reset
             </button>
@@ -239,6 +258,7 @@
 <script setup>
 import { ref, reactive, watch } from 'vue';
 import { Icon } from '@iconify/vue';
+import DimensionInput from '~/components/ui/DimensionInput.vue';
 
 const props = defineProps({
     containerStyles: {
