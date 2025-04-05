@@ -22,7 +22,9 @@
         <!-- Main content area -->
         <div class="flex flex-1 gap-4 overflow-hidden">
             <!-- Tabbed Controls Panel -->
-            <div class="flex flex-col w-1/3 bg-white rounded-lg shadow">
+            <div
+                class="flex flex-col w-1/3 min-w-[300px] bg-white rounded-lg shadow"
+            >
                 <div class="flex border-b">
                     <button
                         v-for="(tab, index) in tabs"
@@ -452,7 +454,7 @@
             </div>
 
             <!-- Preview and Code Area -->
-            <div class="flex flex-col flex-1">
+            <div class="flex flex-col flex-1 min-w-0">
                 <!-- Preview Area -->
                 <div
                     class="flex-1 mb-4 overflow-hidden bg-white rounded-lg shadow"
@@ -494,23 +496,59 @@
                                     />
                                     Add Item
                                 </button>
+                                <button
+                                    @click="resetFlexbox"
+                                    class="flex items-center px-3 py-1.5 text-sm font-medium text-white bg-gray-600 rounded-md hover:bg-gray-700 transition-colors"
+                                    title="Reset flexbox"
+                                >
+                                    <Icon
+                                        icon="mdi:refresh"
+                                        class="w-4 h-4 mr-1"
+                                    />
+                                    Reset
+                                </button>
                             </div>
                         </div>
 
                         <div
-                            class="relative flex-1 overflow-hidden border border-gray-300 rounded-lg"
+                            class="relative flex-1 overflow-auto border border-gray-300 rounded-lg"
+                            style="background-color: #f3f4f6"
                         >
                             <div
-                                class="w-full h-full"
+                                class="w-full h-full min-w-fit min-h-fit"
                                 :style="flexbox.containerStyles"
                             >
-                                <FlexboxItem
-                                    v-for="item in flexbox.items"
-                                    :key="item.id"
-                                    :item="item"
-                                    :is-selected="isItemSelected(item.id)"
-                                    @click="selectItem(item)"
-                                />
+                                <TransitionGroup
+                                    name="flexbox-item"
+                                    tag="div"
+                                    class="w-full h-full"
+                                    :style="{
+                                        display:
+                                            flexbox.containerStyles.display,
+                                        flexDirection:
+                                            flexbox.containerStyles
+                                                .flexDirection,
+                                        flexWrap:
+                                            flexbox.containerStyles.flexWrap,
+                                        justifyContent:
+                                            flexbox.containerStyles
+                                                .justifyContent,
+                                        alignItems:
+                                            flexbox.containerStyles.alignItems,
+                                        alignContent:
+                                            flexbox.containerStyles
+                                                .alignContent,
+                                        gap: flexbox.containerStyles.gap,
+                                    }"
+                                >
+                                    <FlexboxItem
+                                        v-for="item in flexbox.items"
+                                        :key="item.id"
+                                        :item="item"
+                                        :is-selected="isItemSelected(item.id)"
+                                        @click="selectItem(item)"
+                                    />
+                                </TransitionGroup>
                             </div>
                         </div>
                     </div>

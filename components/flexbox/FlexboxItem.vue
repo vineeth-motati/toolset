@@ -36,6 +36,7 @@ const itemStyles = computed(() => ({
 .flex-item {
     min-width: 50px;
     min-height: 50px;
+    max-width: 100%; /* Prevent items from breaking out of container */
     transition: all 0.3s ease; /* Match container transition time */
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);

@@ -3,13 +3,13 @@
         <h2 class="mb-2 text-lg font-semibold">Preview</h2>
 
         <div
-            class="relative flex-grow overflow-hidden border border-gray-300 rounded-lg"
+            class="relative flex-grow overflow-auto border border-gray-300 rounded-lg"
         >
             <!-- Use TransitionGroup instead of Transition for list animations -->
             <TransitionGroup
                 name="fade-scale"
                 tag="div"
-                class="relative w-full h-full flex-container"
+                class="relative w-full h-full min-w-fit min-h-fit flex-container"
                 :style="containerStyles"
                 @click.self="$emit('deselect')"
             >
