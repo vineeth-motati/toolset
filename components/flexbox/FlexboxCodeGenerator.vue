@@ -1,34 +1,46 @@
 <template>
-    <div>
-        <h2 class="mb-2 text-lg font-semibold">Generated Code</h2>
-        <div class="flex gap-2 mb-2">
-            <button
-                v-for="codeType in codeTypes"
-                :key="codeType"
-                :class="[
-                    'px-3 py-1 rounded text-sm',
-                    activeCodeType === codeType
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-gray-200 hover:bg-gray-300',
-                ]"
-                @click="activeCodeType = codeType"
-            >
-                {{ codeType }}
-            </button>
+    <div class="flex flex-col h-full">
+        <div
+            class="sticky top-0 z-10 flex items-center justify-between mb-2 bg-white"
+        >
+            <div class="flex justify-between w-full gap-2 py-1">
+                <div class="flex overflow-hidden rounded">
+                    <button
+                        v-for="codeType in codeTypes"
+                        :key="codeType"
+                        :class="[
+                            'px-3 py-1 text-sm',
+                            activeCodeType === codeType
+                                ? 'bg-indigo-600 text-white'
+                                : 'bg-gray-200 hover:bg-gray-300',
+                        ]"
+                        @click="activeCodeType = codeType"
+                    >
+                        {{ codeType }}
+                    </button>
+                </div>
+                <button
+                    @click="copyCode"
+                    :class="[
+                        'px-3 py-1 text-sm rounded',
+                        copied
+                            ? 'bg-green-600 text-white'
+                            : 'bg-gray-200 hover:bg-gray-300',
+                    ]"
+                    :title="copied ? 'Copied!' : 'Copy to clipboard'"
+                >
+                    <Icon
+                        :icon="copied ? 'mdi:check' : 'mdi:content-copy'"
+                        class="w-4 h-4"
+                    />
+                </button>
+            </div>
         </div>
 
-        <div class="relative">
+        <div class="flex-1 overflow-auto">
             <pre
-                class="p-4 overflow-x-auto text-sm text-gray-100 bg-gray-900 rounded-md max-h-80"
+                class="h-full p-3 text-sm text-gray-100 bg-gray-900 rounded-md"
             ><code v-html="highlightedCode"></code></pre>
-
-            <button
-                @click="copyCode"
-                class="absolute p-2 text-white bg-gray-700 rounded top-2 right-2 hover:bg-gray-600"
-                :title="copied ? 'Copied!' : 'Copy to clipboard'"
-            >
-                <Icon :icon="copied ? 'mdi:check' : 'mdi:content-copy'" />
-            </button>
         </div>
     </div>
 </template>

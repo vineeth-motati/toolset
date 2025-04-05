@@ -1,31 +1,32 @@
 <template>
     <div class="flex flex-col h-full">
-        <h2 class="text-lg font-semibold mb-2">Preview</h2>
+        <h2 class="mb-2 text-lg font-semibold">Preview</h2>
 
         <div
-            class="flex-grow relative overflow-hidden border border-gray-300 rounded-lg"
+            class="relative flex-grow overflow-hidden border border-gray-300 rounded-lg"
         >
-            <div
-                ref="flexContainer"
-                class="w-full h-full relative"
+            <!-- Apply container styles directly to the transition-group -->
+            <transition-group
+                name="fade-scale"
+                tag="div"
+                class="relative w-full h-full flex-container"
                 :style="containerStyles"
+                @click.self="$emit('deselect')"
             >
                 <FlexboxItem
-                    v-for="item in localItems"
+                    v-for="item in flexItems"
                     :key="item.id"
                     :item="item"
-                    @update="updateItem"
-                    @delete="$emit('delete-item', item.id)"
-                    @duplicate="$emit('duplicate-item', item.id)"
+                    :is-selected="selectedItemId === item.id"
+                    @click="$emit('select-item', item)"
                 />
-            </div>
+            </transition-group>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
-import { useDraggable } from '@vueuse/core';
+import { ref } from 'vue';
 
 const props = defineProps({
     containerStyles: {
@@ -36,36 +37,37 @@ const props = defineProps({
         type: Array,
         required: true,
     },
+    selectedItemId: {
+        type: String,
+        default: null,
+    },
 });
 
-const emit = defineEmits([
-    'update:items',
-    'delete-item',
-    'duplicate-item',
-    'update-item',
-]);
+const emit = defineEmits(['select-item', 'deselect']);
 
 const flexContainer = ref(null);
-const localItems = ref([...props.flexItems]);
-
-// Watch for prop changes
-watch(
-    () => props.flexItems,
-    (newItems) => {
-        localItems.value = [...newItems];
-    },
-    { deep: true }
-);
-
-// Methods
-const updateItem = (id, updates) => {
-    const index = localItems.value.findIndex((item) => item.id === id);
-    if (index !== -1) {
-        localItems.value[index] = {
-            ...localItems.value[index],
-            ...updates,
-        };
-        emit('update:items', [...localItems.value]);
-    }
-};
 </script>
+
+<style scoped>
+.flex-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: all 0.8s ease; /* Longer transition for layout changes */
+}
+
+.fade-scale-enter-active,
+.fade-scale-leave-active {
+    transition: all 0.3s ease;
+}
+
+.fade-scale-enter-from,
+.fade-scale-leave-to {
+    opacity: 0;
+    transform: scale(0.95);
+}
+
+.fade-scale-move {
+    transition: all 0.8s ease; /* Match container transition for consistency */
+}
+</style>

@@ -1,5 +1,6 @@
 <template>
-    <div class="flex flex-col h-full">
+    <div class="flex flex-col h-[85vh]">
+        <!-- Header with actions -->
         <div class="flex items-center justify-between mb-4">
             <h1 class="text-2xl font-bold">Flexbox Playground</h1>
             <div class="flex space-x-2">
@@ -10,7 +11,7 @@
                     <Icon icon="mdi:share" class="mr-2" /> Share
                 </button>
                 <button
-                    @click="showCode = !showCode"
+                    @click="showCode = true"
                     class="flex items-center px-4 py-2 text-white bg-gray-600 rounded-md hover:bg-gray-700"
                 >
                     <Icon icon="mdi:code-tags" class="mr-2" /> Code
@@ -18,54 +19,534 @@
             </div>
         </div>
 
-        <div class="flex flex-col h-full gap-4 lg:flex-row">
-            <!-- Controls Panel -->
-            <FlexboxControls
-                class="p-4 bg-white rounded-lg shadow lg:w-1/3"
-                :container-styles="flexbox.containerStyles"
-                :item-defaults="flexbox.itemDefaults"
-                @update:container="updateContainerStyles"
-                @update:items="updateItemDefaults"
-                @add-item="addFlexItem"
-                @reset="resetFlexbox"
-            />
+        <!-- Main content area -->
+        <div class="flex flex-1 gap-4 overflow-hidden">
+            <!-- Tabbed Controls Panel -->
+            <div class="flex flex-col w-1/3 bg-white rounded-lg shadow">
+                <div class="flex border-b">
+                    <button
+                        v-for="(tab, index) in tabs"
+                        :key="index"
+                        @click="activeTab = tab.id"
+                        :class="[
+                            'px-4 py-2 text-sm font-medium',
+                            activeTab === tab.id
+                                ? 'text-indigo-600 border-b-2 border-indigo-600'
+                                : 'text-gray-500 hover:text-gray-700',
+                        ]"
+                    >
+                        {{ tab.name }}
+                    </button>
+                </div>
 
-            <!-- Preview Panel -->
-            <div class="flex flex-col lg:w-2/3">
-                <FlexboxPreview
-                    class="flex-grow p-4 mb-4 bg-white rounded-lg shadow"
-                    :container-styles="flexbox.containerStyles"
-                    :flex-items="flexbox.items"
-                    @update:items="flexbox.items = $event"
-                    @delete-item="deleteFlexItem"
-                    @duplicate-item="duplicateFlexItem"
-                    @update-item="updateFlexItem"
-                />
+                <div class="flex-1 p-4 overflow-auto">
+                    <!-- Container Controls -->
+                    <div v-show="activeTab === 'container'" class="space-y-4">
+                        <h2 class="text-lg font-semibold">
+                            Container Properties
+                        </h2>
 
+                        <!-- Display property -->
+                        <div class="mb-4">
+                            <label class="block mb-2 font-medium"
+                                >display</label
+                            >
+                            <select
+                                v-model="flexbox.containerStyles.display"
+                                class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                @change="
+                                    updateContainerStyles({
+                                        display:
+                                            flexbox.containerStyles.display,
+                                    })
+                                "
+                            >
+                                <option value="flex">flex</option>
+                                <option value="inline-flex">inline-flex</option>
+                            </select>
+                        </div>
+
+                        <!-- Direction buttons in a more compact layout -->
+                        <div class="mb-4">
+                            <label class="block mb-2 font-medium"
+                                >flex-direction</label
+                            >
+                            <div class="grid grid-cols-2 gap-2">
+                                <button
+                                    v-for="direction in [
+                                        'row',
+                                        'row-reverse',
+                                        'column',
+                                        'column-reverse',
+                                    ]"
+                                    :key="direction"
+                                    :class="[
+                                        'p-2 border rounded flex items-center justify-center',
+                                        flexbox.containerStyles
+                                            .flexDirection === direction
+                                            ? 'bg-indigo-100 border-indigo-500'
+                                            : 'border-gray-300 hover:bg-gray-100',
+                                    ]"
+                                    @click="
+                                        updateContainerStyles({
+                                            flexDirection: direction,
+                                        })
+                                    "
+                                >
+                                    <Icon
+                                        :icon="directionIcons[direction]"
+                                        class="mr-1"
+                                    />
+                                    {{ direction }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Flex-wrap with more compact layout -->
+                        <div class="mb-4">
+                            <label class="block mb-2 font-medium"
+                                >flex-wrap</label
+                            >
+                            <div class="grid grid-cols-3 gap-2">
+                                <button
+                                    v-for="wrap in [
+                                        'nowrap',
+                                        'wrap',
+                                        'wrap-reverse',
+                                    ]"
+                                    :key="wrap"
+                                    :class="[
+                                        'p-2 border rounded text-sm',
+                                        flexbox.containerStyles.flexWrap ===
+                                        wrap
+                                            ? 'bg-indigo-100 border-indigo-500'
+                                            : 'border-gray-300 hover:bg-gray-100',
+                                    ]"
+                                    @click="
+                                        updateContainerStyles({
+                                            flexWrap: wrap,
+                                        })
+                                    "
+                                >
+                                    {{ wrap }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Other container properties in a two-column layout -->
+                        <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                            <!-- Justify Content -->
+                            <div>
+                                <label class="block mb-2 font-medium"
+                                    >justify-content</label
+                                >
+                                <select
+                                    v-model="
+                                        flexbox.containerStyles.justifyContent
+                                    "
+                                    class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    @change="
+                                        updateContainerStyles({
+                                            justifyContent:
+                                                flexbox.containerStyles
+                                                    .justifyContent,
+                                        })
+                                    "
+                                >
+                                    <option value="flex-start">
+                                        flex-start
+                                    </option>
+                                    <option value="flex-end">flex-end</option>
+                                    <option value="center">center</option>
+                                    <option value="space-between">
+                                        space-between
+                                    </option>
+                                    <option value="space-around">
+                                        space-around
+                                    </option>
+                                    <option value="space-evenly">
+                                        space-evenly
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Align Items -->
+                            <div>
+                                <label class="block mb-2 font-medium"
+                                    >align-items</label
+                                >
+                                <select
+                                    v-model="flexbox.containerStyles.alignItems"
+                                    class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    @change="
+                                        updateContainerStyles({
+                                            alignItems:
+                                                flexbox.containerStyles
+                                                    .alignItems,
+                                        })
+                                    "
+                                >
+                                    <option value="flex-start">
+                                        flex-start
+                                    </option>
+                                    <option value="flex-end">flex-end</option>
+                                    <option value="center">center</option>
+                                    <option value="stretch">stretch</option>
+                                    <option value="baseline">baseline</option>
+                                </select>
+                            </div>
+
+                            <!-- Align Content -->
+                            <div>
+                                <label class="block mb-2 font-medium"
+                                    >align-content</label
+                                >
+                                <select
+                                    v-model="
+                                        flexbox.containerStyles.alignContent
+                                    "
+                                    class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    @change="
+                                        updateContainerStyles({
+                                            alignContent:
+                                                flexbox.containerStyles
+                                                    .alignContent,
+                                        })
+                                    "
+                                >
+                                    <option value="flex-start">
+                                        flex-start
+                                    </option>
+                                    <option value="flex-end">flex-end</option>
+                                    <option value="center">center</option>
+                                    <option value="stretch">stretch</option>
+                                    <option value="space-between">
+                                        space-between
+                                    </option>
+                                    <option value="space-around">
+                                        space-around
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Gap slider -->
+                            <div>
+                                <label class="block mb-2 font-medium"
+                                    >gap</label
+                                >
+                                <div class="flex items-center">
+                                    <input
+                                        v-model="gapValue"
+                                        type="range"
+                                        min="0"
+                                        max="50"
+                                        class="flex-grow mr-2"
+                                        @input="updateGap"
+                                    />
+                                    <span class="w-12 text-right">{{
+                                        flexbox.containerStyles.gap
+                                    }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item Properties - Only shown when an item is selected -->
+                    <div v-show="activeTab === 'item'" class="space-y-4">
+                        <div v-if="selectedItem">
+                            <div class="flex items-center justify-between mb-4">
+                                <h2 class="text-lg font-semibold">
+                                    {{ selectedItem.content }} Properties
+                                </h2>
+                                <button
+                                    @click="deselectItem"
+                                    class="p-1 text-gray-500 rounded-full hover:text-gray-700"
+                                >
+                                    <Icon icon="mdi:close" class="w-5 h-5" />
+                                </button>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block mb-2 font-medium"
+                                    >Content</label
+                                >
+                                <div class="flex gap-2">
+                                    <input
+                                        v-model="selectedItem.content"
+                                        type="text"
+                                        class="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        @change="updateSelectedItem"
+                                    />
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                                <!-- Flex Grow -->
+                                <div>
+                                    <label class="block mb-2 font-medium"
+                                        >flex-grow</label
+                                    >
+                                    <div class="flex items-center">
+                                        <input
+                                            v-model.number="
+                                                selectedItem.styles.flexGrow
+                                            "
+                                            type="range"
+                                            min="0"
+                                            max="5"
+                                            step="1"
+                                            class="flex-grow mr-2"
+                                            @input="updateSelectedItem"
+                                        />
+                                        <span class="w-8 text-right">{{
+                                            selectedItem.styles.flexGrow
+                                        }}</span>
+                                    </div>
+                                </div>
+
+                                <!-- Flex Shrink -->
+                                <div>
+                                    <label class="block mb-2 font-medium"
+                                        >flex-shrink</label
+                                    >
+                                    <div class="flex items-center">
+                                        <input
+                                            v-model.number="
+                                                selectedItem.styles.flexShrink
+                                            "
+                                            type="range"
+                                            min="0"
+                                            max="5"
+                                            step="1"
+                                            class="flex-grow mr-2"
+                                            @input="updateSelectedItem"
+                                        />
+                                        <span class="w-8 text-right">{{
+                                            selectedItem.styles.flexShrink
+                                        }}</span>
+                                    </div>
+                                </div>
+
+                                <!-- Flex Basis -->
+                                <div>
+                                    <label class="block mb-2 font-medium"
+                                        >flex-basis</label
+                                    >
+                                    <select
+                                        v-model="selectedItem.styles.flexBasis"
+                                        class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        @change="updateSelectedItem"
+                                    >
+                                        <option value="auto">auto</option>
+                                        <option value="0">0</option>
+                                        <option value="100px">100px</option>
+                                        <option value="200px">200px</option>
+                                        <option value="50%">50%</option>
+                                        <option value="100%">100%</option>
+                                    </select>
+                                </div>
+
+                                <!-- Align Self -->
+                                <div>
+                                    <label class="block mb-2 font-medium"
+                                        >align-self</label
+                                    >
+                                    <select
+                                        v-model="selectedItem.styles.alignSelf"
+                                        class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        @change="updateSelectedItem"
+                                    >
+                                        <option value="auto">auto</option>
+                                        <option value="flex-start">
+                                            flex-start
+                                        </option>
+                                        <option value="flex-end">
+                                            flex-end
+                                        </option>
+                                        <option value="center">center</option>
+                                        <option value="baseline">
+                                            baseline
+                                        </option>
+                                        <option value="stretch">stretch</option>
+                                    </select>
+                                </div>
+
+                                <!-- Order -->
+                                <div>
+                                    <label class="block mb-2 font-medium"
+                                        >order</label
+                                    >
+                                    <div class="flex items-center">
+                                        <input
+                                            v-model.number="
+                                                selectedItem.styles.order
+                                            "
+                                            type="range"
+                                            min="-5"
+                                            max="5"
+                                            step="1"
+                                            class="flex-grow mr-2"
+                                            @input="updateSelectedItem"
+                                        />
+                                        <span class="w-8 text-right">{{
+                                            selectedItem.styles.order
+                                        }}</span>
+                                    </div>
+                                </div>
+
+                                <!-- Background Color -->
+                                <div>
+                                    <label class="block mb-2 font-medium"
+                                        >Background Color</label
+                                    >
+                                    <div class="flex items-center gap-2">
+                                        <input
+                                            v-model="
+                                                selectedItem.styles
+                                                    .backgroundColor
+                                            "
+                                            type="color"
+                                            class="w-10 h-10 border border-gray-300 rounded"
+                                            @input="updateSelectedItem"
+                                        />
+                                        <span>{{
+                                            selectedItem.styles.backgroundColor
+                                        }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2 mt-4">
+                                <button
+                                    @click="duplicateSelectedItem"
+                                    class="px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
+                                >
+                                    <Icon
+                                        icon="mdi:content-duplicate"
+                                        class="mr-1"
+                                    />
+                                    Duplicate
+                                </button>
+                                <button
+                                    @click="deleteSelectedItem"
+                                    class="px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700"
+                                >
+                                    <Icon icon="mdi:delete" class="mr-1" />
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                        <div v-else class="py-8 text-center text-gray-500">
+                            <Icon
+                                icon="mdi:cursor-default-click-outline"
+                                class="w-12 h-12 mx-auto"
+                            />
+                            <p class="mt-2">
+                                Select an item to edit its properties
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview and Code Area -->
+            <div class="flex flex-col flex-1">
+                <!-- Preview Area -->
+                <div
+                    class="flex-1 mb-4 overflow-hidden bg-white rounded-lg shadow"
+                >
+                    <div class="flex flex-col h-full p-4">
+                        <h2 class="mb-2 text-lg font-semibold">Preview</h2>
+                        <div
+                            class="relative flex-1 overflow-hidden border border-gray-300 rounded-lg"
+                        >
+                            <div
+                                class="w-full h-full"
+                                :style="flexbox.containerStyles"
+                            >
+                                <FlexboxItem
+                                    v-for="item in flexbox.items"
+                                    :key="item.id"
+                                    :item="item"
+                                    :is-selected="isItemSelected(item.id)"
+                                    @click="selectItem(item)"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fixed Action Buttons -->
+        <div class="fixed flex flex-col gap-2 right-8 bottom-8">
+            <button
+                @click="addFlexItem"
+                class="p-3 text-white bg-indigo-600 rounded-full shadow-lg hover:bg-indigo-700"
+                title="Add new item"
+            >
+                <Icon icon="mdi:plus" class="w-6 h-6" />
+            </button>
+            <button
+                @click="resetFlexbox"
+                class="p-3 text-white bg-gray-600 rounded-full shadow-lg hover:bg-gray-700"
+                title="Reset flexbox"
+            >
+                <Icon icon="mdi:refresh" class="w-6 h-6" />
+            </button>
+        </div>
+
+        <!-- Code Modal -->
+        <Modal
+            :is-open="showCode"
+            title="Generated Code"
+            @close="showCode = false"
+        >
+            <div style="max-height: 70vh; overflow-y: auto">
                 <FlexboxCodeGenerator
-                    v-if="showCode"
-                    class="p-4 bg-white rounded-lg shadow"
                     :container-styles="flexbox.containerStyles"
                     :flex-items="flexbox.items"
                 />
             </div>
-        </div>
+        </Modal>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useLocalStorage } from '@vueuse/core';
 import { Icon } from '@iconify/vue';
 import { v4 as uuidv4 } from 'uuid';
 import { useShareLink } from '~/composables/useShareLink';
 import { useToast } from '~/composables/useToast';
+import { cloneDeep } from 'lodash-es';
+import Modal from '~/components/ui/Modal.vue';
 
 const toast = useToast();
 const { generateShareLink, getSharedData } = useShareLink();
 
 // UI state
 const showCode = ref(false);
+const activeTab = ref('container');
+const gapValue = ref(10);
+const selectedItemId = ref(null);
+
+// Computed value for the selected item
+const selectedItem = ref(null);
+
+// Tabs for the controls panel
+const tabs = [
+    { id: 'container', name: 'Container' },
+    { id: 'item', name: 'Item Properties' },
+];
+
+// Direction icons
+const directionIcons = {
+    row: 'mdi:arrow-right',
+    'row-reverse': 'mdi:arrow-left',
+    column: 'mdi:arrow-down',
+    'column-reverse': 'mdi:arrow-up',
+};
 
 // Use a single state object pattern, matching other tools in the application
 const flexbox = useLocalStorage('flexbox', {
@@ -74,7 +555,7 @@ const flexbox = useLocalStorage('flexbox', {
         flexDirection: 'row',
         flexWrap: 'nowrap',
         justifyContent: 'flex-start',
-        alignItems: 'stretch',
+        alignItems: 'flex-start',
         alignContent: 'stretch',
         gap: '10px',
         padding: '20px',
@@ -127,7 +608,7 @@ const flexbox = useLocalStorage('flexbox', {
     ],
 });
 
-// Methods - updated to work with the consolidated state object
+// Methods
 const updateContainerStyles = (styles) => {
     Object.assign(flexbox.value.containerStyles, styles);
 };
@@ -182,7 +663,7 @@ const resetFlexbox = () => {
             flexDirection: 'row',
             flexWrap: 'nowrap',
             justifyContent: 'flex-start',
-            alignItems: 'stretch',
+            alignItems: 'flex-start',
             alignContent: 'stretch',
             gap: '10px',
             padding: '20px',
@@ -245,6 +726,81 @@ const getRandomColor = () => {
     return colors[Math.floor(Math.random() * colors.length)];
 };
 
+const updateGap = () => {
+    flexbox.value.containerStyles.gap = `${gapValue.value}px`;
+};
+
+const selectItem = (item) => {
+    // Make a deep clone to avoid direct mutations
+    selectedItem.value = cloneDeep(item);
+    selectedItemId.value = item.id;
+    activeTab.value = 'item';
+};
+
+const deselectItem = () => {
+    selectedItem.value = null;
+    selectedItemId.value = null;
+};
+
+const isItemSelected = (id) => {
+    return selectedItemId.value === id;
+};
+
+const updateSelectedItem = () => {
+    if (!selectedItem.value) return;
+
+    const index = flexbox.value.items.findIndex(
+        (item) => item.id === selectedItem.value.id
+    );
+    if (index !== -1) {
+        flexbox.value.items[index] = cloneDeep(selectedItem.value);
+    }
+};
+
+const duplicateSelectedItem = () => {
+    if (!selectedItem.value) return;
+
+    const newItem = {
+        ...cloneDeep(selectedItem.value),
+        id: uuidv4(),
+        content: `${selectedItem.value.content} (copy)`,
+    };
+
+    flexbox.value.items.push(newItem);
+    selectItem(newItem);
+    toast.success('Item duplicated!');
+};
+
+const deleteSelectedItem = () => {
+    if (!selectedItem.value) return;
+
+    flexbox.value.items = flexbox.value.items.filter(
+        (item) => item.id !== selectedItem.value.id
+    );
+    deselectItem();
+    toast.success('Item deleted!');
+};
+
+// Watch for changes to items in the flexbox
+watch(
+    () => flexbox.value.items,
+    (newItems) => {
+        // If the currently selected item changes externally, update our local copy
+        if (selectedItemId.value) {
+            const updatedItem = newItems.find(
+                (item) => item.id === selectedItemId.value
+            );
+            if (updatedItem) {
+                selectedItem.value = cloneDeep(updatedItem);
+            } else {
+                // If the item was deleted, deselect it
+                deselectItem();
+            }
+        }
+    },
+    { deep: true }
+);
+
 // Updated sharing functionality using the consolidated state object
 const shareFlexbox = async () => {
     try {
@@ -268,5 +824,15 @@ onMounted(async () => {
         Object.assign(flexbox.value, shared);
         toast.success('Loaded shared flexbox layout!');
     }
+
+    // Set initial gap value from containerStyles
+    gapValue.value = parseInt(flexbox.value.containerStyles.gap) || 10;
 });
 </script>
+
+<style>
+.selected-flex-item {
+    outline: 2px solid #4f46e5;
+    outline-offset: 2px;
+}
+</style>
