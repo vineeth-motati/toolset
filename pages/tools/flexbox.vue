@@ -514,42 +514,32 @@
                             class="relative flex-1 overflow-auto border border-gray-300 rounded-lg"
                             style="background-color: #f3f4f6"
                         >
-                            <div
-                                class="w-full h-full min-w-fit min-h-fit"
-                                :style="flexbox.containerStyles"
+                            <TransitionGroup
+                                name="flexbox-item"
+                                tag="div"
+                                class="w-full h-full p-3"
+                                :style="{
+                                    display: flexbox.containerStyles.display,
+                                    flexDirection:
+                                        flexbox.containerStyles.flexDirection,
+                                    flexWrap: flexbox.containerStyles.flexWrap,
+                                    justifyContent:
+                                        flexbox.containerStyles.justifyContent,
+                                    alignItems:
+                                        flexbox.containerStyles.alignItems,
+                                    alignContent:
+                                        flexbox.containerStyles.alignContent,
+                                    gap: flexbox.containerStyles.gap,
+                                }"
                             >
-                                <TransitionGroup
-                                    name="flexbox-item"
-                                    tag="div"
-                                    class="w-full h-full"
-                                    :style="{
-                                        display:
-                                            flexbox.containerStyles.display,
-                                        flexDirection:
-                                            flexbox.containerStyles
-                                                .flexDirection,
-                                        flexWrap:
-                                            flexbox.containerStyles.flexWrap,
-                                        justifyContent:
-                                            flexbox.containerStyles
-                                                .justifyContent,
-                                        alignItems:
-                                            flexbox.containerStyles.alignItems,
-                                        alignContent:
-                                            flexbox.containerStyles
-                                                .alignContent,
-                                        gap: flexbox.containerStyles.gap,
-                                    }"
-                                >
-                                    <FlexboxItem
-                                        v-for="item in flexbox.items"
-                                        :key="item.id"
-                                        :item="item"
-                                        :is-selected="isItemSelected(item.id)"
-                                        @click="selectItem(item)"
-                                    />
-                                </TransitionGroup>
-                            </div>
+                                <FlexboxItem
+                                    v-for="item in flexbox.items"
+                                    :key="item.id"
+                                    :item="item"
+                                    :is-selected="isItemSelected(item.id)"
+                                    @click="selectItem(item)"
+                                />
+                            </TransitionGroup>
                         </div>
                     </div>
                 </div>
@@ -609,8 +599,8 @@ const directionIcons = {
     'column-reverse': 'mdi:arrow-up',
 };
 
-// Use a single state object pattern, matching other tools in the application
-const flexbox = useLocalStorage('flexbox', {
+// Flexbox data
+const flexboxStorage = useLocalStorage('flexbox', {
     containerStyles: {
         display: 'flex',
         flexDirection: 'row',
@@ -675,6 +665,14 @@ const flexbox = useLocalStorage('flexbox', {
             },
         },
     ],
+});
+
+// Reactive state for the flexbox
+const flexbox = computed({
+    get: () => flexboxStorage.value,
+    set: (newValue) => {
+        flexboxStorage.value = newValue;
+    },
 });
 
 // Methods
