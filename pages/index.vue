@@ -60,6 +60,12 @@ const tools = [
         description: 'Generate QR codes for any text or URL',
     },
     {
+        name: 'Flexbox',
+        path: '/tools/flexbox',
+        icon: 'mdi:page-layout-body',
+        description: 'Create and experiment with CSS Flexbox layouts',
+    },
+    {
         name: 'Image Tools',
         path: '/tools/image',
         icon: 'mdi:image',
