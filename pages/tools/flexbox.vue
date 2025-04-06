@@ -78,7 +78,7 @@
                                     v-for="direction in directionOptions"
                                     :key="direction"
                                     :class="[
-                                        'p-2 border rounded flex items-center justify-center cursor-pointer align-middle justify-center',
+                                        'p-2 border rounded flex items-center cursor-pointer align-middle justify-center',
                                         flexbox.containerStyles
                                             .flexDirection === direction
                                             ? 'bg-indigo-100 border-indigo-500'
