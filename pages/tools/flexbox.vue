@@ -74,33 +74,37 @@
                                 >Flex Direction</label
                             >
                             <div class="grid grid-cols-2 gap-2">
-                                <button
-                                    v-for="direction in [
-                                        'row',
-                                        'row-reverse',
-                                        'column',
-                                        'column-reverse',
-                                    ]"
+                                <label
+                                    v-for="direction in directionOptions"
                                     :key="direction"
                                     :class="[
-                                        'p-2 border rounded flex items-center justify-center',
+                                        'p-2 border rounded flex items-center justify-center cursor-pointer align-middle justify-center',
                                         flexbox.containerStyles
                                             .flexDirection === direction
                                             ? 'bg-indigo-100 border-indigo-500'
                                             : 'border-gray-300 hover:bg-gray-100',
                                     ]"
-                                    @click="
-                                        updateContainerStyles({
-                                            flexDirection: direction,
-                                        })
-                                    "
                                 >
+                                    <input
+                                        type="radio"
+                                        :value="direction"
+                                        v-model="
+                                            flexbox.containerStyles
+                                                .flexDirection
+                                        "
+                                        class="sr-only"
+                                        @change="
+                                            updateContainerStyles({
+                                                flexDirection: direction,
+                                            })
+                                        "
+                                    />
                                     <Icon
                                         :icon="directionIcons[direction]"
                                         class="mr-1"
                                     />
                                     {{ direction }}
-                                </button>
+                                </label>
                             </div>
                         </div>
 
@@ -109,29 +113,36 @@
                             <label class="block mb-2 font-medium"
                                 >Flex Wrap</label
                             >
-                            <div class="grid grid-cols-3 gap-2">
-                                <button
-                                    v-for="wrap in [
-                                        'nowrap',
-                                        'wrap',
-                                        'wrap-reverse',
-                                    ]"
+                            <div
+                                class="grid grid-cols-3 gap-2"
+                                :key="flexbox.containerStyles.flexWrap"
+                            >
+                                <label
+                                    v-for="wrap in wrapOptions"
                                     :key="wrap"
                                     :class="[
-                                        'p-2 border rounded text-sm',
+                                        'p-2 border rounded text-sm cursor-pointer text-center content-center',
                                         flexbox.containerStyles.flexWrap ===
                                         wrap
                                             ? 'bg-indigo-100 border-indigo-500'
                                             : 'border-gray-300 hover:bg-gray-100',
                                     ]"
-                                    @click="
-                                        updateContainerStyles({
-                                            flexWrap: wrap,
-                                        })
-                                    "
                                 >
+                                    <input
+                                        type="radio"
+                                        :value="wrap"
+                                        v-model="
+                                            flexbox.containerStyles.flexWrap
+                                        "
+                                        class="sr-only"
+                                        @change="
+                                            updateContainerStyles({
+                                                flexWrap: wrap,
+                                            })
+                                        "
+                                    />
                                     {{ wrap }}
-                                </button>
+                                </label>
                             </div>
                         </div>
 
@@ -563,7 +574,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed, watch, nextTick } from 'vue';
 import { useLocalStorage } from '@vueuse/core';
 import { Icon } from '@iconify/vue';
 import { v4 as uuidv4 } from 'uuid';
@@ -599,6 +610,13 @@ const directionIcons = {
     'column-reverse': 'mdi:arrow-up',
 };
 
+const wrapOptions = ref(['nowrap', 'wrap', 'wrap-reverse']);
+const directionOptions = ref([
+    'row',
+    'row-reverse',
+    'column',
+    'column-reverse',
+]);
 // Flexbox data
 const flexboxStorage = useLocalStorage('flexbox', {
     containerStyles: {
@@ -896,12 +914,19 @@ const shareFlexbox = async () => {
 onMounted(async () => {
     const shared = await getSharedData();
     if (shared) {
+        // Use nextTick to ensure the UI updates after the data changes
         Object.assign(flexbox.value, shared);
+        await nextTick();
         toast.success('Loaded shared flexbox layout!');
     }
 
     // Set initial gap value from containerStyles
     gapValue.value = parseInt(flexbox.value.containerStyles.gap) || 10;
+
+    // Force a re-render by creating a reactive trigger
+    const containerStylesCopy = cloneDeep(flexbox.value.containerStyles);
+    await nextTick();
+    Object.assign(flexbox.value.containerStyles, containerStylesCopy);
 });
 </script>
 
