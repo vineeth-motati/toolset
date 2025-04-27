@@ -102,6 +102,12 @@ const tools = [
         description: 'Create and edit spreadsheets',
     },
     {
+        name: 'JSONGrid',
+        path: '/tools/jsongrid',
+        icon: 'mdi:table-large',
+        description: 'Visualize and edit JSON data in grid format',
+    },
+    {
         name: 'API',
         path: '/tools/api',
         icon: 'mdi:api',
