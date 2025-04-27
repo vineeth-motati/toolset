@@ -1,5 +1,5 @@
-/** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
+    darkMode: 'class', // Ensures dark mode is based on .dark class
     content: [
         './components/**/*.{js,vue,ts}',
         './layouts/**/*.vue',
@@ -8,7 +8,15 @@ export default {
         './app.vue',
     ],
     theme: {
-        extend: {},
+        extend: {
+            // Add any theme extensions needed for proper dark mode styling
+            backgroundColor: {
+                dark: '#1f2937',
+            },
+            textColor: {
+                dark: '#f9fafb',
+            },
+        },
     },
     plugins: [],
 };
