@@ -1,5 +1,5 @@
 <template>
-    <div class="mx-auto max-w-4xl">
+    <div class="max-w-4xl mx-auto">
         <h1 class="mb-8 text-4xl font-bold text-center">
             Welcome to Tools-Set
         </h1>
@@ -8,11 +8,11 @@
                 v-for="tool in tools"
                 :key="tool.path"
                 :to="tool.path"
-                class="p-6 bg-white rounded-xl shadow-sm transition-shadow group hover:shadow-md"
+                class="p-6 transition-shadow bg-white shadow-sm rounded-xl group hover:shadow-md"
             >
                 <div class="flex items-center space-x-4">
                     <div
-                        class="p-2 bg-indigo-100 rounded-lg transition-colors group-hover:bg-indigo-200"
+                        class="p-2 transition-colors bg-indigo-100 rounded-lg group-hover:bg-indigo-200"
                     >
                         <Icon
                             :icon="tool.icon"
@@ -118,6 +118,12 @@ const tools = [
         path: '/tools/json',
         icon: 'mdi:json',
         description: 'Format and validate JSON data',
+    },
+    {
+        name: 'YT-Transcriptor',
+        path: '/tools/transcriptor',
+        icon: 'mdi:youtube',
+        description: 'Extract and view transcripts from YouTube videos',
     },
 ];
 </script>

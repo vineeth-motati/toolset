@@ -346,6 +346,12 @@ const allTools = [
         icon: 'mdi:json',
         description: 'Format and validate JSON data',
     },
+    {
+        name: 'YT-Transcriptor',
+        path: '/tools/transcriptor',
+        icon: 'mdi:youtube',
+        description: 'Extract and view transcripts from YouTube videos',
+    },
 ];
 
 // Popular tools for mobile menu
