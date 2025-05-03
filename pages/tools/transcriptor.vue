@@ -400,25 +400,51 @@ const fetchTranscript = async () => {
         loading.value = true;
         error.value = null;
 
-        // Using a server endpoint to fetch the transcript
+        // Using our enhanced API endpoint
         const response = await fetch(
-            `/api/youtube-transcript?videoId=${videoId}`
+            `/api/youtube-transcript-env?videoId=${videoId}`
         );
         const data = await response.json();
 
         if (!response.ok || data.error) {
-            throw new Error(data.error || 'Failed to fetch transcript');
+            // Enhanced error handling with more specific messages
+            if (
+                data.errorType === 'TRANSCRIPT_DISABLED' ||
+                (data.error &&
+                    data.error.includes('blocking transcript access'))
+            ) {
+                throw new Error(
+                    `YouTube is blocking transcript access from our server. This may work if you run the tool locally on your computer. Error details: ${data.error || 'Transcript access denied'}`
+                );
+            } else if (data.errorType === 'NOT_AVAILABLE') {
+                throw new Error(
+                    `This video doesn't have any captions or transcripts available.`
+                );
+            } else if (data.errorType === 'VIDEO_UNAVAILABLE') {
+                throw new Error(
+                    `This video appears to be unavailable or private.`
+                );
+            } else if (data.errorType === 'RATE_LIMIT') {
+                throw new Error(
+                    `We've hit YouTube's rate limit. Please try again in a few minutes.`
+                );
+            } else {
+                throw new Error(data.error || 'Failed to fetch transcript');
+            }
         }
 
-        transcriptorState.value.transcript = data;
+        // If we got a transcript successfully
+        if (data.transcript) {
+            transcriptorState.value.transcript = data.transcript;
 
-        // Also fetch video details
-        await fetchVideoDetails(videoId);
+            // Also fetch video details
+            await fetchVideoDetails(videoId);
 
-        // Initialize the YouTube player
-        await initYouTubePlayer(videoId);
+            // Initialize the YouTube player
+            await initYouTubePlayer(videoId);
 
-        toast.success('Transcript loaded successfully');
+            toast.success('Transcript loaded successfully');
+        }
     } catch (err) {
         error.value = `Error fetching transcript: ${err.message}`;
         toast.error(error.value);
