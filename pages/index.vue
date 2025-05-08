@@ -96,6 +96,12 @@ const tools = [
         description: 'Generate color palettes from any color',
     },
     {
+        name: 'Draw',
+        path: '/tools/draw',
+        icon: 'mdi:draw',
+        description: 'Create and share interactive whiteboard drawings',
+    },
+    {
         name: 'Sheets',
         path: '/tools/sheets',
         icon: 'mdi:table',
