@@ -578,11 +578,11 @@ import { ref, onMounted, computed, watch, nextTick } from 'vue';
 import { useLocalStorage } from '@vueuse/core';
 import { Icon } from '@iconify/vue';
 import { v4 as uuidv4 } from 'uuid';
-import { useShareLink } from '~/composables/useShareLink';
-import { useToast } from '~/composables/useToast';
+import { useShareLink } from '@/composables/useShareLink';
+import { useToast } from '@/composables/useToast';
 import { cloneDeep } from 'lodash-es';
-import Modal from '~/components/ui/Modal.vue';
-import DimensionInput from '~/components/ui/DimensionInput.vue';
+import Modal from '@/components/ui/Modal.vue';
+import DimensionInput from '@/components/ui/DimensionInput.vue';
 
 const toast = useToast();
 const { generateShareLink, getSharedData } = useShareLink();

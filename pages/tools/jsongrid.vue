@@ -349,9 +349,9 @@
 <script setup>
 import { ref, computed, onMounted, watch, onUnmounted, render } from 'vue';
 import { useLocalStorage } from '@vueuse/core';
-import { useToast } from '~/composables/useToast';
-import { useShareLink } from '~/composables/useShareLink';
-import { useJsonGrid } from '~/composables/useJsonGrid';
+import { useToast } from '@/composables/useToast';
+import { useShareLink } from '@/composables/useShareLink';
+import { useJsonGrid } from '@/composables/useJsonGrid';
 import { Icon } from '@iconify/vue';
 import JSON5 from 'json5';
 import ace from 'ace-builds';

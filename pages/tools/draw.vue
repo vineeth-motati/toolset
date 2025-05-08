@@ -31,8 +31,8 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useLocalStorage } from '@vueuse/core';
-import { useToast } from '~/composables/useToast';
-import { useShareLink } from '~/composables/useShareLink';
+import { useToast } from '@/composables/useToast';
+import { useShareLink } from '@/composables/useShareLink';
 import { Icon } from '@iconify/vue';
 
 const toast = useToast();

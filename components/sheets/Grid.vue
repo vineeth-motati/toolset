@@ -61,7 +61,7 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import { useSheetsFormulas } from '~/composables/useSheetsFormulas';
+import { useSheetsFormulas } from '@/composables/useSheetsFormulas';
 
 const props = defineProps({
     data: {

@@ -87,7 +87,7 @@
 import { nanoid } from 'nanoid';
 import { useLocalStorage } from '@vueuse/core';
 import { nextTick, ref, onMounted } from 'vue';
-import { useShareLink } from '~/composables/useShareLink';
+import { useShareLink } from '@/composables/useShareLink';
 
 // State Management
 const notes = useLocalStorage('markdown-notes', []);

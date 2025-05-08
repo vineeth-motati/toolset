@@ -240,8 +240,8 @@
 <script setup>
 import { ref, onMounted, watch, onUnmounted } from 'vue';
 import { useLocalStorage } from '@vueuse/core';
-import { useToast } from '~/composables/useToast';
-import { useShareLink } from '~/composables/useShareLink';
+import { useToast } from '@/composables/useToast';
+import { useShareLink } from '@/composables/useShareLink';
 import { Icon } from '@iconify/vue';
 import { jsPDF } from 'jspdf';
 

@@ -37,7 +37,7 @@
 </template>
 
 <script setup>
-import { useToast } from '~/composables/useToast';
+import { useToast } from '@/composables/useToast';
 import { Icon } from '@iconify/vue';
 
 const { toasts, removeToast } = useToast();

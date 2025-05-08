@@ -35,9 +35,9 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useLocalStorage } from '@vueuse/core';
-import { useToast } from '~/composables/useToast';
-import { useShareLink } from '~/composables/useShareLink';
-import { useSheetsFormulas } from '~/composables/useSheetsFormulas';
+import { useToast } from '@/composables/useToast';
+import { useShareLink } from '@/composables/useShareLink';
+import { useSheetsFormulas } from '@/composables/useSheetsFormulas';
 import Papa from 'papaparse';
 import ExcelJS from 'exceljs';
 

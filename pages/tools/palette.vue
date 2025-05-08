@@ -87,8 +87,8 @@
 <script setup>
 import Values from 'values.js';
 import { useLocalStorage } from '@vueuse/core';
-import { useToast } from '~/composables/useToast';
-import { useShareLink } from '~/composables/useShareLink';
+import { useToast } from '@/composables/useToast';
+import { useShareLink } from '@/composables/useShareLink';
 
 const toast = useToast();
 const { generateShareLink, getSharedData } = useShareLink();

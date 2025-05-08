@@ -9,6 +9,6 @@
     </div>
 </template>
 <script setup>
-import PageLoading from '~/components/ui/PageLoading.vue';
-import Toast from '~/components/ui/Toast.vue';
+import PageLoading from '@/components/ui/PageLoading.vue';
+import Toast from '@/components/ui/Toast.vue';
 </script>
