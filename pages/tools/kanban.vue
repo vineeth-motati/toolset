@@ -76,7 +76,7 @@
 
 <script setup>
 import draggable from 'vuedraggable';
-import Modal from '~/components/ui/Modal.vue';
+import Modal from '@/components/ui/Modal.vue';
 import { useLocalStorage } from '@vueuse/core';
 const { generateShareLink, getSharedData } = useShareLink();
 const toast = useToast();

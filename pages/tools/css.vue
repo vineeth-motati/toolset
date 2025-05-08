@@ -104,7 +104,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { useShareLink } from '~/composables/useShareLink';
+import { useShareLink } from '@/composables/useShareLink';
 
 // State
 const value = ref(0);

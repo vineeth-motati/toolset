@@ -250,7 +250,8 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { Icon } from '@iconify/vue';
-import { useTheme } from '~/composables/useTheme';
+import { useTheme } from '@/composables/useTheme';
+import toolsData from '@/data/tools.json';
 
 const mobileMenuOpen = ref(false);
 const isMobileSearchOpen = ref(false);
@@ -260,99 +261,8 @@ const searchQuery = ref('');
 // Use the theme composable - make sure we're using these variables in the template
 const { isDark, toggleTheme } = useTheme();
 
-// All available tools (Using the same data structure as on the homepage)
-const allTools = [
-    {
-        name: 'Kanban Board',
-        path: '/tools/kanban',
-        icon: 'material-symbols:view-kanban-outline',
-        description: 'Organize your tasks with a drag-and-drop Kanban board',
-    },
-    {
-        name: 'Notes',
-        path: '/tools/notes',
-        icon: 'mdi:note',
-        description: 'Take and organize your notes with markdown support',
-    },
-    {
-        name: 'Code Editor',
-        path: '/tools/code',
-        icon: 'mdi:code-tags',
-        description: 'Write and share code with syntax highlighting',
-    },
-    {
-        name: 'QR Generator',
-        path: '/tools/qr',
-        icon: 'mdi:qrcode',
-        description: 'Generate QR codes for any text or URL',
-    },
-    {
-        name: 'Flexbox',
-        path: '/tools/flexbox',
-        icon: 'mdi:page-layout-body',
-        description: 'Create and experiment with CSS Flexbox layouts',
-    },
-    {
-        name: 'Image Tools',
-        path: '/tools/image',
-        icon: 'mdi:image',
-        description: 'Compress and optimize your images',
-    },
-    {
-        name: 'Markdown Editor',
-        path: '/tools/markdown',
-        icon: 'mdi:markdown',
-        description: 'Write and save markdown notes',
-    },
-    {
-        name: 'CSS Unit Converter',
-        path: '/tools/css',
-        icon: 'ph:file-css',
-        description: 'Convert between different CSS units',
-    },
-    {
-        name: 'Animations',
-        path: '/tools/animation',
-        icon: 'mdi:animation',
-        description: 'Create custom animations with ease',
-    },
-    {
-        name: 'Color Palette',
-        path: '/tools/palette',
-        icon: 'mdi:palette',
-        description: 'Generate color palettes from any color',
-    },
-    {
-        name: 'Sheets',
-        path: '/tools/sheets',
-        icon: 'mdi:table',
-        description: 'Create and edit spreadsheets',
-    },
-    {
-        name: 'JSONGrid',
-        path: '/tools/jsongrid',
-        icon: 'mdi:table-large',
-        description: 'Visualize and edit JSON data in grid format',
-    },
-    {
-        name: 'API',
-        path: '/tools/api',
-        icon: 'mdi:api',
-        description: 'Interact with APIs and make HTTP requests',
-    },
-    {
-        name: 'JSON Formatter',
-        path: '/tools/json',
-        icon: 'mdi:json',
-        description: 'Format and validate JSON data',
-    },
-    {
-        name: 'YT-Transcriptor',
-        path: '/tools/transcriptor',
-        icon: 'mdi:youtube',
-        description: 'Extract and view transcripts from YouTube videos',
-    },
-];
+// All available tools (imported from tools.json)
+const allTools = toolsData;
 
 // Popular tools for mobile menu
 const popularTools = [

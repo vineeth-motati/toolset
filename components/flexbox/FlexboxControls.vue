@@ -252,7 +252,7 @@
 <script setup>
 import { ref, reactive, watch } from 'vue';
 import { Icon } from '@iconify/vue';
-import DimensionInput from '~/components/ui/DimensionInput.vue';
+import DimensionInput from '@/components/ui/DimensionInput.vue';
 
 const props = defineProps({
     containerStyles: {

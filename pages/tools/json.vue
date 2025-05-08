@@ -212,8 +212,8 @@
 import { ref, computed, onMounted } from 'vue';
 import { Icon } from '@iconify/vue';
 import { useLocalStorage } from '@vueuse/core';
-import { useToast } from '~/composables/useToast';
-import { useShareLink } from '~/composables/useShareLink';
+import { useToast } from '@/composables/useToast';
+import { useShareLink } from '@/composables/useShareLink';
 import JSON5 from 'json5';
 
 const toast = useToast();
