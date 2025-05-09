@@ -94,5 +94,11 @@
         "path": "/tools/transcriptor",
         "icon": "mdi:youtube",
         "description": "Extract and view transcripts from YouTube videos"
+    },
+    {
+        "name": "Convert",
+        "path": "/tools/convert",
+        "icon": "mdi:swap-horizontal",
+        "description": "Convert between different file formats"
     }
 ]
