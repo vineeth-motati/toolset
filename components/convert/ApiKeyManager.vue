@@ -3,7 +3,7 @@
         <h2 class="mb-4 text-xl font-semibold">API Key Management</h2>
 
         <!-- API Key is configured -->
-        <div v-if="hasApiKey" class="mb-6">
+        <div v-if="hasApiKey()" class="mb-6">
             <div
                 class="p-4 mb-4 border border-green-200 rounded-lg bg-green-50"
             >
