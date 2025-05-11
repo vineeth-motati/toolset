@@ -43,46 +43,60 @@
             </div>
 
             <!-- API Key Modal -->
-            <div
-                v-if="showApiKeyModal"
-                class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+            <Modal
+                :is-open="showApiKeyModal"
+                title="API Key Required"
+                confirm-text="Save"
+                :show-confirm="!!tempApiKey"
+                @close="closeApiKeyModal"
+                @confirm="saveApiKey"
             >
-                <div class="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
-                    <h2 class="mb-4 text-xl font-bold">API Key Required</h2>
-                    <p class="mb-4 text-gray-600">
-                        To use the conversion tools, you need to provide an API
-                        key from ConversionTools.io
-                    </p>
-                    <div class="mb-4">
-                        <label
-                            class="block mb-1 text-sm font-medium text-gray-700"
-                        >
-                            API Key
-                        </label>
-                        <input
-                            v-model="tempApiKey"
-                            type="text"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md"
-                            placeholder="Enter your API key"
-                        />
-                    </div>
-                    <div class="flex justify-end space-x-2">
-                        <button
-                            @click="closeApiKeyModal"
-                            class="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            @click="saveApiKey"
-                            class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                            :disabled="!tempApiKey"
-                        >
-                            Save
-                        </button>
-                    </div>
+                <p class="mb-4 text-gray-600">
+                    To use the conversion tools, you need to provide an API key
+                    from ConversionTools.io
+                </p>
+                <div class="mb-4">
+                    <label class="block mb-1 text-sm font-medium text-gray-700">
+                        API Key
+                    </label>
+                    <input
+                        v-model="tempApiKey"
+                        type="text"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        placeholder="Enter your API key"
+                    />
                 </div>
-            </div>
+
+                <!-- API Key Information -->
+                <div
+                    class="p-3 mt-6 border border-blue-200 rounded-md bg-blue-50"
+                >
+                    <h3 class="mb-2 text-sm font-medium text-blue-700">
+                        How to get an API Key
+                    </h3>
+                    <ol
+                        class="ml-5 space-y-1 text-xs text-gray-700 list-decimal"
+                    >
+                        <li>
+                            Visit
+                            <a
+                                href="https://conversiontools.io"
+                                target="_blank"
+                                class="text-blue-600 hover:underline"
+                                >ConversionTools.io</a
+                            >
+                        </li>
+                        <li>Create an account or log in</li>
+                        <li>Go to your Profile page</li>
+                        <li>Find your API key in the API Access section</li>
+                        <li>Copy and paste it here</li>
+                    </ol>
+                    <p class="mt-2 text-xs text-gray-500">
+                        Note: The API key is stored locally in your browser and
+                        not sent to our servers.
+                    </p>
+                </div>
+            </Modal>
 
             <div>
                 <div class="grid grid-cols-1 gap-6">
@@ -185,12 +199,12 @@
                             v-if="state.isConverting || state.progress"
                             class="mb-4"
                         >
-                            <div class="mb-2 flex justify-between items-center">
+                            <div class="flex items-center justify-between mb-2">
                                 <span class="text-sm font-medium text-gray-700"
                                     >Conversion Status</span
                                 >
                                 <span
-                                    class="text-xs px-2 py-1 rounded"
+                                    class="px-2 py-1 text-xs rounded"
                                     :class="{
                                         'bg-blue-100 text-blue-700': [
                                             'STARTING',
@@ -210,7 +224,7 @@
                                 </span>
                             </div>
                             <div
-                                class="w-full h-2 bg-gray-200 rounded-full overflow-hidden"
+                                class="w-full h-2 overflow-hidden bg-gray-200 rounded-full"
                             >
                                 <div
                                     class="h-full transition-all duration-500"
@@ -231,7 +245,7 @@
                         <!-- Error Message -->
                         <div
                             v-if="state.error"
-                            class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm"
+                            class="p-3 mb-4 text-sm text-red-700 border border-red-200 rounded-md bg-red-50"
                         >
                             {{ state.error }}
                         </div>
@@ -252,14 +266,14 @@
                                     <img
                                         :src="previewUrl"
                                         alt="Converted image"
-                                        class="max-w-full h-auto"
+                                        class="h-auto max-w-full"
                                     />
                                 </div>
 
                                 <!-- Preview for Text -->
                                 <div
                                     v-else-if="isTextOutput && outputText"
-                                    class="h-64 p-4 overflow-auto border border-gray-300 rounded-md bg-gray-50 font-mono text-sm"
+                                    class="h-64 p-4 overflow-auto font-mono text-sm border border-gray-300 rounded-md bg-gray-50"
                                 >
                                     {{ outputText }}
                                 </div>
@@ -334,6 +348,7 @@ import { Icon } from '@iconify/vue';
 import { useToast } from '@/composables/useToast';
 import { useRouter, useRoute } from 'vue-router';
 import { useConverter } from '@/composables/useConverter';
+import Modal from '@/components/ui/Modal.vue';
 
 const props = defineProps({
     title: {
