@@ -9,13 +9,6 @@
             </div>
             <div class="flex gap-2">
                 <button
-                    @click="navigateToDebug"
-                    class="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-                >
-                    <Icon icon="tabler:bug" class="inline-block mr-1" />
-                    Debug
-                </button>
-                <button
                     @click="navigateToSettings"
                     class="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
                 >
@@ -74,11 +67,6 @@ const navigateToConverter = (option) => {
 // Function to navigate to settings
 const navigateToSettings = () => {
     router.push('/tools/convert/settings');
-};
-
-// Function to navigate to debug
-const navigateToDebug = () => {
-    router.push('/tools/convert/debug');
 };
 
 // Generate categories from centralized config

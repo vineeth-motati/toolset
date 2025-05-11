@@ -28,7 +28,12 @@
                         </div>
                         <div class="p-2">
                             <button
-                                class="w-full px-4 py-2 text-left rounded-md text-blue-700 bg-blue-50"
+                                class="w-full px-4 py-2 text-left rounded-md hover:bg-gray-50"
+                                :class="{
+                                    'bg-blue-50 text-blue-700':
+                                        activeTab === 'apikeys',
+                                    'text-gray-700': activeTab !== 'apikeys',
+                                }"
                                 @click="activeTab = 'apikeys'"
                             >
                                 <Icon
@@ -36,6 +41,21 @@
                                     class="inline-block mr-2"
                                 />
                                 API Keys
+                            </button>
+                            <button
+                                class="w-full px-4 py-2 text-left rounded-md hover:bg-gray-50"
+                                :class="{
+                                    'bg-blue-50 text-blue-700':
+                                        activeTab === 'debug',
+                                    'text-gray-700': activeTab !== 'debug',
+                                }"
+                                @click="activeTab = 'debug'"
+                            >
+                                <Icon
+                                    icon="tabler:bug"
+                                    class="inline-block mr-2"
+                                />
+                                Debug
                             </button>
                         </div>
                     </div>
@@ -46,6 +66,11 @@
                     <!-- API Keys Tab -->
                     <div v-if="activeTab === 'apikeys'">
                         <ApiKeyManager />
+                    </div>
+
+                    <!-- Debug Tab -->
+                    <div v-if="activeTab === 'debug'">
+                        <Debugger />
                     </div>
                 </div>
             </div>
@@ -58,6 +83,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { Icon } from '@iconify/vue';
 import ApiKeyManager from '@/components/convert/ApiKeyManager.vue';
+import Debugger from '@/components/convert/Debugger.vue';
 
 const router = useRouter();
 const activeTab = ref('apikeys');
