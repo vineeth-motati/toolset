@@ -7,11 +7,11 @@
     "rewrites": [
         {
             "source": "/api/redactor",
-            "destination": "/api/redactor.post.js"
+            "destination": "/api/redactor"
         }
     ],
     "functions": {
-        "api/redactor.post.js": {
+        "api/**/*.js": {
             "memory": 1024,
             "maxDuration": 60
         }
