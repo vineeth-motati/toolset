@@ -36,6 +36,20 @@ export default defineEventHandler(async (event) => {
                 primaryError.message
             );
 
+            // Forward the request to our enhanced endpoint which has fallback methods
+            try {
+                const response = await $fetch(
+                    `/api/youtube-transcript-env?videoId=${videoId}`
+                );
+                if (response.transcript) {
+                    return response.transcript;
+                }
+                // If no transcript in response but no error thrown, fall through to the error handlers
+            } catch (fallbackError) {
+                console.error('Fallback method also failed:', fallbackError);
+                // Continue to error handling
+            }
+
             // Provide specific error messages based on error type
             if (primaryError instanceof YoutubeTranscriptDisabledError) {
                 // This is likely a false negative when running on Vercel
