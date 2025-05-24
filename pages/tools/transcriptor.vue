@@ -243,6 +243,7 @@ import { useLocalStorage } from '@vueuse/core';
 import { useToast } from '@/composables/useToast';
 import { useShareLink } from '@/composables/useShareLink';
 import { Icon } from '@iconify/vue';
+import { jsPDF } from 'jspdf';
 
 const toast = useToast();
 const { generateShareLink, getSharedData } = useShareLink();
@@ -581,9 +582,6 @@ const exportPdf = async () => {
     );
 
     try {
-        // Dynamically import jsPDF only when needed
-        const { jsPDF } = await import('jspdf');
-
         // For Latin-based text, use simple PDF generation
         const doc = new jsPDF({
             orientation: 'portrait',
