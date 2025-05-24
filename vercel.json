@@ -1,19 +1,13 @@
 {
-    "version": 2,
+    "$schema": "https://openapi.vercel.sh/vercel.json",
     "buildCommand": "npm run build",
     "devCommand": "npm run dev",
     "installCommand": "npm install",
-    "framework": "nuxt",
-    "builds": [
+    "framework": "nuxtjs",
+    "rewrites": [
         {
-            "src": "nuxt.config.ts",
-            "use": "@nuxtjs/vercel-builder"
-        }
-    ],
-    "routes": [
-        {
-            "src": "/api/redactor",
-            "dest": "/api/redactor.post.js"
+            "source": "/api/redactor",
+            "destination": "/api/redactor.post.js"
         }
     ],
     "functions": {
