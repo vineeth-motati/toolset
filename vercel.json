@@ -1,13 +1,7 @@
 {
-    "$schema": "https://openapi.vercel.sh/vercel.json",
-    "buildCommand": "npm run build",
-    "devCommand": "npm run dev",
-    "installCommand": "npm ci --ignore-scripts && npx nuxt prepare",
-    "framework": "nuxtjs",
+    "version": 2,
     "rewrites": [
-        {
-            "source": "/api/redactor",
-            "destination": "/api/redactor"
-        }
+        { "source": "/api/(.*)", "destination": "/api/$1" },
+        { "source": "/(.*)", "destination": "/" }
     ]
 }
