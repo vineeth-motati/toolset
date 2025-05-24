@@ -100,5 +100,11 @@
         "path": "/tools/convert",
         "icon": "mdi:swap-horizontal",
         "description": "Convert between different file formats"
+    },
+    {
+        "name": "Redactor",
+        "path": "/tools/redactor",
+        "icon": "mdi:shield-lock",
+        "description": "Automatically detect and redact personal information from images and PDFs"
     }
 ]
