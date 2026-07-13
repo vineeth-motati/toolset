@@ -39,7 +39,7 @@
 
 <script setup>
 import { Icon } from '@iconify/vue';
-import toolsData from '@/data/tools.json';
+import { useTools } from '@/composables/useTools';
 
-const tools = toolsData;
+const { all: tools } = useTools();
 </script>

@@ -1,5 +1,5 @@
 <template>
-    <ToolLayout fluid class="flex flex-col p-4 h-full">
+    <ToolLayout size="full" class="flex flex-col p-4 h-full">
         <template #actions>
             <BaseButton icon="mdi:share" size="sm" @click="shareFlexbox">
                 Share
@@ -579,7 +579,6 @@ import { cloneDeep } from 'lodash-es';
 import Modal from '@/components/ui/Modal.vue';
 import DimensionInput from '@/components/ui/DimensionInput.vue';
 
-definePageMeta({ layout: 'fullscreen' });
 
 const toast = useToast();
 const { generateShareLink, getSharedData } = useShareLink();

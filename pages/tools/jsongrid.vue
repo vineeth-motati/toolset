@@ -1,5 +1,5 @@
 <template>
-    <ToolLayout fluid class="flex flex-col p-4 h-full">
+    <ToolLayout size="full" class="flex flex-col p-4 h-full">
         <template #actions>
             <BaseButton icon="tabler:share" size="sm" @click="shareJson">
                 Share
@@ -348,7 +348,6 @@ import 'ace-builds/src-noconflict/theme-monokai';
 import 'ace-builds/src-noconflict/mode-json';
 import { debounce, isObject, isArray, includes, toString } from 'lodash-es';
 
-definePageMeta({ layout: 'fullscreen' });
 
 const toast = useToast();
 const { generateShareLink, getSharedData } = useShareLink();

@@ -1,5 +1,5 @@
 <template>
-    <ToolLayout fluid>
+    <ToolLayout>
         <template #actions>
             <BaseButton icon="mdi:plus" size="sm" @click="addNote">
                 New Note

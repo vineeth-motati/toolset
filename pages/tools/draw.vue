@@ -1,5 +1,5 @@
 <template>
-    <ToolLayout fluid class="flex flex-col p-4 h-full">
+    <ToolLayout size="full" class="flex flex-col p-4 h-full">
         <template #actions>
             <BaseButton icon="tabler:share" size="sm" @click="shareDraw">
                 Share
@@ -23,7 +23,6 @@ import { useLocalStorage } from '@vueuse/core';
 import { useToast } from '@/composables/useToast';
 import { useShareLink } from '@/composables/useShareLink';
 
-definePageMeta({ layout: 'fullscreen' });
 
 const toast = useToast();
 const { generateShareLink, getSharedData } = useShareLink();

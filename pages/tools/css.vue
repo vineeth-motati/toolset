@@ -1,5 +1,5 @@
 <template>
-    <ToolLayout fluid>
+    <ToolLayout>
         <template #actions>
             <BaseButton
                 icon="mdi:share-variant"

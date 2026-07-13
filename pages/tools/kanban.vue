@@ -1,5 +1,5 @@
 <template>
-    <ToolLayout fluid class="flex flex-col p-4 h-full">
+    <ToolLayout size="full" class="flex flex-col p-4 h-full">
         <template #actions>
             <BaseButton icon="mdi:share-variant" size="sm" @click="shareBoard">
                 Share Board
@@ -71,7 +71,6 @@ import draggable from 'vuedraggable';
 import Modal from '@/components/ui/Modal.vue';
 import { useLocalStorage } from '@vueuse/core';
 
-definePageMeta({ layout: 'fullscreen' });
 
 const { generateShareLink, getSharedData } = useShareLink();
 const toast = useToast();

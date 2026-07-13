@@ -1,5 +1,5 @@
 <template>
-    <ToolLayout>
+    <ToolLayout size="narrow">
         <template #actions>
             <BaseButton
                 v-if="qrCodeDataUrl"

@@ -1,5 +1,5 @@
 <template>
-    <ToolLayout fluid class="flex flex-col p-4 h-full">
+    <ToolLayout size="full" class="flex flex-col p-4 h-full">
         <div class="flex flex-col flex-1 min-h-0">
             <SheetsToolbar
                 :activeSheet="activeSheet"
@@ -43,7 +43,6 @@ import { useSheetsFormulas } from '@/composables/useSheetsFormulas';
 import Papa from 'papaparse';
 import ExcelJS from 'exceljs';
 
-definePageMeta({ layout: 'fullscreen' });
 
 const toast = useToast();
 const { generateShareLink, getSharedData } = useShareLink();
