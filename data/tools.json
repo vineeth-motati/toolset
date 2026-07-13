@@ -5,7 +5,13 @@
         "icon": "material-symbols:view-kanban-outline",
         "description": "Organize your tasks with a drag-and-drop Kanban board",
         "category": "productivity",
-        "keywords": ["kanban", "board", "tasks", "drag and drop", "project management"],
+        "keywords": [
+            "kanban",
+            "board",
+            "tasks",
+            "drag and drop",
+            "project management"
+        ],
         "layout": "fullscreen",
         "popular": true,
         "seo": {

@@ -8,34 +8,32 @@ Tools-Set is a unified platform offering various specialized tools for developer
 
 ## Features
 
-- **Multiple Specialized Tools**:
+-   **Multiple Specialized Tools**:
 
-    - Kanban Board: Organize your tasks with drag-and-drop functionality
-    - Notes: Take and organize markdown-supported notes
-    - Code Editor: Write and share code with syntax highlighting
-    - QR Generator: Generate QR codes for any text or URL
-    - Flexbox Playground: Create and experiment with CSS Flexbox layouts
-    - Image Tools: Compress and optimize images
-    - Markdown Editor: Write and save markdown notes
-    - CSS Unit Converter: Convert between different CSS units
-    - Animation Creator: Create custom animations with ease
-    - Color Palette Generator: Generate color palettes from any color
-    - Spreadsheets: Create and edit data in spreadsheet format
-    - JSONGrid: Visualize and edit JSON data in grid format
-    - API Tester: Interact with APIs and make HTTP requests
-    - JSON Formatter: Format and validate JSON data
-    - Redactor: Automatically detect and redact personal information from images and PDFs using Microsoft Presidio
+    -   Kanban Board: Organize your tasks with drag-and-drop functionality
+    -   Notes: Take and organize markdown-supported notes
+    -   Code Editor: Write and share code with syntax highlighting
+    -   QR Generator: Generate QR codes for any text or URL
+    -   Flexbox Playground: Create and experiment with CSS Flexbox layouts
+    -   Image Tools: Compress and optimize images
+    -   Markdown Editor: Write and save markdown notes
+    -   CSS Unit Converter: Convert between different CSS units
+    -   Animation Creator: Create custom animations with ease
+    -   Color Palette Generator: Generate color palettes from any color
+    -   Spreadsheets: Create and edit data in spreadsheet format
+    -   JSONGrid: Visualize and edit JSON data in grid format
+    -   API Tester: Interact with APIs and make HTTP requests
+    -   JSON Formatter: Format and validate JSON data
 
-- **Modern UI**: Clean, responsive interface built with TailwindCSS
-- **Share Functionality**: Share your creations with others via links
-- **Dark Mode Support**: Toggle between light and dark themes
-- **Persistent Storage**: Local storage integration for saving your work
+-   **Modern UI**: Clean, responsive interface built with TailwindCSS
+-   **Share Functionality**: Share your creations with others via links
+-   **Dark Mode Support**: Toggle between light and dark themes
+-   **Persistent Storage**: Local storage integration for saving your work
 
 ## Technologies
 
-- [Nuxt 3](https://nuxt.com/) - Vue.js Framework
-- [TailwindCSS](https://tailwindcss.com/) - CSS Framework
-- [Vue 3](https://vuejs.org/) - Progressive JavaScript Framework
-- [Monaco Editor](https://microsoft.github.io/monaco-editor/) - Code Editor
-- [Iconify](https://iconify.design/) - Icon System
-- Microsoft Presidio - For PII detection and redaction
+-   [Nuxt 3](https://nuxt.com/) - Vue.js Framework
+-   [TailwindCSS](https://tailwindcss.com/) - CSS Framework
+-   [Vue 3](https://vuejs.org/) - Progressive JavaScript Framework
+-   [Monaco Editor](https://microsoft.github.io/monaco-editor/) - Code Editor
+-   [Iconify](https://iconify.design/) - Icon System
