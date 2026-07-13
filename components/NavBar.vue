@@ -251,7 +251,7 @@
 import { ref, computed } from 'vue';
 import { Icon } from '@iconify/vue';
 import { useTheme } from '@/composables/useTheme';
-import toolsData from '@/data/tools.json';
+import { useTools } from '@/composables/useTools';
 
 const mobileMenuOpen = ref(false);
 const isMobileSearchOpen = ref(false);
@@ -261,54 +261,14 @@ const searchQuery = ref('');
 // Use the theme composable - make sure we're using these variables in the template
 const { isDark, toggleTheme } = useTheme();
 
-// All available tools (imported from tools.json)
-const allTools = toolsData;
+// Tools data + search/popular derived from data/tools.json (single source of truth)
+const { search, popular } = useTools();
 
-// Popular tools for mobile menu
-const popularTools = [
-    {
-        name: 'Kanban Board',
-        path: '/tools/kanban',
-        icon: 'material-symbols:view-kanban-outline',
-    },
-    {
-        name: 'Code Editor',
-        path: '/tools/code',
-        icon: 'mdi:code-tags',
-    },
-    {
-        name: 'API Tester',
-        path: '/tools/api',
-        icon: 'mdi:api',
-    },
-    {
-        name: 'Notes',
-        path: '/tools/notes',
-        icon: 'mdi:note',
-    },
-    {
-        name: 'Color Palette',
-        path: '/tools/palette',
-        icon: 'mdi:palette',
-    },
-    {
-        name: 'Flexbox',
-        path: '/tools/flexbox',
-        icon: 'mdi:page-layout-body',
-    },
-];
+// Popular tools for mobile menu — driven by each tool's `popular` flag
+const popularTools = popular();
 
 // Filter tools based on search query
-const filteredTools = computed(() => {
-    if (!searchQuery.value) return [];
-
-    const query = searchQuery.value.toLowerCase();
-    return allTools.filter(
-        (tool) =>
-            tool.name.toLowerCase().includes(query) ||
-            tool.description.toLowerCase().includes(query)
-    );
-});
+const filteredTools = computed(() => search(searchQuery.value));
 </script>
 
 <style scoped>

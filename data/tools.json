@@ -3,108 +3,252 @@
         "name": "Kanban Board",
         "path": "/tools/kanban",
         "icon": "material-symbols:view-kanban-outline",
-        "description": "Organize your tasks with a drag-and-drop Kanban board"
+        "description": "Organize your tasks with a drag-and-drop Kanban board",
+        "category": "productivity",
+        "keywords": ["kanban", "board", "tasks", "drag and drop", "project management"],
+        "layout": "fullscreen",
+        "popular": true,
+        "seo": {
+            "title": "Kanban Board — Free Online Task Board",
+            "description": "Organize tasks with a free drag-and-drop Kanban board. Runs entirely in your browser."
+        }
     },
     {
         "name": "Notes",
         "path": "/tools/notes",
         "icon": "mdi:note",
-        "description": "Take and organize your notes with markdown support"
+        "description": "Take and organize your notes with markdown support",
+        "category": "productivity",
+        "keywords": ["notes", "markdown", "notepad", "writing"],
+        "layout": "default",
+        "popular": true,
+        "seo": {
+            "title": "Notes — Free Online Markdown Notepad",
+            "description": "Take and organize notes with markdown support. Private, fast, and free."
+        }
     },
     {
         "name": "Code Editor",
         "path": "/tools/code",
         "icon": "mdi:code-tags",
-        "description": "Write and share code with syntax highlighting"
+        "description": "Write and share code with syntax highlighting",
+        "category": "dev",
+        "keywords": ["code editor", "syntax highlighting", "snippet", "monaco"],
+        "layout": "default",
+        "popular": true,
+        "seo": {
+            "title": "Code Editor — Online Syntax-Highlighted Editor",
+            "description": "Write, edit, and share code online with syntax highlighting for many languages."
+        }
     },
     {
         "name": "QR Generator",
         "path": "/tools/qr",
         "icon": "mdi:qrcode",
-        "description": "Generate QR codes for any text or URL"
+        "description": "Generate QR codes for any text or URL",
+        "category": "media",
+        "keywords": ["qr code", "generator", "url", "scan"],
+        "layout": "default",
+        "popular": false,
+        "seo": {
+            "title": "QR Code Generator — Free Online Tool",
+            "description": "Generate a QR code for any text or URL and download it instantly. Free and private."
+        }
     },
     {
         "name": "Flexbox",
         "path": "/tools/flexbox",
         "icon": "mdi:page-layout-body",
-        "description": "Create and experiment with CSS Flexbox layouts"
+        "description": "Create and experiment with CSS Flexbox layouts",
+        "category": "design",
+        "keywords": ["flexbox", "css", "layout", "playground"],
+        "layout": "fullscreen",
+        "popular": true,
+        "seo": {
+            "title": "Flexbox Playground — CSS Layout Tool",
+            "description": "Experiment with CSS Flexbox layouts visually and copy the generated CSS."
+        }
     },
     {
         "name": "Image Tools",
         "path": "/tools/image",
         "icon": "mdi:image",
-        "description": "Compress and optimize your images"
+        "description": "Compress and optimize your images",
+        "category": "media",
+        "keywords": ["image compression", "optimize", "resize", "photo"],
+        "layout": "default",
+        "popular": false,
+        "seo": {
+            "title": "Image Optimizer — Compress Images Online",
+            "description": "Compress and optimize images in your browser without uploading them anywhere."
+        }
     },
     {
         "name": "Markdown Editor",
         "path": "/tools/markdown",
         "icon": "mdi:markdown",
-        "description": "Write and save markdown notes"
+        "description": "Write and save markdown notes",
+        "category": "productivity",
+        "keywords": ["markdown", "editor", "preview", "writing"],
+        "layout": "default",
+        "popular": false,
+        "seo": {
+            "title": "Markdown Editor — Live Preview Online",
+            "description": "Write markdown with a live preview and save your notes locally."
+        }
     },
     {
         "name": "CSS Unit Converter",
         "path": "/tools/css",
         "icon": "ph:file-css",
-        "description": "Convert between different CSS units"
+        "description": "Convert between different CSS units",
+        "category": "convert",
+        "keywords": ["css units", "px", "rem", "em", "converter"],
+        "layout": "default",
+        "popular": false,
+        "seo": {
+            "title": "CSS Unit Converter — px, rem, em, %",
+            "description": "Convert between CSS units like px, rem, em, and percentages instantly."
+        }
     },
     {
         "name": "Animations",
         "path": "/tools/animation",
         "icon": "mdi:animation",
-        "description": "Create custom animations with ease"
+        "description": "Create custom animations with ease",
+        "category": "design",
+        "keywords": ["css animation", "keyframes", "generator"],
+        "layout": "fullscreen",
+        "popular": false,
+        "seo": {
+            "title": "CSS Animation Generator — Free Online Tool",
+            "description": "Create custom CSS animations visually and export the keyframes."
+        }
     },
     {
         "name": "Color Palette",
         "path": "/tools/palette",
         "icon": "mdi:palette",
-        "description": "Generate color palettes from any color"
+        "description": "Generate color palettes from any color",
+        "category": "design",
+        "keywords": ["color palette", "generator", "shades", "hex"],
+        "layout": "default",
+        "popular": true,
+        "seo": {
+            "title": "Color Palette Generator — Free Online Tool",
+            "description": "Generate color palettes and shades from any base color for your designs."
+        }
     },
     {
         "name": "Draw",
         "path": "/tools/draw",
         "icon": "mdi:draw",
-        "description": "Create and share interactive whiteboard drawings"
+        "description": "Create and share interactive whiteboard drawings",
+        "category": "design",
+        "keywords": ["whiteboard", "draw", "sketch", "diagram", "tldraw"],
+        "layout": "fullscreen",
+        "popular": false,
+        "seo": {
+            "title": "Drawing Board — Free Online Whiteboard",
+            "description": "Sketch, diagram, and share interactive whiteboard drawings in your browser."
+        }
     },
     {
         "name": "Sheets",
         "path": "/tools/sheets",
         "icon": "mdi:table",
-        "description": "Create and edit spreadsheets"
+        "description": "Create and edit spreadsheets",
+        "category": "productivity",
+        "keywords": ["spreadsheet", "sheets", "table", "formulas"],
+        "layout": "fullscreen",
+        "popular": false,
+        "seo": {
+            "title": "Sheets — Free Online Spreadsheet Editor",
+            "description": "Create and edit spreadsheets with formulas, right in your browser."
+        }
     },
     {
         "name": "JSONGrid",
         "path": "/tools/jsongrid",
         "icon": "mdi:table-large",
-        "description": "Visualize and edit JSON data in grid format"
+        "description": "Visualize and edit JSON data in grid format",
+        "category": "dev",
+        "keywords": ["json", "grid", "table", "visualize", "editor"],
+        "layout": "fullscreen",
+        "popular": false,
+        "seo": {
+            "title": "JSONGrid — Visualize JSON as a Table",
+            "description": "Visualize and edit JSON data in an interactive grid/table format."
+        }
     },
     {
         "name": "API",
         "path": "/tools/api",
         "icon": "mdi:api",
-        "description": "Interact with APIs and make HTTP requests"
+        "description": "Interact with APIs and make HTTP requests",
+        "category": "dev",
+        "keywords": ["api tester", "http client", "rest", "request"],
+        "layout": "default",
+        "popular": true,
+        "seo": {
+            "title": "API Tester — Free Online HTTP Client",
+            "description": "Send HTTP requests and inspect responses with a free browser-based API tester."
+        }
     },
     {
         "name": "JSON Formatter",
         "path": "/tools/json",
         "icon": "mdi:json",
-        "description": "Format and validate JSON data"
+        "description": "Format and validate JSON data",
+        "category": "dev",
+        "keywords": ["json formatter", "validator", "prettify", "minify"],
+        "layout": "default",
+        "popular": false,
+        "seo": {
+            "title": "JSON Formatter & Validator — Free Online Tool",
+            "description": "Format, validate, and minify JSON online. Runs entirely in your browser."
+        }
     },
     {
         "name": "YT-Transcriptor",
         "path": "/tools/transcriptor",
         "icon": "mdi:youtube",
-        "description": "Extract and view transcripts from YouTube videos"
+        "description": "Extract and view transcripts from YouTube videos",
+        "category": "media",
+        "keywords": ["youtube", "transcript", "subtitles", "extract"],
+        "layout": "default",
+        "popular": false,
+        "seo": {
+            "title": "YouTube Transcriptor — Extract Video Transcripts",
+            "description": "Extract and read transcripts from any YouTube video for free."
+        }
     },
     {
         "name": "Convert",
         "path": "/tools/convert",
         "icon": "mdi:swap-horizontal",
-        "description": "Convert between different file formats"
+        "description": "Convert between different file formats",
+        "category": "convert",
+        "keywords": ["file converter", "format", "convert"],
+        "layout": "default",
+        "popular": false,
+        "seo": {
+            "title": "File Converter — Convert Between Formats Online",
+            "description": "Convert files between formats for free, right in your browser."
+        }
     },
     {
         "name": "Redactor",
         "path": "/tools/redactor",
         "icon": "mdi:shield-lock",
-        "description": "Automatically detect and redact personal information from images and PDFs"
+        "description": "Automatically detect and redact personal information from images and PDFs",
+        "category": "media",
+        "keywords": ["redact", "pii", "privacy", "pdf", "image"],
+        "layout": "default",
+        "popular": false,
+        "seo": {
+            "title": "PII Redactor — Redact Personal Info from Images & PDFs",
+            "description": "Automatically detect and redact personal information from images and PDFs."
+        }
     }
 ]
