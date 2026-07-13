@@ -1,39 +1,49 @@
 <template>
-    <div class="mx-auto max-w-2xl">
-        <h1 class="mb-6 text-2xl font-bold">QR Code Generator</h1>
-        <div class="p-6 bg-white rounded-lg shadow">
-            <div class="mb-4">
-                <label class="block mb-2 text-sm font-medium text-gray-700">
-                    Enter text or URL
-                </label>
-                <input
-                    v-model="text"
-                    type="text"
-                    class="px-3 py-2 w-full rounded-md border"
-                    placeholder="https://example.com"
+    <ToolLayout>
+        <template #actions>
+            <BaseButton
+                v-if="qrCodeDataUrl"
+                variant="secondary"
+                icon="mdi:download"
+                size="sm"
+                @click="downloadQRCode"
+            >
+                Download
+            </BaseButton>
+            <BaseButton
+                v-if="qrCodeDataUrl"
+                variant="secondary"
+                icon="mdi:share-variant"
+                size="sm"
+                @click="shareQRCode"
+            >
+                Share
+            </BaseButton>
+        </template>
+
+        <BaseCard>
+            <BaseInput
+                v-model="text"
+                label="Enter text or URL"
+                placeholder="https://example.com"
+            />
+
+            <div v-if="qrCodeDataUrl" key="qr" class="flex justify-center mt-6">
+                <img
+                    :src="qrCodeDataUrl"
+                    alt="QR Code"
+                    class="rounded-lg border border-gray-100 dark:border-gray-700"
                 />
             </div>
-            <div class="flex justify-center mb-4">
-                <img :src="qrCodeDataUrl" v-if="qrCodeDataUrl" alt="QR Code" />
-            </div>
-            <div class="flex justify-center">
-                <button
-                    v-if="qrCodeDataUrl"
-                    @click="downloadQRCode"
-                    class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                >
-                    Download QR Code
-                </button>
-                <button
-                    v-if="qrCodeDataUrl"
-                    @click="shareQRCode"
-                    class="px-4 py-2 ml-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                >
-                    Share QR Code
-                </button>
-            </div>
-        </div>
-    </div>
+            <BaseEmptyState
+                v-else
+                key="empty"
+                icon="mdi:qrcode"
+                title="No QR code yet"
+                description="Type a URL or text above to generate one."
+            />
+        </BaseCard>
+    </ToolLayout>
 </template>
 
 <script setup>

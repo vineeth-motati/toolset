@@ -10,7 +10,7 @@
             class="flex flex-col space-y-4"
         >
             <div
-                v-for="toast in toasts"
+                v-for="(toast, index) in toasts"
                 :key="toast.id"
                 :style="{ zIndex: toasts.length - index }"
                 :class="getToastClasses(toast.type)"

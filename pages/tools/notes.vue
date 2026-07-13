@@ -1,75 +1,68 @@
 <template>
-    <div class="mx-auto max-w-4xl">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold">Notes</h1>
-            <div class="flex gap-2">
-                <button
-                    @click="addNote"
-                    class="px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700"
-                >
-                    New Note
-                </button>
-                <button
-                    @click="shareNotes"
-                    class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                >
-                    Share Notes
-                </button>
-            </div>
-        </div>
+    <ToolLayout fluid>
+        <template #actions>
+            <BaseButton icon="mdi:plus" size="sm" @click="addNote">
+                New Note
+            </BaseButton>
+            <BaseButton
+                variant="secondary"
+                icon="mdi:share-variant"
+                size="sm"
+                @click="shareNotes"
+            >
+                Share Notes
+            </BaseButton>
+        </template>
 
-        <draggable
-            v-model="notes"
-            class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
-            item-key="id"
-            :animation="150"
-        >
-            <template #item="{ element: note }">
-                <div class="p-4 bg-white rounded-lg shadow">
-                    <input
-                        v-model="note.title"
-                        class="px-2 py-1 mb-2 w-full text-lg font-semibold border-b"
-                        placeholder="Note title"
-                    />
-                    <div class="flex gap-2 mb-2">
-                        <button
-                            @click="note.isPreview = !note.isPreview"
-                            class="px-2 py-1 text-sm rounded"
-                            :class="
-                                note.isPreview
-                                    ? 'bg-blue-100 text-blue-700'
-                                    : 'bg-gray-100'
-                            "
-                        >
-                            {{ note.isPreview ? 'Edit' : 'Preview' }}
-                        </button>
-                    </div>
-                    <div
-                        v-if="note.isPreview"
-                        class="overflow-y-auto px-2 py-1 max-w-none h-32 prose prose-sm"
-                        v-html="renderMarkdown(note.content)"
-                    ></div>
-                    <textarea
-                        v-else
-                        v-model="note.content"
-                        class="px-2 py-1 w-full h-32 font-mono rounded border"
-                        placeholder="Note content (Markdown supported)"
-                    ></textarea>
-                    <div class="flex justify-between mt-2">
-                        <span class="text-sm text-gray-500">
-                            {{ new Date(note.date).toLocaleDateString() }}
-                        </span>
-                        <button
-                            @click="deleteNote(note.id)"
-                            class="text-red-600 hover:text-red-800"
-                        >
-                            Delete
-                        </button>
-                    </div>
-                </div>
-            </template>
-        </draggable>
-    </div>
+        <div class="mx-auto max-w-4xl">
+            <draggable
+                v-model="notes"
+                class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
+                item-key="id"
+                :animation="150"
+            >
+                <template #item="{ element: note }">
+                    <BaseCard>
+                        <BaseInput
+                            v-model="note.title"
+                            placeholder="Note title"
+                        />
+                        <div class="flex gap-2 my-2">
+                            <BaseButton
+                                :variant="note.isPreview ? 'primary' : 'secondary'"
+                                size="sm"
+                                @click="note.isPreview = !note.isPreview"
+                            >
+                                {{ note.isPreview ? 'Edit' : 'Preview' }}
+                            </BaseButton>
+                        </div>
+                        <div
+                            v-if="note.isPreview"
+                            class="overflow-y-auto px-2 py-1 max-w-none h-32 prose prose-sm dark:prose-invert"
+                            v-html="renderMarkdown(note.content)"
+                        ></div>
+                        <BaseTextarea
+                            v-else
+                            v-model="note.content"
+                            :rows="4"
+                            placeholder="Note content (Markdown supported)"
+                        />
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="text-sm text-gray-500 dark:text-gray-400">
+                                {{ new Date(note.date).toLocaleDateString() }}
+                            </span>
+                            <BaseIconButton
+                                icon="mdi:delete-outline"
+                                label="Delete note"
+                                variant="danger"
+                                @click="deleteNote(note.id)"
+                            />
+                        </div>
+                    </BaseCard>
+                </template>
+            </draggable>
+        </div>
+    </ToolLayout>
 </template>
 
 <script setup>
@@ -149,5 +142,11 @@ const shareNotes = async () => {
     background: #f6f8fa;
     padding: 0.2em 0.4em;
     border-radius: 0.375rem;
+}
+
+.dark .prose pre,
+.dark .prose code {
+    background: #1f2937;
+    color: #e5e7eb;
 }
 </style>

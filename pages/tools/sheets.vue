@@ -1,36 +1,38 @@
 <template>
-    <div class="flex flex-col h-[85vh]">
-        <SheetsToolbar
-            :activeSheet="activeSheet"
-            :sheets="sheets"
-            :current-format="currentCellFormat"
-            @add-sheet="addSheet"
-            @switch-sheet="switchSheet"
-            @import-file="importFile"
-            @export-file="exportFile"
-            @update-format="updateCellFormat"
-            @share-sheet="shareSheet"
-        />
-
-        <SheetsFormulaBar
-            v-model="formulaBarValue"
-            :active-cell="activeCell"
-            @formula-submit="updateFormula"
-        />
-
-        <div class="overflow-hidden flex-1">
-            <SheetsGrid
-                :data="activeSheetData"
-                :formulas="activeSheet?.formulas"
-                :formats="activeSheet?.formats"
-                :active-cell="activeCell"
-                :editing-cell="editingCell"
-                @cell-update="updateCell"
-                @cell-click="handleCellClick"
-                @range-select="handleRangeSelect"
+    <ToolLayout fluid class="flex flex-col p-4 h-full">
+        <div class="flex flex-col flex-1 min-h-0">
+            <SheetsToolbar
+                :activeSheet="activeSheet"
+                :sheets="sheets"
+                :current-format="currentCellFormat"
+                @add-sheet="addSheet"
+                @switch-sheet="switchSheet"
+                @import-file="importFile"
+                @export-file="exportFile"
+                @update-format="updateCellFormat"
+                @share-sheet="shareSheet"
             />
+
+            <SheetsFormulaBar
+                v-model="formulaBarValue"
+                :active-cell="activeCell"
+                @formula-submit="updateFormula"
+            />
+
+            <div class="overflow-hidden flex-1">
+                <SheetsGrid
+                    :data="activeSheetData"
+                    :formulas="activeSheet?.formulas"
+                    :formats="activeSheet?.formats"
+                    :active-cell="activeCell"
+                    :editing-cell="editingCell"
+                    @cell-update="updateCell"
+                    @cell-click="handleCellClick"
+                    @range-select="handleRangeSelect"
+                />
+            </div>
         </div>
-    </div>
+    </ToolLayout>
 </template>
 <script setup>
 import { ref, computed } from 'vue';
@@ -40,6 +42,8 @@ import { useShareLink } from '@/composables/useShareLink';
 import { useSheetsFormulas } from '@/composables/useSheetsFormulas';
 import Papa from 'papaparse';
 import ExcelJS from 'exceljs';
+
+definePageMeta({ layout: 'fullscreen' });
 
 const toast = useToast();
 const { generateShareLink, getSharedData } = useShareLink();

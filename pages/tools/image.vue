@@ -1,49 +1,70 @@
 <template>
-    <div class="max-w-4xl mx-auto">
-        <h1 class="text-2xl font-bold mb-6">Image Optimizer</h1>
-        <div class="bg-white rounded-lg shadow p-6">
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Upload Image
-                </label>
-                <input
-                    type="file"
-                    @change="handleImageUpload"
-                    accept="image/*"
-                    class="w-full"
-                />
-            </div>
+    <ToolLayout fluid>
+        <div class="mx-auto max-w-4xl">
+            <BaseCard>
+                <BaseFormField label="Upload Image">
+                    <input
+                        type="file"
+                        @change="handleImageUpload"
+                        accept="image/*"
+                        class="block w-full text-sm text-gray-700 file:mr-4 file:rounded-lg file:border-0 file:bg-primary-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-primary-700 hover:file:bg-primary-100 dark:text-gray-300 dark:file:bg-primary-900/40 dark:file:text-primary-300"
+                    />
+                </BaseFormField>
 
-            <div
-                v-if="originalImage || compressedImage"
-                class="grid grid-cols-2 gap-4"
-            >
-                <div>
-                    <h3 class="font-medium mb-2">Original</h3>
-                    <img :src="originalImage" class="max-w-full h-auto" />
-                    <p class="text-sm text-gray-600 mt-2">
-                        Size: {{ originalSize }}
-                    </p>
-                </div>
-                <div>
-                    <h3 class="font-medium mb-2">Compressed</h3>
-                    <img :src="compressedImage" class="max-w-full h-auto" />
-                    <p class="text-sm text-gray-600 mt-2">
-                        Size: {{ compressedSize }}
-                    </p>
-                </div>
-            </div>
-
-            <div v-if="compressedImage" class="mt-4">
-                <button
-                    @click="downloadImage"
-                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                <div
+                    v-if="originalImage || compressedImage"
+                    key="images"
+                    class="grid grid-cols-2 gap-4 mt-6"
                 >
-                    Download Compressed Image
-                </button>
-            </div>
+                    <div>
+                        <h3
+                            class="mb-2 font-medium text-gray-900 dark:text-gray-100"
+                        >
+                            Original
+                        </h3>
+                        <img
+                            :src="originalImage"
+                            class="w-full h-auto rounded-lg"
+                        />
+                        <p
+                            class="mt-2 text-sm text-gray-600 dark:text-gray-400"
+                        >
+                            Size: {{ originalSize }}
+                        </p>
+                    </div>
+                    <div>
+                        <h3
+                            class="mb-2 font-medium text-gray-900 dark:text-gray-100"
+                        >
+                            Compressed
+                        </h3>
+                        <img
+                            :src="compressedImage"
+                            class="w-full h-auto rounded-lg"
+                        />
+                        <p
+                            class="mt-2 text-sm text-gray-600 dark:text-gray-400"
+                        >
+                            Size: {{ compressedSize }}
+                        </p>
+                    </div>
+                </div>
+                <BaseEmptyState
+                    v-else
+                    key="empty"
+                    icon="mdi:image"
+                    title="No image yet"
+                    description="Upload an image above to compress it."
+                />
+
+                <div v-if="compressedImage" class="mt-6">
+                    <BaseButton icon="mdi:download" @click="downloadImage">
+                        Download Compressed Image
+                    </BaseButton>
+                </div>
+            </BaseCard>
         </div>
-    </div>
+    </ToolLayout>
 </template>
 
 <script setup>

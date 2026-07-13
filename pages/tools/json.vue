@@ -1,171 +1,158 @@
 <template>
-    <div class="mx-auto max-w-7xl">
-        <div class="flex justify-between items-center">
-            <h1 class="mb-6 text-2xl font-bold">JSON Viewer</h1>
-            <!-- Share JSON Button -->
-            <button
-                @click="shareJson"
-                class="flex gap-2 items-center px-3 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700"
-            >
+    <ToolLayout fluid>
+        <template #actions>
+            <BaseButton icon="mdi:share-variant" size="sm" @click="shareJson">
                 Share JSON
-            </button>
-        </div>
+            </BaseButton>
+        </template>
 
-        <div class="bg-white rounded-lg shadow">
-            <!-- Tabs -->
-            <div class="border-b">
-                <nav class="flex">
-                    <button
-                        v-for="tab in tabs"
-                        :key="tab.id"
-                        @click="activeTab = tab.id"
-                        :class="[
-                            'px-4 py-2 text-sm font-medium',
-                            activeTab === tab.id
-                                ? 'border-b-2 border-blue-500 text-blue-600 '
-                                : 'text-gray-500 hover:text-gray-700 ',
-                        ]"
-                    >
-                        {{ tab.name }}
-                    </button>
-                </nav>
-            </div>
-
-            <!-- Text Tab -->
-            <div v-if="activeTab === 'text'" class="p-4">
-                <div class="mb-4 border-b">
-                    <div class="flex gap-2 pb-2">
+        <div class="mx-auto max-w-7xl">
+            <BaseCard padding="none">
+                <!-- Tabs -->
+                <div class="border-b dark:border-gray-700">
+                    <nav class="flex">
                         <button
-                            v-for="action in actions"
-                            :key="action.id"
-                            @click="handleAction(action.id)"
-                            class="flex gap-1 items-center px-3 py-1 text-sm rounded hover:bg-gray-100"
+                            v-for="tab in tabs"
+                            :key="tab.id"
+                            @click="activeTab = tab.id"
+                            :class="[
+                                'px-4 py-2 text-sm font-medium',
+                                activeTab === tab.id
+                                    ? 'border-b-2 border-primary-500 text-primary-600 dark:text-primary-400'
+                                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200',
+                            ]"
                         >
-                            <Icon
-                                :icon="action.icon"
-                                class="inline-block mr-1"
-                            />
-                            {{ action.name }}
+                            {{ tab.name }}
                         </button>
-                    </div>
+                    </nav>
                 </div>
 
-                <textarea
-                    v-model="jsonText"
-                    lines="20"
-                    class="w-full h-[500px] px-3 py-2 font-mono text-sm border rounded-md"
-                    placeholder="Paste your JSON here..."
-                ></textarea>
-            </div>
-
-            <!-- Viewer Tab -->
-            <div v-else class="grid grid-cols-2 gap-4 p-4">
-                <!-- Tree View -->
-                <div class="p-4 rounded-lg border">
-                    <div class="flex gap-2 items-center mb-4">
-                        <div class="relative flex-1">
-                            <Icon
-                                icon="mdi:magnify"
-                                class="absolute left-3 top-1/2 w-5 h-5 text-gray-400 transform -translate-y-1/2"
-                            />
-                            <input
-                                v-model="searchQuery"
-                                type="text"
-                                class="py-2 pr-4 pl-10 w-full rounded-md border"
-                                placeholder="Search..."
-                                @keyup.enter="search"
-                            />
+                <!-- Text Tab -->
+                <div v-if="activeTab === 'text'" class="p-4">
+                    <div class="mb-4 border-b dark:border-gray-700">
+                        <div class="flex flex-wrap gap-2 pb-2">
+                            <BaseButton
+                                v-for="action in actions"
+                                :key="action.id"
+                                variant="ghost"
+                                size="sm"
+                                :icon="action.icon"
+                                @click="handleAction(action.id)"
+                            >
+                                {{ action.name }}
+                            </BaseButton>
                         </div>
-                        <button
-                            @click="searchPrev"
-                            class="p-2 rounded hover:bg-gray-100"
-                            :disabled="!hasSearchResults"
-                        >
-                            <Icon icon="mdi:chevron-up" />
-                        </button>
-                        <button
-                            @click="searchNext"
-                            class="p-2 rounded hover:bg-gray-100"
-                            :disabled="!hasSearchResults"
-                        >
-                            <Icon icon="mdi:chevron-down" />
-                        </button>
                     </div>
 
-                    <div class="overflow-auto max-h-[500px]">
-                        <div
-                            v-for="(item, index) in parsedItems"
-                            :key="index"
-                            :class="{
-                                'bg-blue-50 ': isSelected(item),
-                            }"
-                        >
-                            <div
-                                class="flex items-center py-1 cursor-pointer"
-                                @click="toggleItem(item)"
-                            >
-                                <Icon
-                                    :icon="
-                                        item.expanded
-                                            ? 'mdi:chevron-down'
-                                            : 'mdi:chevron-right'
-                                    "
-                                    class="w-5 h-5"
-                                />
-                                <span class="font-mono">{{ item.key }}: </span>
-                                <span
-                                    v-if="!item.isObject"
-                                    class="ml-2 text-gray-600"
-                                >
-                                    {{ item.value }}
-                                </span>
-                            </div>
+                    <textarea
+                        v-model="jsonText"
+                        rows="20"
+                        class="w-full h-[500px] px-3 py-2 font-mono text-sm text-gray-900 bg-white rounded-md border focus:outline-none focus:ring-1 focus:ring-primary-400 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
+                        placeholder="Paste your JSON here..."
+                    ></textarea>
+                </div>
 
+                <!-- Viewer Tab -->
+                <div v-else class="grid grid-cols-2 gap-4 p-4">
+                    <!-- Tree View -->
+                    <div class="p-4 rounded-lg border dark:border-gray-700">
+                        <div class="flex gap-2 items-center mb-4">
+                            <BaseInput
+                                v-model="searchQuery"
+                                icon="mdi:magnify"
+                                placeholder="Search..."
+                                class="flex-1"
+                                @keyup.enter="search"
+                            />
+                            <BaseIconButton
+                                icon="mdi:chevron-up"
+                                label="Previous result"
+                                :disabled="!hasSearchResults"
+                                @click="searchPrev"
+                            />
+                            <BaseIconButton
+                                icon="mdi:chevron-down"
+                                label="Next result"
+                                :disabled="!hasSearchResults"
+                                @click="searchNext"
+                            />
+                        </div>
+
+                        <div class="overflow-auto max-h-[500px]">
                             <div
-                                v-if="item.isObject && item.expanded"
-                                class="ml-4"
+                                v-for="(item, index) in parsedItems"
+                                :key="index"
+                                :class="{
+                                    'bg-primary-50 dark:bg-primary-900/20': isSelected(item),
+                                }"
                             >
                                 <div
-                                    v-for="child in item.children"
-                                    :key="child.key"
-                                    class="py-1"
+                                    class="flex items-center py-1 cursor-pointer"
+                                    @click="toggleItem(item)"
                                 >
-                                    <span class="font-mono"
-                                        >{{ child.key }}:
+                                    <Icon
+                                        :icon="
+                                            item.expanded
+                                                ? 'mdi:chevron-down'
+                                                : 'mdi:chevron-right'
+                                        "
+                                        class="w-5 h-5 text-gray-500 dark:text-gray-400"
+                                    />
+                                    <span class="font-mono text-gray-900 dark:text-gray-100">{{ item.key }}: </span>
+                                    <span
+                                        v-if="!item.isObject"
+                                        class="ml-2 text-gray-600 dark:text-gray-400"
+                                    >
+                                        {{ item.value }}
                                     </span>
-                                    <span class="text-gray-600">
-                                        {{ child.value }}
-                                    </span>
+                                </div>
+
+                                <div
+                                    v-if="item.isObject && item.expanded"
+                                    class="ml-4"
+                                >
+                                    <div
+                                        v-for="child in item.children"
+                                        :key="child.key"
+                                        class="py-1"
+                                    >
+                                        <span class="font-mono text-gray-900 dark:text-gray-100"
+                                            >{{ child.key }}:
+                                        </span>
+                                        <span class="text-gray-600 dark:text-gray-400">
+                                            {{ child.value }}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Details View -->
-                <div class="p-4 rounded-lg border" v-if="selectedItem">
-                    <h3 class="mb-4 text-lg font-medium">Details</h3>
-                    <table class="w-full">
-                        <thead>
-                            <tr class="border-b">
-                                <th class="py-2 text-left">Name</th>
-                                <th class="py-2 text-left">Value</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr
-                                v-for="(value, key) in selectedItem.value || {}"
-                                :key="key"
-                            >
-                                <td class="py-2 font-mono">{{ key }}</td>
-                                <td class="py-2 text-gray-600">
-                                    {{ value }}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <!-- Details View -->
+                    <div class="p-4 rounded-lg border dark:border-gray-700" v-if="selectedItem">
+                        <h3 class="mb-4 text-lg font-medium text-gray-900 dark:text-gray-100">Details</h3>
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b dark:border-gray-700">
+                                    <th class="py-2 text-left text-gray-900 dark:text-gray-100">Name</th>
+                                    <th class="py-2 text-left text-gray-900 dark:text-gray-100">Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    v-for="(value, key) in selectedItem.value || {}"
+                                    :key="key"
+                                >
+                                    <td class="py-2 font-mono text-gray-900 dark:text-gray-100">{{ key }}</td>
+                                    <td class="py-2 text-gray-600 dark:text-gray-400">
+                                        {{ value }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
+            </BaseCard>
         </div>
 
         <!-- Load JSON Data Modal -->
@@ -205,7 +192,7 @@
                 </div>
             </div>
         </UiModal>
-    </div>
+    </ToolLayout>
 </template>
 
 <script setup>

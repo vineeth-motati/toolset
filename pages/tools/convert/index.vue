@@ -1,52 +1,49 @@
 <template>
-    <div class="h-[85vh] flex flex-col">
-        <div class="flex items-center justify-between mb-4">
-            <div>
-                <h1 class="text-2xl font-bold">File Converter</h1>
-                <p class="text-gray-600">
-                    Convert files from one format to another
-                </p>
-            </div>
-            <div class="flex gap-2">
-                <button
-                    @click="navigateToSettings"
-                    class="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-                >
-                    <Icon icon="tabler:settings" class="inline-block mr-1" />
-                    Settings
-                </button>
-            </div>
-        </div>
+    <ToolLayout fluid>
+        <template #actions>
+            <BaseButton
+                variant="secondary"
+                icon="tabler:settings"
+                size="sm"
+                @click="navigateToSettings"
+            >
+                Settings
+            </BaseButton>
+        </template>
 
-        <div class="flex-1 p-6 overflow-auto bg-white rounded-lg shadow">
-            <!-- Conversion categories -->
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div
-                    v-for="(category, index) in conversionCategories"
-                    :key="'cat-' + index"
-                    class="conversion-category"
-                >
-                    <h2 class="mb-3 text-xl font-semibold text-blue-600">
-                        {{ category.title }}
-                    </h2>
-                    <div class="grid grid-cols-2 gap-2 md:grid-cols-3">
-                        <button
-                            v-for="option in category.options"
-                            :key="option.title"
-                            @click="navigateToConverter(option)"
-                            class="flex items-center px-3 py-2 text-sm transition-colors border rounded-md hover:bg-gray-50"
+        <div class="h-[85vh] flex flex-col">
+            <BaseCard class="overflow-auto flex-1">
+                <!-- Conversion categories -->
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <div
+                        v-for="(category, index) in conversionCategories"
+                        :key="'cat-' + index"
+                        class="p-4 bg-gray-50 rounded-lg border dark:bg-gray-900/40 dark:border-gray-700"
+                    >
+                        <h2
+                            class="mb-3 text-xl font-semibold text-primary-600 dark:text-primary-400"
                         >
-                            <Icon
-                                :icon="option.icon"
-                                class="mr-2 text-blue-600"
-                            />
-                            <span>{{ option.title }}</span>
-                        </button>
+                            {{ category.title }}
+                        </h2>
+                        <div class="grid grid-cols-2 gap-2 md:grid-cols-3">
+                            <button
+                                v-for="option in category.options"
+                                :key="option.title"
+                                @click="navigateToConverter(option)"
+                                class="flex items-center px-3 py-2 text-sm rounded-md border transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700"
+                            >
+                                <Icon
+                                    :icon="option.icon"
+                                    class="mr-2 text-primary-600 dark:text-primary-400"
+                                />
+                                <span>{{ option.title }}</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </BaseCard>
         </div>
-    </div>
+    </ToolLayout>
 </template>
 
 <script setup>
@@ -92,9 +89,3 @@ const generateCategories = () => {
 // Conversion categories from configuration
 const conversionCategories = computed(() => generateCategories());
 </script>
-
-<style lang="postcss" scoped>
-.conversion-category {
-    @apply border rounded-lg p-4 bg-gray-50;
-}
-</style>

@@ -1,21 +1,10 @@
 <template>
-    <div class="h-[85vh] flex flex-col">
-        <div class="flex items-center justify-between mb-4">
-            <div>
-                <h1 class="text-2xl font-bold">JSONGrid</h1>
-                <p class="text-gray-600">
-                    Visualize and edit JSON data in grid format
-                </p>
-            </div>
-            <div class="flex gap-2">
-                <button
-                    @click="shareJson"
-                    class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                >
-                    <Icon icon="tabler:share" class="inline-block mr-1" /> Share
-                </button>
-            </div>
-        </div>
+    <ToolLayout fluid class="flex flex-col p-4 h-full">
+        <template #actions>
+            <BaseButton icon="tabler:share" size="sm" @click="shareJson">
+                Share
+            </BaseButton>
+        </template>
 
         <!-- Main Layout -->
         <div class="flex flex-col flex-1 gap-4 overflow-hidden lg:flex-row">
@@ -343,7 +332,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </ToolLayout>
 </template>
 
 <script setup>
@@ -358,6 +347,8 @@ import ace from 'ace-builds';
 import 'ace-builds/src-noconflict/theme-monokai';
 import 'ace-builds/src-noconflict/mode-json';
 import { debounce, isObject, isArray, includes, toString } from 'lodash-es';
+
+definePageMeta({ layout: 'fullscreen' });
 
 const toast = useToast();
 const { generateShareLink, getSharedData } = useShareLink();

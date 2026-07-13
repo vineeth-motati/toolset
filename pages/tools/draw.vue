@@ -1,23 +1,12 @@
 <template>
-    <div class="h-[85vh] flex flex-col">
-        <div class="flex items-center justify-between mb-4">
-            <div>
-                <h1 class="text-2xl font-bold">Drawing Board</h1>
-                <p class="text-gray-600">
-                    Create and share diagrams and sketches
-                </p>
-            </div>
-            <div class="flex gap-2">
-                <button
-                    @click="shareDraw"
-                    class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                >
-                    <Icon icon="tabler:share" class="inline-block mr-1" /> Share
-                </button>
-            </div>
-        </div>
+    <ToolLayout fluid class="flex flex-col p-4 h-full">
+        <template #actions>
+            <BaseButton icon="tabler:share" size="sm" @click="shareDraw">
+                Share
+            </BaseButton>
+        </template>
 
-        <div class="flex-1 overflow-hidden bg-white rounded-lg shadow">
+        <div class="overflow-hidden flex-1 bg-white rounded-lg shadow dark:bg-gray-800">
             <TldrawWrapper
                 v-if="isMounted"
                 :snapshotData="sharedDrawState"
@@ -25,7 +14,7 @@
                 @ready="handleDrawReady"
             />
         </div>
-    </div>
+    </ToolLayout>
 </template>
 
 <script setup>
@@ -33,7 +22,8 @@ import { ref, onMounted } from 'vue';
 import { useLocalStorage } from '@vueuse/core';
 import { useToast } from '@/composables/useToast';
 import { useShareLink } from '@/composables/useShareLink';
-import { Icon } from '@iconify/vue';
+
+definePageMeta({ layout: 'fullscreen' });
 
 const toast = useToast();
 const { generateShareLink, getSharedData } = useShareLink();

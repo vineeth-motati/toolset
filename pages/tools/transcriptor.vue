@@ -1,240 +1,224 @@
 <template>
-    <div class="mx-auto max-w-7xl">
-        <div class="flex items-center justify-between mb-6">
-            <h1 class="text-2xl font-bold">YouTube Transcriptor</h1>
-            <button
+    <ToolLayout fluid>
+        <template #actions>
+            <BaseButton
+                variant="secondary"
+                icon="mdi:share-variant"
+                size="sm"
                 @click="shareTranscript"
-                class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
             >
                 Share Transcript
-            </button>
-        </div>
+            </BaseButton>
+        </template>
 
-        <!-- Input Section -->
-        <div class="p-4 mb-4 bg-white rounded-lg shadow">
-            <div class="flex flex-col gap-4 md:flex-row">
-                <div class="relative flex-grow">
-                    <input
-                        v-model="transcriptorState.youtubeUrl"
-                        type="text"
-                        placeholder="Enter YouTube URL or Video ID"
-                        class="w-full px-4 py-2 pr-10 border rounded-md"
-                        @keyup.enter="fetchTranscript"
-                    />
-                    <button
-                        v-if="transcriptorState.youtubeUrl"
-                        @click="clearInputField"
-                        type="button"
-                        class="absolute text-gray-500 -translate-y-1/2 right-2 top-1/2 hover:text-gray-700"
-                        title="Clear input"
-                    >
-                        <Icon icon="mdi:close-circle" />
-                    </button>
-                </div>
-                <div class="flex gap-2">
-                    <button
-                        @click="fetchTranscript"
-                        class="flex items-center justify-center gap-1 px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700"
-                        :disabled="loading"
-                    >
-                        <Icon
-                            v-if="loading"
-                            icon="mdi:loading"
-                            class="animate-spin"
+        <div class="mx-auto max-w-7xl">
+            <!-- Input Section -->
+            <BaseCard class="mb-4">
+                <div class="flex flex-col gap-4 md:flex-row">
+                    <div class="relative flex-grow">
+                        <input
+                            v-model="transcriptorState.youtubeUrl"
+                            type="text"
+                            placeholder="Enter YouTube URL or Video ID"
+                            class="px-4 py-2 pr-10 w-full text-gray-900 bg-white rounded-md border focus:outline-none focus:ring-1 focus:ring-primary-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+                            @keyup.enter="fetchTranscript"
                         />
-                        <Icon v-else icon="mdi:play" />
-                        <span v-if="loading">Loading...</span>
-                        <span v-else>Get Transcript</span>
-                    </button>
-                    <button
-                        @click="clearTranscript"
-                        class="px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700"
-                    >
-                        Clear
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div v-if="loading" class="flex justify-center my-8">
-            <div
-                class="w-8 h-8 border-4 border-blue-600 rounded-full animate-spin border-t-transparent"
-            ></div>
-        </div>
-
-        <div v-if="error" class="p-4 my-4 text-red-700 bg-red-100 rounded-lg">
-            {{ error }}
-        </div>
-
-        <!-- Main Content Area -->
-        <div
-            v-if="transcriptorState.transcript.length > 0"
-            class="grid grid-cols-1 gap-6 lg:grid-cols-3"
-        >
-            <!-- Video Player Section -->
-            <div class="p-4 bg-white rounded-lg shadow lg:col-span-1">
-                <h2 class="mb-4 text-lg font-medium">Video</h2>
-                <div class="relative mb-4 aspect-video">
-                    <div id="youtube-player"></div>
-                </div>
-
-                <!-- Video Details Section -->
-                <div
-                    v-if="transcriptorState.videoDetails"
-                    class="pt-3 mt-3 border-t"
-                >
-                    <h3 class="text-lg font-bold line-clamp-2">
-                        {{ transcriptorState.videoDetails.title }}
-                    </h3>
-                    <div
-                        class="flex items-center justify-between mt-2 text-sm text-gray-600"
-                    >
-                        <span>{{
-                            transcriptorState.videoDetails.channelTitle
-                        }}</span>
-                        <span>{{
-                            formatDate(
-                                transcriptorState.videoDetails.publishedAt
-                            )
-                        }}</span>
-                    </div>
-
-                    <!-- Only show view count when it's a valid number -->
-                    <div
-                        v-if="
-                            isValidViewCount(
-                                transcriptorState.videoDetails.viewCount
-                            )
-                        "
-                        class="mt-2 text-sm text-gray-500"
-                    >
-                        {{
-                            formatViewCount(
-                                transcriptorState.videoDetails.viewCount
-                            )
-                        }}
-                        views
-                    </div>
-
-                    <div
-                        class="mt-3"
-                        v-if="transcriptorState.videoDetails.description"
-                    >
-                        <div
-                            :class="{
-                                'line-clamp-3':
-                                    !transcriptorState.showFullDescription,
-                            }"
-                            class="text-sm text-gray-700"
-                        >
-                            {{ transcriptorState.videoDetails.description }}
-                        </div>
                         <button
-                            @click="
-                                transcriptorState.showFullDescription =
-                                    !transcriptorState.showFullDescription
-                            "
-                            class="mt-1 text-sm text-blue-600 hover:underline"
+                            v-if="transcriptorState.youtubeUrl"
+                            @click="clearInputField"
+                            type="button"
+                            class="absolute right-2 top-1/2 text-gray-500 -translate-y-1/2 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                            title="Clear input"
                         >
-                            {{
-                                transcriptorState.showFullDescription
-                                    ? 'Show less'
-                                    : 'Show more'
-                            }}
+                            <Icon icon="mdi:close-circle" />
                         </button>
                     </div>
+                    <div class="flex gap-2">
+                        <BaseButton icon="mdi:play" :loading="loading" @click="fetchTranscript">
+                            {{ loading ? 'Loading...' : 'Get Transcript' }}
+                        </BaseButton>
+                        <BaseButton variant="danger" @click="clearTranscript">
+                            Clear
+                        </BaseButton>
+                    </div>
                 </div>
+            </BaseCard>
+
+            <div v-if="loading" class="flex justify-center my-8">
+                <div
+                    class="w-8 h-8 rounded-full border-4 animate-spin border-primary-600 border-t-transparent"
+                ></div>
             </div>
 
-            <!-- Transcript Section -->
-            <div class="p-4 bg-white rounded-lg shadow lg:col-span-2">
-                <div
-                    class="flex flex-wrap items-center justify-between gap-2 mb-4"
-                >
-                    <h2 class="text-lg font-medium">Transcript</h2>
-                    <div class="flex flex-wrap items-center gap-2">
-                        <label class="flex items-center">
-                            <input
-                                v-model="transcriptorState.showTimestamps"
-                                type="checkbox"
-                                class="mr-2"
-                            />
-                            Show Timestamps
-                        </label>
-                        <div class="flex gap-2">
-                            <button
-                                @click="copyTranscript"
-                                class="px-3 py-1 text-sm text-white bg-blue-600 rounded hover:bg-blue-700"
-                                title="Copy to clipboard"
-                            >
-                                <span class="flex items-center">
-                                    <Icon
-                                        icon="mdi:content-copy"
-                                        class="mr-1"
-                                    />
-                                    Copy
-                                </span>
-                            </button>
-                            <button
-                                @click="exportPdf"
-                                class="px-3 py-1 text-sm text-white bg-purple-600 rounded hover:bg-purple-700"
-                                title="Export as PDF"
-                            >
-                                <span class="flex items-center">
-                                    <Icon
-                                        icon="mdi:file-pdf-box"
-                                        class="mr-1"
-                                    />
-                                    PDF
-                                </span>
-                            </button>
-                            <button
-                                @click="exportAsText"
-                                class="px-3 py-1 text-sm text-white bg-green-600 rounded hover:bg-green-700"
-                                title="Export as Text File"
-                            >
-                                <span class="flex items-center">
-                                    <Icon
-                                        icon="mdi:file-document-outline"
-                                        class="mr-1"
-                                    />
-                                    Text
-                                </span>
-                            </button>
-                        </div>
+            <div
+                v-if="error"
+                class="p-4 my-4 text-red-700 bg-red-100 rounded-lg dark:bg-red-900/30 dark:text-red-300"
+            >
+                {{ error }}
+            </div>
+
+            <!-- Main Content Area -->
+            <div
+                v-if="transcriptorState.transcript.length > 0"
+                class="grid grid-cols-1 gap-6 lg:grid-cols-3"
+            >
+                <!-- Video Player Section -->
+                <BaseCard class="lg:col-span-1">
+                    <h2 class="mb-4 text-lg font-medium text-gray-900 dark:text-gray-100">Video</h2>
+                    <div class="relative mb-4 aspect-video">
+                        <div id="youtube-player"></div>
                     </div>
-                </div>
-                <div class="overflow-y-auto max-h-[60vh]">
+
+                    <!-- Video Details Section -->
                     <div
-                        v-if="transcriptorState.transcript.length > 0"
-                        class="space-y-2"
+                        v-if="transcriptorState.videoDetails"
+                        class="pt-3 mt-3 border-t dark:border-gray-700"
                     >
+                        <h3 class="text-lg font-bold line-clamp-2 text-gray-900 dark:text-gray-100">
+                            {{ transcriptorState.videoDetails.title }}
+                        </h3>
                         <div
-                            v-for="(
-                                segment, index
-                            ) in transcriptorState.transcript"
-                            :key="index"
-                            @click="jumpToTimestamp(segment.offset)"
-                            class="p-2 transition-colors rounded cursor-pointer hover:bg-gray-100"
-                            :class="{ 'bg-blue-50': isCurrentSegment(segment) }"
+                            class="flex justify-between items-center mt-2 text-sm text-gray-600 dark:text-gray-400"
                         >
-                            <span
-                                v-if="transcriptorState.showTimestamps"
-                                class="mr-2 font-mono text-xs text-gray-500"
+                            <span>{{
+                                transcriptorState.videoDetails.channelTitle
+                            }}</span>
+                            <span>{{
+                                formatDate(
+                                    transcriptorState.videoDetails.publishedAt
+                                )
+                            }}</span>
+                        </div>
+
+                        <!-- Only show view count when it's a valid number -->
+                        <div
+                            v-if="
+                                isValidViewCount(
+                                    transcriptorState.videoDetails.viewCount
+                                )
+                            "
+                            class="mt-2 text-sm text-gray-500 dark:text-gray-400"
+                        >
+                            {{
+                                formatViewCount(
+                                    transcriptorState.videoDetails.viewCount
+                                )
+                            }}
+                            views
+                        </div>
+
+                        <div
+                            class="mt-3"
+                            v-if="transcriptorState.videoDetails.description"
+                        >
+                            <div
+                                :class="{
+                                    'line-clamp-3':
+                                        !transcriptorState.showFullDescription,
+                                }"
+                                class="text-sm text-gray-700 dark:text-gray-300"
                             >
-                                {{ formatTime(segment.offset) }}
-                            </span>
-                            {{ segment.text }}
+                                {{ transcriptorState.videoDetails.description }}
+                            </div>
+                            <button
+                                @click="
+                                    transcriptorState.showFullDescription =
+                                        !transcriptorState.showFullDescription
+                                "
+                                class="mt-1 text-sm text-primary-600 hover:underline dark:text-primary-400"
+                            >
+                                {{
+                                    transcriptorState.showFullDescription
+                                        ? 'Show less'
+                                        : 'Show more'
+                                }}
+                            </button>
                         </div>
                     </div>
-                    <div v-else class="text-gray-500">
-                        No transcript available. Please enter a valid YouTube
-                        URL and click "Get Transcript".
+                </BaseCard>
+
+                <!-- Transcript Section -->
+                <BaseCard class="lg:col-span-2">
+                    <div
+                        class="flex flex-wrap gap-2 justify-between items-center mb-4"
+                    >
+                        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Transcript</h2>
+                        <div class="flex flex-wrap gap-2 items-center">
+                            <label class="flex items-center text-gray-700 dark:text-gray-300">
+                                <input
+                                    v-model="transcriptorState.showTimestamps"
+                                    type="checkbox"
+                                    class="mr-2"
+                                />
+                                Show Timestamps
+                            </label>
+                            <div class="flex gap-2">
+                                <BaseButton
+                                    variant="secondary"
+                                    size="sm"
+                                    icon="mdi:content-copy"
+                                    @click="copyTranscript"
+                                >
+                                    Copy
+                                </BaseButton>
+                                <BaseButton
+                                    variant="secondary"
+                                    size="sm"
+                                    icon="mdi:file-pdf-box"
+                                    @click="exportPdf"
+                                >
+                                    PDF
+                                </BaseButton>
+                                <BaseButton
+                                    variant="secondary"
+                                    size="sm"
+                                    icon="mdi:file-document-outline"
+                                    @click="exportAsText"
+                                >
+                                    Text
+                                </BaseButton>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                    <div class="overflow-y-auto max-h-[60vh]">
+                        <div
+                            v-if="transcriptorState.transcript.length > 0"
+                            key="segments"
+                            class="space-y-2"
+                        >
+                            <div
+                                v-for="(
+                                    segment, index
+                                ) in transcriptorState.transcript"
+                                :key="index"
+                                @click="jumpToTimestamp(segment.offset)"
+                                class="p-2 rounded transition-colors cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                                :class="{
+                                    'bg-primary-50 dark:bg-primary-900/20':
+                                        isCurrentSegment(segment),
+                                }"
+                            >
+                                <span
+                                    v-if="transcriptorState.showTimestamps"
+                                    class="mr-2 font-mono text-xs text-gray-500 dark:text-gray-400"
+                                >
+                                    {{ formatTime(segment.offset) }}
+                                </span>
+                                <span class="text-gray-800 dark:text-gray-200">{{ segment.text }}</span>
+                            </div>
+                        </div>
+                        <BaseEmptyState
+                            v-else
+                            key="empty"
+                            icon="mdi:youtube"
+                            title="No transcript available"
+                            description='Enter a valid YouTube URL and click "Get Transcript".'
+                        />
+                    </div>
+                </BaseCard>
             </div>
         </div>
-    </div>
+    </ToolLayout>
 </template>
 
 <script setup>

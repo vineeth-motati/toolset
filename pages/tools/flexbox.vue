@@ -1,23 +1,18 @@
 <template>
-    <div class="flex flex-col h-[85vh]">
-        <!-- Header with actions -->
-        <div class="flex items-center justify-between mb-4">
-            <h1 class="text-2xl font-bold">Flexbox Playground</h1>
-            <div class="flex space-x-2">
-                <button
-                    @click="shareFlexbox"
-                    class="flex items-center px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
-                >
-                    <Icon icon="mdi:share" class="mr-2" /> Share
-                </button>
-                <button
-                    @click="showCode = true"
-                    class="flex items-center px-4 py-2 text-white bg-gray-600 rounded-md hover:bg-gray-700"
-                >
-                    <Icon icon="mdi:code-tags" class="mr-2" /> Code
-                </button>
-            </div>
-        </div>
+    <ToolLayout fluid class="flex flex-col p-4 h-full">
+        <template #actions>
+            <BaseButton icon="mdi:share" size="sm" @click="shareFlexbox">
+                Share
+            </BaseButton>
+            <BaseButton
+                variant="secondary"
+                icon="mdi:code-tags"
+                size="sm"
+                @click="showCode = true"
+            >
+                Code
+            </BaseButton>
+        </template>
 
         <!-- Main content area -->
         <div class="flex flex-1 gap-4 overflow-hidden">
@@ -570,7 +565,7 @@
                 />
             </div>
         </Modal>
-    </div>
+    </ToolLayout>
 </template>
 
 <script setup>
@@ -583,6 +578,8 @@ import { useToast } from '@/composables/useToast';
 import { cloneDeep } from 'lodash-es';
 import Modal from '@/components/ui/Modal.vue';
 import DimensionInput from '@/components/ui/DimensionInput.vue';
+
+definePageMeta({ layout: 'fullscreen' });
 
 const toast = useToast();
 const { generateShareLink, getSharedData } = useShareLink();

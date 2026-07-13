@@ -1,47 +1,47 @@
 <template>
     <div class="h-[85vh] flex flex-col">
-        <div class="flex items-center justify-between mb-4">
+        <div class="flex justify-between items-center mb-4">
             <div class="flex items-center">
-                <button
+                <BaseIconButton
+                    icon="tabler:arrow-left"
+                    label="Back to converters"
                     @click="goBack"
-                    class="p-2 mr-3 text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200"
-                    title="Back to converters"
-                >
-                    <Icon icon="tabler:arrow-left" class="text-xl" />
-                </button>
+                    class="mr-3"
+                />
                 <div v-if="currentConverter">
-                    <h1 class="text-2xl font-bold">
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
                         {{ currentConverter.title }}
                     </h1>
-                    <p class="text-gray-600">
+                    <p class="text-gray-600 dark:text-gray-400">
                         {{ currentConverter.description }}
                     </p>
                 </div>
                 <div v-else>
-                    <h1 class="text-2xl font-bold">Converter Not Found</h1>
-                    <p class="text-gray-600">
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Converter Not Found</h1>
+                    <p class="text-gray-600 dark:text-gray-400">
                         The requested converter could not be found
                     </p>
                 </div>
             </div>
             <div class="flex gap-2" v-if="currentConverter">
-                <button
+                <BaseButton
+                    variant="secondary"
+                    icon="tabler:settings"
+                    size="sm"
                     @click="navigateToSettings"
-                    class="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
                 >
-                    <Icon icon="tabler:settings" class="inline-block mr-1" />
                     Settings
-                </button>
+                </BaseButton>
             </div>
         </div>
 
-        <div v-if="currentConverter" class="flex-1 overflow-auto">
+        <div v-if="currentConverter" class="overflow-auto flex-1">
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
                 <!-- Left sidebar with related converters -->
                 <div class="col-span-1">
-                    <div class="bg-white rounded-lg shadow">
-                        <div class="p-4 border-b">
-                            <h2 class="font-medium">More Converters</h2>
+                    <BaseCard padding="none">
+                        <div class="p-4 border-b dark:border-gray-700">
+                            <h2 class="font-medium text-gray-900 dark:text-gray-100">More Converters</h2>
                         </div>
                         <div class="p-2 max-h-[65vh] overflow-auto">
                             <div v-if="relatedConverters.length > 0">
@@ -53,10 +53,10 @@
                                     <button
                                         @click="navigateToConverter(converter)"
                                         :class="[
-                                            'w-full px-4 py-2 text-left rounded-md hover:bg-blue-50',
+                                            'w-full px-4 py-2 text-left rounded-md hover:bg-primary-50 dark:hover:bg-gray-700',
                                             converter.path === $route.path
-                                                ? 'text-blue-700 bg-blue-50'
-                                                : 'text-gray-700',
+                                                ? 'text-primary-700 bg-primary-50 dark:bg-gray-700 dark:text-primary-400'
+                                                : 'text-gray-700 dark:text-gray-300',
                                         ]"
                                     >
                                         <Icon
@@ -70,11 +70,11 @@
                                     </button>
                                 </div>
                             </div>
-                            <div v-else class="px-4 py-3 text-sm text-gray-500">
+                            <div v-else class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
                                 No related converters found
                             </div>
                         </div>
-                    </div>
+                    </BaseCard>
                 </div>
 
                 <!-- Right content area with converter -->
@@ -101,58 +101,29 @@
                                 :key="param.name"
                                 class="mb-3"
                             >
-                                <label
-                                    class="block mb-1 text-sm font-medium text-gray-700"
-                                >
-                                    {{ param.label }}
-                                    <span
-                                        v-if="param.required"
-                                        class="text-red-500 text-xs ml-1"
-                                        >(required)</span
-                                    >
-                                    <span
-                                        v-else
-                                        class="text-gray-500 text-xs ml-1"
-                                        >(optional)</span
-                                    >
-                                </label>
-
-                                <!-- Select input for options -->
-                                <select
+                                <BaseSelect
                                     v-if="param.type === 'select'"
                                     v-model="paramValues[param.name]"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md"
-                                >
-                                    <option
-                                        v-for="option in param.options"
-                                        :key="option.value"
-                                        :value="option.value"
-                                    >
-                                        {{ option.label }}
-                                    </option>
-                                </select>
-
-                                <!-- Number input -->
-                                <input
+                                    :options="param.options"
+                                    :label="param.label"
+                                />
+                                <BaseInput
                                     v-else-if="param.type === 'number'"
                                     v-model="paramValues[param.name]"
                                     type="number"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md"
+                                    :label="param.label"
                                     :placeholder="param.placeholder || ''"
                                 />
-
-                                <!-- Default text input -->
-                                <input
+                                <BaseInput
                                     v-else
                                     v-model="paramValues[param.name]"
-                                    type="text"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md"
+                                    :label="param.label"
                                     :placeholder="param.placeholder || ''"
                                 />
 
                                 <p
                                     v-if="param.description"
-                                    class="mt-1 text-xs text-gray-500"
+                                    class="mt-1 text-xs text-gray-500 dark:text-gray-400"
                                 >
                                     {{ param.description }}
                                 </p>
@@ -163,17 +134,14 @@
             </div>
         </div>
 
-        <div v-else class="flex flex-col items-center justify-center flex-1">
-            <p class="text-xl text-gray-500">Converter not found</p>
-            <p class="text-gray-500">
+        <div v-else class="flex flex-col flex-1 justify-center items-center">
+            <p class="text-xl text-gray-500 dark:text-gray-400">Converter not found</p>
+            <p class="text-gray-500 dark:text-gray-400">
                 Path: {{ `/tools/convert/${converterType}` }}
             </p>
-            <button
-                @click="goBack"
-                class="px-4 py-2 mt-4 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-            >
+            <BaseButton class="mt-4" @click="goBack">
                 Back to converters
-            </button>
+            </BaseButton>
         </div>
     </div>
 </template>

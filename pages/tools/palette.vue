@@ -1,87 +1,70 @@
 <template>
-    <div class="mx-auto max-w-4xl">
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <h1 class="text-2xl font-bold">Color Palette Generator</h1>
-                <p class="text-gray-600">Easily generate color palettes.</p>
-            </div>
-
-            <button
+    <ToolLayout fluid>
+        <template #actions>
+            <BaseButton
+                variant="secondary"
+                icon="mdi:share-variant"
+                size="sm"
                 @click="sharePalette"
-                class="px-4 py-2 text-white bg-purple-600 rounded-md hover:bg-purple-700"
             >
                 Share Palette
-            </button>
-        </div>
-        <div class="p-6 bg-white rounded-lg shadow">
-            <div class="mb-6">
-                <label class="block mb-2 text-sm font-medium text-gray-700">
-                    Base Color
-                </label>
-                <div class="flex gap-4">
-                    <input
-                        v-model="palette.baseColor"
-                        type="color"
-                        class="w-20 h-10"
-                    />
-                    <input
-                        v-model="palette.baseColor"
-                        type="text"
-                        class="flex-1 px-3 py-2 rounded-md border"
-                        placeholder="#000000"
-                    />
-                    <button
-                        @click="generatePalette"
-                        class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                    >
-                        Generate New
-                    </button>
-                </div>
-            </div>
+            </BaseButton>
+        </template>
 
-            <div class="mb-6">
-                <label class="block mb-2 text-sm font-medium text-gray-700">
-                    Scheme Type
-                </label>
-                <select
+        <div class="mx-auto max-w-4xl">
+            <BaseCard>
+                <BaseFormField label="Base Color">
+                    <div class="flex gap-4">
+                        <input
+                            v-model="palette.baseColor"
+                            type="color"
+                            class="w-20 h-10 rounded border border-gray-300 dark:border-gray-700"
+                        />
+                        <BaseInput
+                            v-model="palette.baseColor"
+                            placeholder="#000000"
+                            class="flex-1"
+                        />
+                        <BaseButton icon="mdi:refresh" @click="generatePalette">
+                            Generate New
+                        </BaseButton>
+                    </div>
+                </BaseFormField>
+
+                <BaseSelect
                     v-model="palette.schemeType"
-                    class="px-3 py-2 w-full rounded-md border"
-                >
-                    <option
-                        v-for="scheme in Object.keys(colorSchemes)"
-                        :key="colorSchemes[scheme]"
-                        :value="colorSchemes[scheme]"
-                    >
-                        {{ scheme }}
-                    </option>
-                </select>
-            </div>
+                    :options="schemeOptions"
+                    label="Scheme Type"
+                    class="mt-4"
+                />
 
-            <div
-                class="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-            >
-                <div v-if="palette.colors.length === 0">
-                    <div class="flex justify-center items-center h-24">
-                        No colors generated
-                    </div>
-                </div>
                 <div
-                    v-for="color in palette.colors"
-                    :key="color.hex"
-                    class="relative group"
+                    class="grid grid-cols-1 gap-4 mt-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
                 >
+                    <BaseEmptyState
+                        v-if="palette.colors.length === 0"
+                        icon="mdi:palette"
+                        title="No colors generated"
+                        class="col-span-full"
+                    />
                     <div
-                        class="h-24 rounded-lg shadow-sm cursor-pointer"
-                        :style="{ backgroundColor: color.hex }"
-                        @click="copyColor(color.hex)"
-                    ></div>
-                    <div class="mt-2 text-sm text-center">
-                        {{ color.hex }}
+                        v-for="color in palette.colors"
+                        :key="color.hex"
+                        class="relative group"
+                    >
+                        <div
+                            class="h-24 rounded-lg shadow-sm cursor-pointer"
+                            :style="{ backgroundColor: color.hex }"
+                            @click="copyColor(color.hex)"
+                        ></div>
+                        <div class="mt-2 text-sm text-center text-gray-700 dark:text-gray-300">
+                            {{ color.hex }}
+                        </div>
                     </div>
                 </div>
-            </div>
+            </BaseCard>
         </div>
-    </div>
+    </ToolLayout>
 </template>
 
 <script setup>
@@ -108,6 +91,11 @@ const colorSchemes = {
     'Split Complementary': 'split-complementary',
     Square: 'square',
 };
+
+const schemeOptions = Object.entries(colorSchemes).map(([label, value]) => ({
+    label,
+    value,
+}));
 
 const hexToHsl = (hex) => {
     // Remove '#' if present

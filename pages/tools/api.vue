@@ -1,207 +1,161 @@
 <template>
-    <div class="mx-auto max-w-6xl">
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <h1 class="text-2xl font-bold">API Tester</h1>
-                <p class="text-gray-600">
-                    Interact with APIs, test endpoints, and debug HTTP requests.
-                </p>
-            </div>
-            <div class="flex gap-2">
-                <button
-                    @click="openCurlModal"
-                    class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
-                >
-                    Import from cURL
-                </button>
-                <button
-                    @click="shareApi"
-                    class="px-4 py-2 text-white bg-purple-600 rounded-lg hover:bg-purple-700"
-                >
-                    Share API
-                </button>
-            </div>
-        </div>
+    <ToolLayout fluid>
+        <template #actions>
+            <BaseButton
+                variant="secondary"
+                icon="mdi:import"
+                size="sm"
+                @click="openCurlModal"
+            >
+                Import from cURL
+            </BaseButton>
+            <BaseButton
+                variant="secondary"
+                icon="mdi:share-variant"
+                size="sm"
+                @click="shareApi"
+            >
+                Share API
+            </BaseButton>
+        </template>
 
-        <!-- Main Layout -->
-        <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
-            <!-- Request Section -->
-            <div class="p-6 bg-white rounded-lg shadow-lg">
-                <h2 class="mb-4 text-lg font-semibold">Request</h2>
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-medium text-gray-700"
-                        >Endpoint URL</label
-                    >
-                    <input
+        <div class="mx-auto max-w-6xl">
+            <!-- Main Layout -->
+            <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+                <!-- Request Section -->
+                <BaseCard>
+                    <h2 class="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
+                        Request
+                    </h2>
+
+                    <BaseInput
                         v-model="api.endpoint"
-                        type="text"
-                        class="px-3 py-2 w-full rounded-lg border outline-none focus:ring-2 focus:ring-indigo-500"
+                        label="Endpoint URL"
                         placeholder="Enter API URL (e.g., https://api.example.com)"
                     />
-                </div>
 
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label
-                            class="block mb-2 text-sm font-medium text-gray-700"
-                            >HTTP Method</label
-                        >
-                        <select
+                    <div class="grid grid-cols-2 gap-4 mt-4">
+                        <BaseSelect
                             v-model="api.method"
-                            class="px-3 py-2 w-full rounded-lg border outline-none focus:ring-2 focus:ring-indigo-500"
-                        >
-                            <option value="GET">GET</option>
-                            <option value="POST">POST</option>
-                            <option value="PUT">PUT</option>
-                            <option value="DELETE">DELETE</option>
-                            <option value="PATCH">PATCH</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label
-                            class="block mb-2 text-sm font-medium text-gray-700"
-                            >Content Type</label
-                        >
-                        <select
+                            :options="methodOptions"
+                            label="HTTP Method"
+                        />
+                        <BaseSelect
                             v-model="api.contentType"
-                            class="px-3 py-2 w-full rounded-lg border outline-none focus:ring-2 focus:ring-indigo-500"
-                        >
-                            <option value="application/json">JSON</option>
-                            <option value="application/x-www-form-urlencoded">
-                                Form URL Encoded
-                            </option>
-                            <option value="text/plain">Plain Text</option>
-                        </select>
+                            :options="contentTypeOptions"
+                            label="Content Type"
+                        />
                     </div>
-                </div>
 
-                <!-- Authorization Section -->
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-medium text-gray-700"
-                        >Authorization</label
-                    >
-                    <select
+                    <!-- Authorization Section -->
+                    <BaseSelect
                         v-model="api.auth.type"
-                        class="px-3 py-2 w-full rounded-lg border outline-none focus:ring-2 focus:ring-indigo-500"
-                    >
-                        <option value="">None</option>
-                        <option value="Bearer">Bearer Token</option>
-                        <option value="Basic">Basic Auth</option>
-                        <option value="Custom">Custom Header</option>
-                    </select>
-                </div>
+                        :options="authTypeOptions"
+                        label="Authorization"
+                        class="mt-4"
+                    />
 
-                <div v-if="api.auth.type === 'Bearer'" class="mb-4">
-                    <input
+                    <BaseInput
+                        v-if="api.auth.type === 'Bearer'"
                         v-model="api.auth.token"
-                        type="text"
-                        class="px-3 py-2 w-full rounded-lg border outline-none focus:ring-2 focus:ring-indigo-500"
                         placeholder="Enter Bearer Token"
+                        class="mt-4"
                     />
-                </div>
-                <div
-                    v-if="api.auth.type === 'Basic'"
-                    class="grid grid-cols-2 gap-4 mb-4"
-                >
-                    <input
-                        v-model="api.auth.username"
-                        type="text"
-                        class="px-3 py-2 rounded-lg border outline-none focus:ring-2 focus:ring-indigo-500"
-                        placeholder="Username"
-                    />
-                    <input
-                        v-model="api.auth.password"
-                        type="password"
-                        class="px-3 py-2 rounded-lg border outline-none focus:ring-2 focus:ring-indigo-500"
-                        placeholder="Password"
-                    />
-                </div>
-                <div v-if="api.auth.type === 'Custom'" class="mb-4">
-                    <input
+                    <div
+                        v-if="api.auth.type === 'Basic'"
+                        class="grid grid-cols-2 gap-4 mt-4"
+                    >
+                        <BaseInput
+                            v-model="api.auth.username"
+                            placeholder="Username"
+                        />
+                        <BaseInput
+                            v-model="api.auth.password"
+                            type="password"
+                            placeholder="Password"
+                        />
+                    </div>
+                    <BaseInput
+                        v-if="api.auth.type === 'Custom'"
                         v-model="api.auth.customHeader"
-                        type="text"
-                        class="px-3 py-2 w-full rounded-lg border outline-none focus:ring-2 focus:ring-indigo-500"
                         placeholder='Enter Custom Header (e.g., "X-API-Key: key")'
+                        class="mt-4"
                     />
-                </div>
 
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-medium text-gray-700"
-                        >Headers (JSON format)</label
-                    >
-                    <textarea
+                    <BaseTextarea
                         v-model="api.headers"
-                        class="px-3 py-2 w-full h-24 font-mono rounded-lg border outline-none focus:ring-2 focus:ring-indigo-500"
+                        label="Headers (JSON format)"
                         placeholder='e.g., {"Authorization": "Bearer token"}'
-                    ></textarea>
-                </div>
+                        class="mt-4 font-mono"
+                        :rows="4"
+                    />
 
-                <div
-                    class="mb-4"
-                    v-if="['POST', 'PUT', 'PATCH'].includes(api.method)"
-                >
-                    <label class="block mb-2 text-sm font-medium text-gray-700"
-                        >Body (JSON format)</label
-                    >
-                    <textarea
+                    <BaseTextarea
+                        v-if="['POST', 'PUT', 'PATCH'].includes(api.method)"
                         v-model="api.body"
-                        class="px-3 py-2 w-full h-32 font-mono rounded-lg border outline-none focus:ring-2 focus:ring-indigo-500"
+                        label="Body (JSON format)"
                         placeholder='e.g., {"key": "value"}'
-                    ></textarea>
-                </div>
+                        class="mt-4 font-mono"
+                        :rows="5"
+                    />
 
-                <button
-                    @click="sendRequest"
-                    :disabled="api.loading || !api.endpoint"
-                    class="px-4 py-2 text-white bg-green-600 rounded-lg transition-colors hover:bg-green-700"
-                >
-                    {{ api.loading ? 'Sending...' : 'Send Request' }}
-                </button>
-            </div>
+                    <BaseButton
+                        class="mt-4"
+                        :loading="api.loading"
+                        :disabled="api.loading || !api.endpoint"
+                        @click="sendRequest"
+                    >
+                        {{ api.loading ? 'Sending...' : 'Send Request' }}
+                    </BaseButton>
+                </BaseCard>
 
-            <!-- Response Section -->
-            <div class="p-6 bg-white rounded-lg shadow-lg">
-                <h2 class="mb-4 text-lg font-semibold">Response</h2>
-                <div v-if="api.response">
-                    <div class="mb-2 text-sm text-gray-500">
-                        <span class="font-bold">Status:</span>
-                        {{ api.response.status }}
+                <!-- Response Section -->
+                <BaseCard>
+                    <h2 class="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
+                        Response
+                    </h2>
+                    <div v-if="api.response" key="response">
+                        <div class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                            <span class="font-bold">Status:</span>
+                            {{ api.response.status }}
+                        </div>
+                        <div class="mb-4">
+                            <h3 class="mb-1 font-medium text-gray-900 dark:text-gray-100">Headers:</h3>
+                            <pre
+                                class="overflow-x-auto p-3 font-mono text-sm bg-gray-100 rounded-lg dark:bg-gray-900 dark:text-gray-200"
+                                >{{
+                                    JSON.stringify(api.response.headers, null, 2)
+                                }}</pre
+                            >
+                        </div>
+                        <div v-if="api.response.isHtml">
+                            <h3 class="mb-1 font-medium text-gray-900 dark:text-gray-100">HTML Content:</h3>
+                            <div
+                                class="overflow-auto p-3 bg-gray-100 rounded-lg dark:bg-gray-900 dark:text-gray-200"
+                                v-html="api.response.data"
+                            ></div>
+                        </div>
+                        <div v-else>
+                            <h3 class="mb-1 font-medium text-gray-900 dark:text-gray-100">Body:</h3>
+                            <pre
+                                class="overflow-auto p-3 max-h-96 font-mono text-sm bg-gray-100 rounded-lg dark:bg-gray-900 dark:text-gray-200"
+                                >{{
+                                    JSON.stringify(api.response.data, null, 2)
+                                }}</pre
+                            >
+                        </div>
                     </div>
-                    <div class="mb-4">
-                        <h3 class="mb-1 font-medium">Headers:</h3>
-                        <pre
-                            class="overflow-x-auto p-3 font-mono text-sm bg-gray-100 rounded-lg"
-                            >{{
-                                JSON.stringify(api.response.headers, null, 2)
-                            }}</pre
-                        >
+                    <div v-else-if="api.error" key="error" class="text-red-600 dark:text-red-400">
+                        {{ api.error }}
                     </div>
-                    <div v-if="api.response.isHtml">
-                        <h3 class="mb-1 font-medium">HTML Content:</h3>
-                        <div
-                            class="overflow-auto p-3 bg-gray-100 rounded-lg"
-                            v-html="api.response.data"
-                        ></div>
-                    </div>
-                    <div v-else>
-                        <h3 class="mb-1 font-medium">Body:</h3>
-                        <pre
-                            class="overflow-auto p-3 max-h-96 font-mono text-sm bg-gray-100 rounded-lg"
-                            >{{
-                                JSON.stringify(api.response.data, null, 2)
-                            }}</pre
-                        >
-                    </div>
-                </div>
-                <div v-else-if="api.error" class="text-red-600">
-                    {{ api.error }}
-                </div>
-                <div v-else>
-                    <p class="text-gray-600">
-                        {{ api.loading ? 'Sending request...' : 'No response' }}
-                    </p>
-                </div>
+                    <BaseEmptyState
+                        v-else
+                        key="empty"
+                        icon="mdi:api"
+                        :title="api.loading ? 'Sending request...' : 'No response'"
+                        description="Send a request to see the response here."
+                    />
+                </BaseCard>
             </div>
         </div>
 
@@ -211,18 +165,15 @@
             @close="closeCurlModal"
             @confirm="importCurl"
         >
-            <div>
-                <label class="block mb-2 text-sm font-medium text-gray-700">
-                    Paste cURL Command
-                </label>
-                <textarea
-                    v-model="curlCommand"
-                    class="px-3 py-2 w-full h-24 font-mono rounded-lg border outline-none focus:ring-2 focus:ring-indigo-500"
-                    placeholder="Paste cURL command here"
-                ></textarea>
-            </div>
+            <BaseTextarea
+                v-model="curlCommand"
+                label="Paste cURL Command"
+                placeholder="Paste cURL command here"
+                class="font-mono"
+                :rows="4"
+            />
         </UiModal>
-    </div>
+    </ToolLayout>
 </template>
 
 <script setup>
@@ -231,6 +182,19 @@ import { useLocalStorage } from '@vueuse/core';
 const { generateShareLink, getSharedData } = useShareLink();
 const { $axios } = useNuxtApp();
 const toast = useToast();
+
+const methodOptions = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
+const contentTypeOptions = [
+    { label: 'JSON', value: 'application/json' },
+    { label: 'Form URL Encoded', value: 'application/x-www-form-urlencoded' },
+    { label: 'Plain Text', value: 'text/plain' },
+];
+const authTypeOptions = [
+    { label: 'None', value: '' },
+    { label: 'Bearer Token', value: 'Bearer' },
+    { label: 'Basic Auth', value: 'Basic' },
+    { label: 'Custom Header', value: 'Custom' },
+];
 
 const api = useLocalStorage('api', {
     endpoint: '',
