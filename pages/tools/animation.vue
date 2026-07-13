@@ -1,15 +1,15 @@
 <template>
-    <div class="p-4 mx-auto max-w-6xl">
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold">CSS Animation Generator</h1>
-            <button
+    <ToolLayout fluid class="mx-auto max-w-6xl">
+        <template #actions>
+            <BaseButton
+                variant="secondary"
+                icon="mdi:share-variant"
+                size="sm"
                 @click="shareAnimation"
-                class="px-4 py-2 text-white bg-purple-600 rounded-md hover:bg-purple-700"
             >
                 Share Animation
-            </button>
-        </div>
+            </BaseButton>
+        </template>
 
         <!-- Main Grid -->
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -372,7 +372,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </ToolLayout>
 </template>
 
 <script setup>

@@ -13,12 +13,15 @@
             :disabled="disabled"
             :rows="rows"
             :class="[textareaBase, error ? errorRing : '']"
+            v-bind="$attrs"
         />
     </BaseFormField>
 </template>
 
 <script setup>
 import { useId } from 'vue';
+
+defineOptions({ inheritAttrs: false });
 
 const props = defineProps({
     label: { type: String, default: null },

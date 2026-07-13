@@ -1,38 +1,35 @@
 <template>
     <div class="h-[85vh] flex flex-col">
-        <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center">
-                <button
-                    @click="goBack"
-                    class="p-2 mr-3 text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200"
-                    title="Back to converters"
-                >
-                    <Icon icon="tabler:arrow-left" class="text-xl" />
-                </button>
-                <div>
-                    <h1 class="text-2xl font-bold">Converter Settings</h1>
-                    <p class="text-gray-600">
-                        Manage API keys and conversion preferences
-                    </p>
-                </div>
+        <div class="flex items-center mb-4">
+            <BaseIconButton
+                icon="tabler:arrow-left"
+                label="Back to converters"
+                @click="goBack"
+                class="mr-3"
+            />
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Converter Settings</h1>
+                <p class="text-gray-600 dark:text-gray-400">
+                    Manage API keys and conversion preferences
+                </p>
             </div>
         </div>
 
-        <div class="flex-1 overflow-auto">
+        <div class="overflow-auto flex-1">
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
                 <!-- Left sidebar with settings navigation -->
                 <div class="col-span-1">
-                    <div class="bg-white rounded-lg shadow">
-                        <div class="p-4 border-b">
-                            <h2 class="font-medium">Settings</h2>
+                    <BaseCard padding="none">
+                        <div class="p-4 border-b dark:border-gray-700">
+                            <h2 class="font-medium text-gray-900 dark:text-gray-100">Settings</h2>
                         </div>
                         <div class="p-2">
                             <button
-                                class="w-full px-4 py-2 text-left rounded-md hover:bg-gray-50"
+                                class="px-4 py-2 w-full text-left rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
                                 :class="{
-                                    'bg-blue-50 text-blue-700':
+                                    'bg-primary-50 text-primary-700 dark:bg-gray-700 dark:text-primary-400':
                                         activeTab === 'apikeys',
-                                    'text-gray-700': activeTab !== 'apikeys',
+                                    'text-gray-700 dark:text-gray-300': activeTab !== 'apikeys',
                                 }"
                                 @click="activeTab = 'apikeys'"
                             >
@@ -43,11 +40,11 @@
                                 API Keys
                             </button>
                             <button
-                                class="w-full px-4 py-2 text-left rounded-md hover:bg-gray-50"
+                                class="px-4 py-2 w-full text-left rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
                                 :class="{
-                                    'bg-blue-50 text-blue-700':
+                                    'bg-primary-50 text-primary-700 dark:bg-gray-700 dark:text-primary-400':
                                         activeTab === 'debug',
-                                    'text-gray-700': activeTab !== 'debug',
+                                    'text-gray-700 dark:text-gray-300': activeTab !== 'debug',
                                 }"
                                 @click="activeTab = 'debug'"
                             >
@@ -58,7 +55,7 @@
                                 Debug
                             </button>
                         </div>
-                    </div>
+                    </BaseCard>
                 </div>
 
                 <!-- Right content area -->

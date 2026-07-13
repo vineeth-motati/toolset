@@ -19,6 +19,7 @@
                 :placeholder="placeholder"
                 :disabled="disabled"
                 :class="[inputBase, icon ? 'pl-9' : '', error ? errorRing : '']"
+                v-bind="$attrs"
             />
         </div>
     </BaseFormField>
@@ -27,6 +28,8 @@
 <script setup>
 import { useId } from 'vue';
 import { Icon } from '@iconify/vue';
+
+defineOptions({ inheritAttrs: false });
 
 const props = defineProps({
     label: { type: String, default: null },

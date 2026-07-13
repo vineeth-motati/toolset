@@ -1,105 +1,75 @@
 <template>
-    <div class="mx-auto max-w-4xl">
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <h1 class="text-2xl font-bold">CSS Unit Converter</h1>
-                <p class="text-gray-600">Easily convert between CSS units.</p>
-            </div>
-            <button
+    <ToolLayout fluid>
+        <template #actions>
+            <BaseButton
+                icon="mdi:share-variant"
+                size="sm"
                 @click="shareConversion"
-                class="px-4 py-2 text-white bg-blue-600 rounded-lg transition-colors hover:bg-blue-700"
             >
                 Share Conversion
-            </button>
-        </div>
+            </BaseButton>
+        </template>
 
-        <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
-            <!-- Input Section -->
-            <div class="p-6 bg-white rounded-lg shadow-lg">
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-medium text-gray-700"
-                        >Value</label
-                    >
-                    <input
+        <div class="mx-auto max-w-4xl">
+            <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+                <!-- Input Section -->
+                <BaseCard>
+                    <BaseInput
                         v-model="value"
                         type="number"
-                        step="any"
-                        class="px-3 py-2 w-full rounded-lg border focus:ring-2 focus:ring-indigo-500"
+                        label="Value"
                         placeholder="Enter value"
                     />
-                </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label
-                            class="block mb-2 text-sm font-medium text-gray-700"
-                            >From</label
-                        >
-                        <select
-                            v-model="fromUnit"
-                            class="px-3 py-2 w-full rounded-lg border focus:ring-2 focus:ring-indigo-500"
-                        >
-                            <option
-                                v-for="unit in units"
-                                :key="unit.value"
-                                :value="unit.value"
-                            >
-                                {{ unit.label }}
-                            </option>
-                        </select>
+                    <div class="grid grid-cols-2 gap-4 mt-4">
+                        <BaseSelect v-model="fromUnit" :options="units" label="From" />
+                        <BaseSelect v-model="toUnit" :options="units" label="To" />
                     </div>
+                </BaseCard>
 
-                    <div>
-                        <label
-                            class="block mb-2 text-sm font-medium text-gray-700"
-                            >To</label
-                        >
-                        <select
-                            v-model="toUnit"
-                            class="px-3 py-2 w-full rounded-lg border focus:ring-2 focus:ring-indigo-500"
-                        >
-                            <option
-                                v-for="unit in units"
-                                :key="unit.value"
-                                :value="unit.value"
-                            >
-                                {{ unit.label }}
-                            </option>
-                        </select>
+                <!-- Result Section -->
+                <BaseCard>
+                    <h2
+                        class="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100"
+                    >
+                        Result
+                    </h2>
+                    <div
+                        class="mb-4 text-3xl font-bold text-primary-600 dark:text-primary-400"
+                    >
+                        {{ result }}{{ toUnit }}
                     </div>
-                </div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                        {{ value }}{{ fromUnit }} = {{ result }}{{ toUnit }}
+                    </div>
+                </BaseCard>
             </div>
 
-            <!-- Result Section -->
-            <div class="p-6 bg-white rounded-lg shadow-lg">
-                <h2 class="mb-4 text-lg font-semibold">Result</h2>
-                <div class="mb-4 text-3xl font-bold text-indigo-600">
-                    {{ result }}{{ toUnit }}
-                </div>
-                <div class="text-sm text-gray-600">
-                    {{ value }}{{ fromUnit }} = {{ result }}{{ toUnit }}
-                </div>
-            </div>
-        </div>
-
-        <!-- Common Conversions -->
-        <div class="p-6 mt-8 bg-white rounded-lg shadow-lg">
-            <h2 class="mb-4 text-lg font-semibold">Common Conversions</h2>
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <div
-                    v-for="conversion in commonConversions"
-                    :key="conversion.from + conversion.to"
-                    class="p-4 rounded-lg border cursor-pointer hover:bg-gray-50"
-                    @click="applyConversion(conversion)"
+            <!-- Common Conversions -->
+            <BaseCard class="mt-8">
+                <h2
+                    class="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100"
                 >
-                    <div class="font-medium">{{ conversion.label }}</div>
-                    <div class="text-sm text-gray-600">
-                        {{ conversion.from }} → {{ conversion.to }}
+                    Common Conversions
+                </h2>
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <div
+                        v-for="conversion in commonConversions"
+                        :key="conversion.from + conversion.to"
+                        class="p-4 rounded-lg border cursor-pointer hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-700"
+                        @click="applyConversion(conversion)"
+                    >
+                        <div class="font-medium text-gray-900 dark:text-gray-100">
+                            {{ conversion.label }}
+                        </div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">
+                            {{ conversion.from }} → {{ conversion.to }}
+                        </div>
                     </div>
                 </div>
-            </div>
+            </BaseCard>
         </div>
-    </div>
+    </ToolLayout>
 </template>
 
 <script setup>

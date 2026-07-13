@@ -17,13 +17,14 @@ import { Icon } from '@iconify/vue';
 const props = defineProps({
     icon: { type: String, required: true },
     label: { type: String, required: true }, // becomes aria-label — required, not optional
-    variant: { type: String, default: 'ghost' }, // ghost | solid
+    variant: { type: String, default: 'ghost' }, // ghost | solid | danger
     disabled: { type: Boolean, default: false },
 });
 
 const variantClasses = {
     ghost: 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800',
     solid: 'bg-primary-600 text-white hover:bg-primary-700',
+    danger: 'text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30',
 };
 
 const classes = computed(() => [

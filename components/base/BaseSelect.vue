@@ -11,6 +11,7 @@
                 <ListboxButton
                     :id="id"
                     class="flex justify-between items-center px-3 py-2 w-full text-sm text-left text-gray-900 bg-white rounded-lg border border-gray-300 focus:outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+                    v-bind="$attrs"
                 >
                     <span>{{ selectedLabel }}</span>
                     <Icon
@@ -68,6 +69,8 @@ import {
     ListboxOption,
 } from '@headlessui/vue';
 import { Icon } from '@iconify/vue';
+
+defineOptions({ inheritAttrs: false });
 
 const props = defineProps({
     label: { type: String, default: null },

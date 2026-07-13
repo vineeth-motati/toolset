@@ -1,76 +1,78 @@
 <template>
-    <div class="h-[80vh] flex">
-        <!-- Left Panel: Code Editors -->
-        <div class="flex flex-col pr-4 w-1/2 border-r">
-            <!-- Top Bar -->
-            <div class="flex gap-4 mb-4">
-                <button
-                    @click="runCode"
-                    class="px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700"
-                >
-                    Run
-                </button>
-                <button
-                    @click="shareCode"
-                    class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                >
-                    Share Code
-                </button>
+    <ToolLayout fluid>
+        <template #actions>
+            <BaseButton icon="mdi:play" size="sm" @click="runCode">
+                Run
+            </BaseButton>
+            <BaseButton
+                variant="secondary"
+                icon="mdi:share-variant"
+                size="sm"
+                @click="shareCode"
+            >
+                Share Code
+            </BaseButton>
+        </template>
+
+        <div class="h-[80vh] flex">
+            <!-- Left Panel: Code Editors -->
+            <div class="flex flex-col pr-4 w-1/2 border-r dark:border-gray-700">
+                <!-- Editors -->
+                <div class="flex flex-col flex-1 gap-4">
+                    <div class="overflow-hidden relative flex-1 rounded-md border dark:border-gray-700">
+                        <div
+                            class="z-10 px-4 py-2 text-sm font-medium bg-gray-100 border-b border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
+                        >
+                            HTML
+                        </div>
+                        <div
+                            class="absolute inset-x-0 bottom-0 top-[40px] overflow-y-auto"
+                        >
+                            <div ref="htmlEditorContainer" class="h-full"></div>
+                        </div>
+                    </div>
+
+                    <div class="overflow-hidden relative flex-1 rounded-md border dark:border-gray-700">
+                        <div
+                            class="z-10 px-4 py-2 text-sm font-medium bg-gray-100 border-b border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
+                        >
+                            CSS
+                        </div>
+                        <div
+                            class="absolute inset-x-0 bottom-0 top-[40px] overflow-y-auto"
+                        >
+                            <div ref="cssEditorContainer" class="h-full"></div>
+                        </div>
+                    </div>
+
+                    <div class="overflow-hidden relative flex-1 rounded-md border dark:border-gray-700">
+                        <div
+                            class="z-10 px-4 py-2 text-sm font-medium bg-gray-100 border-b border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
+                        >
+                            JavaScript
+                        </div>
+                        <div
+                            class="absolute inset-x-0 bottom-0 top-[40px] overflow-y-auto"
+                        >
+                            <div ref="jsEditorContainer" class="h-full"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Editors -->
-            <div class="flex flex-col flex-1 gap-4">
-                <div class="overflow-hidden relative flex-1 rounded-md border">
-                    <div
-                        class="z-10 px-4 py-2 text-sm font-medium bg-gray-100 border-b border-gray-300"
-                    >
-                        HTML
-                    </div>
-                    <div
-                        class="absolute inset-x-0 bottom-0 top-[40px] overflow-y-auto"
-                    >
-                        <div ref="htmlEditorContainer" class="h-full"></div>
-                    </div>
+            <!-- Right Panel: Preview -->
+            <div class="flex flex-col pl-4 w-1/2 h-[80vh]">
+                <div class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Preview
                 </div>
-
-                <div class="overflow-hidden relative flex-1 rounded-md border">
-                    <div
-                        class="z-10 px-4 py-2 text-sm font-medium bg-gray-100 border-b border-gray-300"
-                    >
-                        CSS
-                    </div>
-                    <div
-                        class="absolute inset-x-0 bottom-0 top-[40px] overflow-y-auto"
-                    >
-                        <div ref="cssEditorContainer" class="h-full"></div>
-                    </div>
-                </div>
-
-                <div class="overflow-hidden relative flex-1 rounded-md border">
-                    <div
-                        class="z-10 px-4 py-2 text-sm font-medium bg-gray-100 border-b border-gray-300"
-                    >
-                        JavaScript
-                    </div>
-                    <div
-                        class="absolute inset-x-0 bottom-0 top-[40px] overflow-y-auto"
-                    >
-                        <div ref="jsEditorContainer" class="h-full"></div>
-                    </div>
-                </div>
+                <iframe
+                    ref="previewFrame"
+                    class="w-full h-full bg-white rounded-md border dark:border-gray-700"
+                    sandbox="allow-scripts allow-same-origin"
+                ></iframe>
             </div>
         </div>
-
-        <!-- Right Panel: Preview -->
-        <div class="flex flex-col pl-4 w-1/2 h-[80vh]">
-            <div class="mb-2 text-sm font-medium">Preview</div>
-            <iframe
-                ref="previewFrame"
-                class="w-full h-full bg-white rounded-md border"
-                sandbox="allow-scripts allow-same-origin"
-            ></iframe>
-        </div>
-    </div>
+    </ToolLayout>
 </template>
 
 <script setup>

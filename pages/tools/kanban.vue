@@ -1,21 +1,18 @@
 <template>
-    <div class="mx-auto max-w-6xl">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold">Kanban Board</h1>
-            <button
-                @click="shareBoard"
-                class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-            >
+    <ToolLayout fluid class="flex flex-col p-4 h-full">
+        <template #actions>
+            <BaseButton icon="mdi:share-variant" size="sm" @click="shareBoard">
                 Share Board
-            </button>
-        </div>
-        <div class="flex overflow-x-auto gap-4 pb-4">
+            </BaseButton>
+        </template>
+
+        <div class="flex overflow-x-auto overflow-y-hidden flex-1 gap-4 pb-4">
             <div
                 v-for="(column, index) in board"
                 :key="index"
-                class="flex-shrink-0 p-4 w-72 bg-gray-100 rounded-lg"
+                class="p-4 w-72 bg-gray-100 rounded-lg shrink-0 dark:bg-gray-800"
             >
-                <h3 class="mb-4 font-semibold">{{ column.title }}</h3>
+                <h3 class="mb-4 font-semibold text-gray-900 dark:text-gray-100">{{ column.title }}</h3>
                 <draggable
                     v-model="column.items"
                     item-key="id"
@@ -25,19 +22,19 @@
                 >
                     <template #item="{ element }">
                         <div
-                            class="p-3 mb-2 bg-white rounded shadow cursor-move"
+                            class="p-3 mb-2 bg-white rounded shadow cursor-move dark:bg-gray-700"
                         >
-                            {{ element.text }}
+                            <span class="text-gray-900 dark:text-gray-100">{{ element.text }}</span>
                             <div class="flex justify-end mt-2">
                                 <button
                                     @click.stop="editTask(index, element)"
-                                    class="mr-2 text-blue-600"
+                                    class="mr-2 text-primary-600 dark:text-primary-400"
                                 >
                                     Edit
                                 </button>
                                 <button
                                     @click.stop="deleteTask(index, element)"
-                                    class="text-red-600"
+                                    class="text-red-600 dark:text-red-400"
                                 >
                                     Delete
                                 </button>
@@ -47,7 +44,7 @@
                 </draggable>
                 <button
                     @click="openNewTaskModal(index)"
-                    class="px-3 py-2 mt-2 w-full text-gray-600 rounded hover:bg-gray-200"
+                    class="px-3 py-2 mt-2 w-full text-gray-600 rounded hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
                 >
                     + Add Task
                 </button>
@@ -60,24 +57,22 @@
             @close="closeModal"
             @confirm="confirmTask"
         >
-            <div class="mt-4">
-                <label class="block text-sm font-medium text-gray-700"
-                    >Task Description</label
-                >
-                <textarea
-                    v-model="newTaskText"
-                    class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    rows="3"
-                ></textarea>
-            </div>
+            <BaseTextarea
+                v-model="newTaskText"
+                label="Task Description"
+                :rows="3"
+            />
         </Modal>
-    </div>
+    </ToolLayout>
 </template>
 
 <script setup>
 import draggable from 'vuedraggable';
 import Modal from '@/components/ui/Modal.vue';
 import { useLocalStorage } from '@vueuse/core';
+
+definePageMeta({ layout: 'fullscreen' });
+
 const { generateShareLink, getSharedData } = useShareLink();
 const toast = useToast();
 

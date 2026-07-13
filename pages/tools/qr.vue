@@ -28,7 +28,7 @@
                 placeholder="https://example.com"
             />
 
-            <div v-if="qrCodeDataUrl" class="flex justify-center mt-6">
+            <div v-if="qrCodeDataUrl" key="qr" class="flex justify-center mt-6">
                 <img
                     :src="qrCodeDataUrl"
                     alt="QR Code"
@@ -37,6 +37,7 @@
             </div>
             <BaseEmptyState
                 v-else
+                key="empty"
                 icon="mdi:qrcode"
                 title="No QR code yet"
                 description="Type a URL or text above to generate one."

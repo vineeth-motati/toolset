@@ -124,7 +124,7 @@
         "description": "Create custom animations with ease",
         "category": "design",
         "keywords": ["css animation", "keyframes", "generator"],
-        "layout": "fullscreen",
+        "layout": "default",
         "popular": false,
         "seo": {
             "title": "CSS Animation Generator — Free Online Tool",
@@ -241,20 +241,6 @@
         "seo": {
             "title": "File Converter — Convert Between Formats Online",
             "description": "Convert files between formats for free, right in your browser."
-        }
-    },
-    {
-        "name": "Redactor",
-        "path": "/tools/redactor",
-        "icon": "mdi:shield-lock",
-        "description": "Automatically detect and redact personal information from images and PDFs",
-        "category": "media",
-        "keywords": ["redact", "pii", "privacy", "pdf", "image"],
-        "layout": "default",
-        "popular": false,
-        "seo": {
-            "title": "PII Redactor — Redact Personal Info from Images & PDFs",
-            "description": "Automatically detect and redact personal information from images and PDFs."
         }
     }
 ]
