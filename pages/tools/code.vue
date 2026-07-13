@@ -78,14 +78,26 @@
 <script setup>
 import ace from 'ace-builds';
 import 'ace-builds/src-noconflict/theme-monokai';
+import 'ace-builds/src-noconflict/theme-chrome';
 import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/mode-html';
 import 'ace-builds/src-noconflict/mode-css';
 import { useLocalStorage } from '@vueuse/core';
 import { debounce } from 'lodash-es';
+import { useTheme } from '@/composables/useTheme';
 
 const { generateShareLink, getSharedData } = useShareLink();
 const toast = useToast();
+const { isDark } = useTheme();
+const aceTheme = computed(() =>
+    isDark.value ? 'ace/theme/monokai' : 'ace/theme/chrome'
+);
+
+watch(aceTheme, (theme) => {
+    Object.values(editors.value).forEach((editor) => {
+        editor?.setTheme(theme);
+    });
+});
 
 const htmlEditorContainer = ref(null);
 const cssEditorContainer = ref(null);
@@ -105,7 +117,7 @@ const setupEditors = () => {
 
         const editor = ace.edit(container, {
             mode: `ace/mode/${language}`,
-            theme: 'ace/theme/monokai',
+            theme: aceTheme.value,
             value: initialValue,
             fontSize: 16,
             showPrintMargin: false,

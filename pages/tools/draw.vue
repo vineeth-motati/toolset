@@ -18,14 +18,23 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { useLocalStorage } from '@vueuse/core';
 import { useToast } from '@/composables/useToast';
 import { useShareLink } from '@/composables/useShareLink';
-
+import { useTheme } from '@/composables/useTheme';
 
 const toast = useToast();
 const { generateShareLink, getSharedData } = useShareLink();
+const { isDark } = useTheme();
+
+const applyTldrawTheme = (editor, dark) => {
+    editor?.user.updateUserPreferences({
+        colorScheme: dark ? 'dark' : 'light',
+    });
+};
+
+watch(isDark, (dark) => applyTldrawTheme(tldrawEditor.value, dark));
 
 // Store for drawing state - only use this for shared data passing
 const drawState = useLocalStorage('draw', {});
@@ -37,6 +46,7 @@ const tldrawEditor = ref(null);
 // Handle the tldraw editor ready event
 const handleDrawReady = (editor) => {
     tldrawEditor.value = editor;
+    applyTldrawTheme(editor, isDark.value);
 };
 
 // Handle changes to the drawing

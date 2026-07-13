@@ -53,7 +53,7 @@
         <!-- Selection Overlay -->
         <div
             v-if="selectionRange"
-            class="absolute bg-blue-100 bg-opacity-20 border-2 border-blue-500 pointer-events-none"
+            class="absolute bg-primary-100 bg-opacity-20 border-2 border-primary-500 pointer-events-none"
             :style="selectionStyle"
         ></div>
     </div>

@@ -86,23 +86,28 @@
 
                 <!-- Right section: theme toggle and search/menu buttons -->
                 <div class="z-10 flex items-center space-x-3">
-                    <!-- Theme toggle with animation -->
-                    <!-- <button
-                        @click="toggleTheme"
-                        class="p-2 text-gray-600 transition-colors duration-200 rounded-full hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-                        aria-label="Toggle theme"
-                    >
-                        <Icon
-                            v-if="isDark"
-                            icon="heroicons:sun"
-                            class="w-5 h-5 transition-transform duration-500"
-                        />
-                        <Icon
-                            v-else
-                            icon="heroicons:moon"
-                            class="w-5 h-5 transition-transform duration-500"
-                        />
-                    </button> -->
+                    <!-- Theme toggle (ClientOnly: icon depends on localStorage) -->
+                    <ClientOnly>
+                        <button
+                            @click="toggleTheme"
+                            class="p-2 text-gray-600 transition-colors duration-200 rounded-full hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                            aria-label="Toggle theme"
+                        >
+                            <Icon
+                                v-if="isDark"
+                                icon="heroicons:sun"
+                                class="w-5 h-5 transition-transform duration-500"
+                            />
+                            <Icon
+                                v-else
+                                icon="heroicons:moon"
+                                class="w-5 h-5 transition-transform duration-500"
+                            />
+                        </button>
+                        <template #fallback>
+                            <span class="inline-block p-2 w-9 h-9"></span>
+                        </template>
+                    </ClientOnly>
 
                     <!-- GitHub link -->
                     <a

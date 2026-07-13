@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-white p-4 rounded-lg shadow">
+    <div class="bg-white p-4 rounded-lg shadow dark:bg-gray-800 dark:text-gray-200">
         <h3 class="text-lg font-medium mb-3">Advanced Filters</h3>
 
         <div class="space-y-4">
@@ -71,7 +71,7 @@
 
                 <button
                     @click="clearFilters"
-                    class="px-3 py-1.5 text-sm text-gray-600 bg-gray-100 rounded hover:bg-gray-200"
+                    class="px-3 py-1.5 text-sm text-gray-600 bg-gray-100 rounded hover:bg-gray-200 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
                     v-if="filters.length > 0"
                 >
                     Clear Filters

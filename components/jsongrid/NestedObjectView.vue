@@ -36,7 +36,7 @@
                             <!-- Nested content when expanded -->
                             <div
                                 v-if="expandedKeys.has(key)"
-                                class="pt-2 pl-2 mt-2 border-t border-l border-gray-200"
+                                class="pt-2 pl-2 mt-2 border-t border-l border-gray-200 dark:border-gray-700"
                             >
                                 <!-- For Arrays - New table-like display -->
                                 <div v-if="isArray(val)" class="nested-grid">
@@ -50,7 +50,7 @@
                                                 class="border-t border-gray-100"
                                             >
                                                 <td
-                                                    class="w-8 px-2 py-1.5 text-gray-500 font-mono bg-gray-50 text-center"
+                                                    class="w-8 px-2 py-1.5 text-gray-500 font-mono bg-gray-50 text-center dark:bg-gray-900/50 dark:text-gray-400"
                                                 >
                                                     {{ index + 1 }}
                                                 </td>
@@ -101,7 +101,7 @@
                                                                     `${key}-${index}`
                                                                 )
                                                             "
-                                                            class="pt-2 pl-2 mt-2 border-t border-l border-gray-200"
+                                                            class="pt-2 pl-2 mt-2 border-t border-l border-gray-200 dark:border-gray-700"
                                                         >
                                                             <NestedObjectView
                                                                 :value="item"
@@ -148,7 +148,7 @@
                                 <!-- For Objects - Enhanced mini-grid display -->
                                 <div v-else class="nested-grid">
                                     <table
-                                        class="w-full text-sm bg-white border-collapse"
+                                        class="w-full text-sm bg-white border-collapse dark:bg-gray-800"
                                     >
                                         <tbody>
                                             <tr
@@ -212,7 +212,7 @@
                                                                     `${key}-${nestedKey}`
                                                                 )
                                                             "
-                                                            class="pt-2 pl-2 mt-2 border-t border-l border-gray-200"
+                                                            class="pt-2 pl-2 mt-2 border-t border-l border-gray-200 dark:border-gray-700"
                                                         >
                                                             <NestedObjectView
                                                                 :value="

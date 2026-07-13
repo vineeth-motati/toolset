@@ -18,9 +18,9 @@
         <div class="flex flex-1 gap-4 overflow-hidden">
             <!-- Tabbed Controls Panel -->
             <div
-                class="flex flex-col w-1/3 min-w-[300px] bg-white rounded-lg shadow"
+                class="flex flex-col w-1/3 min-w-[300px] bg-white rounded-lg shadow dark:bg-gray-800 dark:text-gray-200"
             >
-                <div class="flex border-b">
+                <div class="flex border-b dark:border-gray-700">
                     <button
                         v-for="(tab, index) in tabs"
                         :key="index"
@@ -28,8 +28,8 @@
                         :class="[
                             'px-4 py-2 text-sm font-medium',
                             activeTab === tab.id
-                                ? 'text-indigo-600 border-b-2 border-indigo-600'
-                                : 'text-gray-500 hover:text-gray-700',
+                                ? 'text-primary-600 border-b-2 border-primary-600 dark:text-primary-400 dark:border-primary-400'
+                                : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200',
                         ]"
                     >
                         {{ tab.name }}
@@ -50,7 +50,7 @@
                             >
                             <select
                                 v-model="flexbox.containerStyles.display"
-                                class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:border-gray-600"
                                 @change="
                                     updateContainerStyles({
                                         display:
@@ -76,8 +76,8 @@
                                         'p-2 border rounded flex items-center cursor-pointer align-middle justify-center',
                                         flexbox.containerStyles
                                             .flexDirection === direction
-                                            ? 'bg-indigo-100 border-indigo-500'
-                                            : 'border-gray-300 hover:bg-gray-100',
+                                            ? 'bg-primary-100 border-primary-500 dark:bg-primary-900/50 dark:border-primary-400'
+                                            : 'border-gray-300 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700',
                                     ]"
                                 >
                                     <input
@@ -119,8 +119,8 @@
                                         'p-2 border rounded text-sm cursor-pointer text-center content-center',
                                         flexbox.containerStyles.flexWrap ===
                                         wrap
-                                            ? 'bg-indigo-100 border-indigo-500'
-                                            : 'border-gray-300 hover:bg-gray-100',
+                                            ? 'bg-primary-100 border-primary-500 dark:bg-primary-900/50 dark:border-primary-400'
+                                            : 'border-gray-300 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700',
                                     ]"
                                 >
                                     <input
@@ -152,7 +152,7 @@
                                     v-model="
                                         flexbox.containerStyles.justifyContent
                                     "
-                                    class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:border-gray-600"
                                     @change="
                                         updateContainerStyles({
                                             justifyContent:
@@ -185,7 +185,7 @@
                                 >
                                 <select
                                     v-model="flexbox.containerStyles.alignItems"
-                                    class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:border-gray-600"
                                     @change="
                                         updateContainerStyles({
                                             alignItems:
@@ -213,7 +213,7 @@
                                     v-model="
                                         flexbox.containerStyles.alignContent
                                     "
-                                    class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:border-gray-600"
                                     @change="
                                         updateContainerStyles({
                                             alignContent:
@@ -274,7 +274,7 @@
                                     <input
                                         v-model="selectedItem.content"
                                         type="text"
-                                        class="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        class="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:border-gray-600"
                                         @change="updateSelectedItem"
                                     />
                                 </div>
@@ -334,7 +334,7 @@
                                     >
                                     <select
                                         v-model="selectedItem.styles.flexBasis"
-                                        class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:border-gray-600"
                                         @change="updateSelectedItem"
                                     >
                                         <option value="auto">auto</option>
@@ -353,7 +353,7 @@
                                     >
                                     <select
                                         v-model="selectedItem.styles.alignSelf"
-                                        class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:border-gray-600"
                                         @change="updateSelectedItem"
                                     >
                                         <option value="auto">auto</option>
@@ -463,7 +463,7 @@
             <div class="flex flex-col flex-1 min-w-0">
                 <!-- Preview Area -->
                 <div
-                    class="flex-1 mb-4 overflow-hidden bg-white rounded-lg shadow"
+                    class="flex-1 mb-4 overflow-hidden bg-white rounded-lg shadow dark:bg-gray-800 dark:text-gray-200"
                 >
                     <div class="flex flex-col h-full p-4">
                         <div class="flex items-center justify-between mb-2">
@@ -472,7 +472,7 @@
                                 <button
                                     v-if="selectedItem"
                                     @click="duplicateSelectedItem"
-                                    class="flex items-center px-3 py-1.5 text-sm font-medium text-indigo-700 bg-indigo-100 border border-indigo-300 rounded-md hover:bg-indigo-200 transition-colors"
+                                    class="flex items-center px-3 py-1.5 text-sm font-medium text-primary-700 bg-primary-100 border border-primary-300 rounded-md hover:bg-primary-200 dark:text-primary-300 dark:bg-primary-900/40 dark:border-primary-800 dark:hover:bg-primary-900/60 transition-colors"
                                 >
                                     <Icon
                                         icon="mdi:content-duplicate"
@@ -483,7 +483,7 @@
                                 <button
                                     v-if="selectedItem"
                                     @click="deleteSelectedItem"
-                                    class="flex items-center px-3 py-1.5 text-sm font-medium text-red-700 bg-red-100 border border-red-300 rounded-md hover:bg-red-200 transition-colors"
+                                    class="flex items-center px-3 py-1.5 text-sm font-medium text-red-700 bg-red-100 border border-red-300 rounded-md hover:bg-red-200 dark:text-red-300 dark:bg-red-900/40 dark:border-red-800 dark:hover:bg-red-900/60 transition-colors"
                                 >
                                     <Icon
                                         icon="mdi:delete"
@@ -493,7 +493,7 @@
                                 </button>
                                 <button
                                     @click="addFlexItem"
-                                    class="flex items-center px-3 py-1.5 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition-colors"
+                                    class="flex items-center px-3 py-1.5 text-sm font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700 transition-colors"
                                     title="Add new item"
                                 >
                                     <Icon
@@ -517,8 +517,7 @@
                         </div>
 
                         <div
-                            class="relative flex-1 overflow-auto border border-gray-300 rounded-lg"
-                            style="background-color: #f3f4f6"
+                            class="relative flex-1 overflow-auto bg-gray-100 rounded-lg border border-gray-300 dark:bg-gray-900/50 dark:border-gray-600"
                         >
                             <TransitionGroup
                                 name="flexbox-item"

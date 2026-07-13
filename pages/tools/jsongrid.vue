@@ -10,17 +10,17 @@
         <div class="flex flex-col flex-1 gap-4 overflow-hidden lg:flex-row">
             <!-- Left side - JSON Editor -->
             <div
-                class="flex flex-col h-full overflow-hidden bg-white rounded-lg shadow lg:w-1/2"
+                class="flex flex-col h-full overflow-hidden bg-white rounded-lg shadow lg:w-1/2 dark:bg-gray-800 dark:text-gray-200"
             >
                 <div
-                    class="flex items-center justify-between p-2 border-b bg-gray-50"
+                    class="flex items-center justify-between p-2 border-b bg-gray-50 dark:bg-gray-900/50 dark:border-gray-700"
                 >
                     <div class="flex gap-2">
                         <button
                             v-for="action in editorActions"
                             :key="action.id"
                             @click="handleEditorAction(action.id)"
-                            class="px-3 py-1 text-sm rounded hover:bg-gray-100"
+                            class="px-3 py-1 text-sm rounded hover:bg-gray-100 dark:hover:bg-gray-700"
                             :title="action.name"
                         >
                             <Icon :icon="action.icon" class="inline-block" />
@@ -58,22 +58,22 @@
             <!-- Right side - Grid View -->
             <div
                 :key="renderKey"
-                class="flex flex-col h-full overflow-hidden bg-white rounded-lg shadow lg:w-1/2"
+                class="flex flex-col h-full overflow-hidden bg-white rounded-lg shadow lg:w-1/2 dark:bg-gray-800 dark:text-gray-200"
             >
                 <div
-                    class="flex items-center justify-between p-2 border-b bg-gray-50"
+                    class="flex items-center justify-between p-2 border-b bg-gray-50 dark:bg-gray-900/50 dark:border-gray-700"
                 >
                     <div class="flex gap-2">
                         <input
                             v-model="searchQuery"
                             type="text"
                             placeholder="Search deeply..."
-                            class="px-2 py-1 text-sm border rounded"
+                            class="px-2 py-1 text-sm bg-white rounded border border-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
                             @keyup.enter="applySearch"
                         />
                         <button
                             @click="applySearch"
-                            class="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
+                            class="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                             title="Deep search through all values"
                         >
                             <Icon icon="tabler:search" class="inline-block" />
@@ -82,7 +82,7 @@
                     <div class="flex gap-2">
                         <button
                             @click="expandAll"
-                            class="px-3 py-1 text-sm rounded hover:bg-gray-100"
+                            class="px-3 py-1 text-sm rounded hover:bg-gray-100 dark:hover:bg-gray-700"
                             title="Expand All"
                         >
                             <Icon
@@ -92,7 +92,7 @@
                         </button>
                         <button
                             @click="collapseAll"
-                            class="px-3 py-1 text-sm rounded hover:bg-gray-100"
+                            class="px-3 py-1 text-sm rounded hover:bg-gray-100 dark:hover:bg-gray-700"
                             title="Collapse All"
                         >
                             <Icon
@@ -109,7 +109,7 @@
                     class="flex-1 overflow-auto"
                 >
                     <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="sticky top-0 bg-gray-50">
+                        <thead class="sticky top-0 bg-gray-50 dark:bg-gray-900/50">
                             <tr>
                                 <th
                                     v-for="header in gridHeaders"
@@ -120,7 +120,7 @@
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                             <tr
                                 v-for="(row, rowIndex) in filteredGridData"
                                 :key="rowIndex"
@@ -185,7 +185,7 @@
                                                 class="array-grid"
                                             >
                                                 <table
-                                                    class="w-full text-sm bg-white border-collapse"
+                                                    class="w-full text-sm bg-white border-collapse dark:bg-gray-800"
                                                 >
                                                     <tbody>
                                                         <tr
@@ -196,7 +196,7 @@
                                                             class="border-t border-gray-100"
                                                         >
                                                             <td
-                                                                class="w-8 px-2 py-1.5 text-gray-500 font-mono bg-gray-50 text-center"
+                                                                class="w-8 px-2 py-1.5 text-gray-500 font-mono bg-gray-50 text-center dark:bg-gray-900/50 dark:text-gray-400"
                                                             >
                                                                 {{
                                                                     itemIndex +

@@ -1,76 +1,47 @@
 import { useLocalStorage } from '@vueuse/core';
 import { computed, watch } from 'vue';
 
+// The pre-hydration script in nuxt.config.ts applies the .dark class before
+// first paint (localStorage value, else system preference). This composable
+// only tracks state and user toggles from then on.
 export function useTheme() {
-    // Store theme preference in localStorage with null as initial value to detect first visit
-    const isDarkTheme = useLocalStorage('dark-theme', null);
+    // Explicit serializer: multiple useTheme() instances sync through
+    // storage events, and the default serializer would hand later
+    // instances the raw string "true"/"false" instead of a boolean.
+    const isDarkTheme = useLocalStorage('dark-theme', null, {
+        serializer: {
+            read: (v) => v === 'true',
+            write: (v) => String(v),
+        },
+    });
 
-    // Check if user prefers dark mode at system level
-    const prefersDark = () => {
-        if (process.client) {
-            return window.matchMedia('(prefers-color-scheme: dark)').matches;
-        }
-        return false;
-    };
-
-    // Apply theme to document
-    const applyTheme = () => {
-        if (!process.client) return;
-
-        if (isDarkTheme.value === true) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    };
-
-    // Initialize theme from system preference if not set yet
-    const initTheme = () => {
-        if (!process.client) return;
-
-        // First visit - use system preference
-        if (isDarkTheme.value === null) {
-            isDarkTheme.value = prefersDark();
-        }
-
-        // Apply current theme
-        applyTheme();
-
-        // Listen for system preference changes
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        if (mediaQuery?.addEventListener) {
-            mediaQuery.addEventListener('change', (e) => {
-                // Only update if user hasn't set a preference
-                if (isDarkTheme.value === null) {
-                    isDarkTheme.value = e.matches;
-                }
-            });
-        }
-    };
-
-    // Toggle theme with explicit true/false values
-    const toggleTheme = () => {
-        isDarkTheme.value = !isDarkTheme.value;
-        applyTheme();
-    };
-
-    // Watch for changes and apply them
     if (process.client) {
+        // First visit: adopt whatever the pre-hydration script decided.
+        if (isDarkTheme.value === null) {
+            isDarkTheme.value =
+                document.documentElement.classList.contains('dark');
+        }
+
         watch(
             isDarkTheme,
-            () => {
-                applyTheme();
+            (value) => {
+                document.documentElement.classList.toggle(
+                    'dark',
+                    value === true
+                );
             },
             { immediate: true }
         );
     }
 
-    // Expose computed property for components to use
     const isDark = computed(() => isDarkTheme.value === true);
+
+    const toggleTheme = () => {
+        isDarkTheme.value = !isDark.value;
+    };
 
     return {
         isDark,
         toggleTheme,
-        initTheme,
     };
 }
