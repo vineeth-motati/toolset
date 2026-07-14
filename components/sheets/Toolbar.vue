@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex justify-between items-center p-2 space-x-4 bg-white border-b"
+        class="flex justify-between items-center p-2 space-x-4 bg-white border-b dark:bg-gray-800 dark:border-gray-700"
     >
         <div class="flex items-center space-x-4">
             <!-- Sheet Management -->
@@ -12,41 +12,43 @@
                     :class="[
                         'px-4 py-2  rounded text-sm',
                         activeSheet?.id === sheet.id
-                            ? 'bg-blue-100 text-blue-700'
-                            : 'hover:bg-gray-100',
+                            ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/50 dark:text-primary-300'
+                            : 'hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700',
                     ]"
                 >
                     {{ sheet.name }}
                 </button>
-                <button
+                <BaseIconButton
+                    icon="mdi:plus"
+                    label="Add sheet"
                     @click="$emit('add-sheet')"
-                    class="p-2 rounded hover:bg-gray-100"
-                >
-                    <Icon icon="mdi:plus" class="w-5 h-5" />
-                </button>
+                />
             </div>
 
             <!-- Formatting Tools -->
             <div class="flex items-center space-x-2">
                 <select
                     v-model="fontSize"
-                    class="px-4 py-2 text-sm rounded border"
+                    class="px-4 py-2 text-sm bg-white rounded border border-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
                     @change="updateFormat({ fontSize })"
+                    aria-label="Font size"
                 >
                     <option v-for="size in fontSizes" :key="size" :value="size">
                         {{ size }}px
                     </option>
                 </select>
 
-                <div class="flex rounded border">
+                <div
+                    class="flex rounded border border-gray-300 dark:border-gray-600"
+                >
                     <button
                         v-for="align in alignments"
                         :key="align.value"
                         @click="updateFormat({ align: align.value })"
                         :class="[
-                            'p-2 hover:bg-gray-100',
+                            'p-2 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700',
                             {
-                                'bg-blue-50 ':
+                                'bg-primary-50 dark:bg-primary-900/50':
                                     currentFormat?.align === align.value,
                             },
                         ]"
@@ -56,15 +58,18 @@
                     </button>
                 </div>
 
-                <div class="flex rounded border">
+                <div
+                    class="flex rounded border border-gray-300 dark:border-gray-600"
+                >
                     <button
                         v-for="style in styles"
                         :key="style.value"
                         @click="toggleStyle(style.value)"
                         :class="[
-                            'p-2 hover:bg-gray-100',
+                            'p-2 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700',
                             {
-                                'bg-blue-50 ': currentFormat?.[style.value],
+                                'bg-primary-50 dark:bg-primary-900/50':
+                                    currentFormat?.[style.value],
                             },
                         ]"
                         :title="style.label"
@@ -83,27 +88,32 @@
                     accept=".csv,.xlsx,.xls"
                     @change="handleFileImport"
                 />
-                <button
+                <BaseButton
+                    variant="secondary"
+                    size="sm"
+                    icon="mdi:upload"
                     @click="$refs.fileInput.click()"
-                    class="px-4 py-2 text-sm text-white bg-green-600 rounded hover:bg-green-700"
                 >
                     Import
-                </button>
+                </BaseButton>
                 <Menu as="div" class="relative">
                     <MenuButton
-                        class="px-4 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700"
+                        class="inline-flex gap-1.5 items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-white rounded-lg border border-gray-300 transition-colors duration-150 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-700"
                     >
+                        <Icon icon="mdi:download" class="w-4 h-4" />
                         Export
                     </MenuButton>
                     <MenuItems
-                        class="absolute right-0 z-50 mt-1 w-40 bg-white rounded border shadow-lg"
+                        class="absolute right-0 z-50 mt-1 w-40 bg-white rounded border shadow-lg dark:bg-gray-800 dark:border-gray-700"
                     >
                         <MenuItem v-slot="{ active }">
                             <button
                                 @click="$emit('export-file', 'csv')"
                                 :class="[
-                                    'w-full text-left px-4 py-2 text-sm',
-                                    active ? 'bg-gray-100 ' : '',
+                                    'w-full text-left px-4 py-2 text-sm dark:text-gray-200',
+                                    active
+                                        ? 'bg-gray-100 dark:bg-gray-700'
+                                        : '',
                                 ]"
                             >
                                 Export as CSV
@@ -113,8 +123,10 @@
                             <button
                                 @click="$emit('export-file', 'xlsx')"
                                 :class="[
-                                    'w-full text-left px-4 py-2 text-sm',
-                                    active ? 'bg-gray-100 ' : '',
+                                    'w-full text-left px-4 py-2 text-sm dark:text-gray-200',
+                                    active
+                                        ? 'bg-gray-100 dark:bg-gray-700'
+                                        : '',
                                 ]"
                             >
                                 Export as Excel
@@ -125,12 +137,13 @@
             </div>
         </div>
         <div>
-            <button
+            <BaseButton
+                icon="mdi:share-variant"
+                size="sm"
                 @click="$emit('share-sheet')"
-                class="px-4 py-2 text-white bg-purple-600 rounded-md hover:bg-purple-700"
             >
                 Share Sheet
-            </button>
+            </BaseButton>
         </div>
     </div>
 </template>

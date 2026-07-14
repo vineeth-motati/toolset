@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col h-full">
         <div
-            class="sticky top-0 z-10 flex items-center justify-between mb-2 bg-white"
+            class="sticky top-0 z-10 flex items-center justify-between mb-2 bg-white dark:bg-gray-800"
         >
             <div class="flex justify-between w-full gap-2 py-1">
                 <div class="flex overflow-hidden rounded">
@@ -11,29 +11,19 @@
                         :class="[
                             'px-3 py-1 text-sm',
                             activeCodeType === codeType
-                                ? 'bg-indigo-600 text-white'
-                                : 'bg-gray-200 hover:bg-gray-300',
+                                ? 'bg-primary-600 text-white'
+                                : 'bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600',
                         ]"
                         @click="activeCodeType = codeType"
                     >
                         {{ codeType }}
                     </button>
                 </div>
-                <button
+                <BaseIconButton
+                    :icon="copied ? 'mdi:check' : 'mdi:content-copy'"
+                    :label="copied ? 'Copied!' : 'Copy to clipboard'"
                     @click="copyCode"
-                    :class="[
-                        'px-3 py-1 text-sm rounded',
-                        copied
-                            ? 'bg-green-600 text-white'
-                            : 'bg-gray-200 hover:bg-gray-300',
-                    ]"
-                    :title="copied ? 'Copied!' : 'Copy to clipboard'"
-                >
-                    <Icon
-                        :icon="copied ? 'mdi:check' : 'mdi:content-copy'"
-                        class="w-4 h-4"
-                    />
-                </button>
+                />
             </div>
         </div>
 
@@ -170,7 +160,7 @@ const highlightedCode = computed(() => {
 
 // Methods
 const copyCode = () => {
-    navigator.clipboard.writeText(codeToShow.value);
+    copyText(codeToShow.value);
     copied.value = true;
     setTimeout(() => {
         copied.value = false;

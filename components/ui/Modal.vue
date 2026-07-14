@@ -25,11 +25,11 @@
                         leave-to="opacity-0 scale-95"
                     >
                         <DialogPanel
-                            class="overflow-hidden p-6 w-full max-w-md text-left align-middle bg-white rounded-2xl shadow-xl transition-all transform"
+                            class="overflow-hidden p-6 w-full max-w-md text-left align-middle bg-white rounded-2xl shadow-xl transition-all transform dark:bg-gray-800"
                         >
                             <DialogTitle
                                 as="h3"
-                                class="text-lg font-medium leading-6 text-gray-900"
+                                class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100"
                             >
                                 {{ title }}
                             </DialogTitle>
@@ -39,22 +39,16 @@
                             </div>
 
                             <div class="flex justify-end mt-4 space-x-2">
-                                <button
+                                <BaseButton
                                     v-if="showCancel"
-                                    type="button"
-                                    class="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-md border border-gray-300 hover:bg-gray-50"
+                                    variant="secondary"
                                     @click="close"
                                 >
                                     Cancel
-                                </button>
-                                <button
-                                    v-if="showConfirm"
-                                    type="button"
-                                    class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md border border-transparent hover:bg-blue-700"
-                                    @click="confirm"
-                                >
+                                </BaseButton>
+                                <BaseButton v-if="showConfirm" @click="confirm">
                                     {{ confirmText }}
-                                </button>
+                                </BaseButton>
                             </div>
                         </DialogPanel>
                     </TransitionChild>

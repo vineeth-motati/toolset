@@ -1,5 +1,5 @@
 <template>
-    <ToolLayout fluid class="flex flex-col p-4 h-full">
+    <ToolLayout size="full" class="flex flex-col p-4 h-full">
         <template #actions>
             <BaseButton icon="tabler:share" size="sm" @click="shareJson">
                 Share
@@ -10,21 +10,19 @@
         <div class="flex flex-col flex-1 gap-4 overflow-hidden lg:flex-row">
             <!-- Left side - JSON Editor -->
             <div
-                class="flex flex-col h-full overflow-hidden bg-white rounded-lg shadow lg:w-1/2"
+                class="flex flex-col h-full overflow-hidden bg-white rounded-lg shadow lg:w-1/2 dark:bg-gray-800 dark:text-gray-200"
             >
                 <div
-                    class="flex items-center justify-between p-2 border-b bg-gray-50"
+                    class="flex items-center justify-between p-2 border-b bg-gray-50 dark:bg-gray-900/50 dark:border-gray-700"
                 >
                     <div class="flex gap-2">
-                        <button
+                        <BaseIconButton
                             v-for="action in editorActions"
                             :key="action.id"
+                            :icon="action.icon"
+                            :label="action.name"
                             @click="handleEditorAction(action.id)"
-                            class="px-3 py-1 text-sm rounded hover:bg-gray-100"
-                            :title="action.name"
-                        >
-                            <Icon :icon="action.icon" class="inline-block" />
-                        </button>
+                        />
                     </div>
                     <div class="flex items-center">
                         <div v-if="isValidJson" class="mr-2 text-green-600">
@@ -58,48 +56,36 @@
             <!-- Right side - Grid View -->
             <div
                 :key="renderKey"
-                class="flex flex-col h-full overflow-hidden bg-white rounded-lg shadow lg:w-1/2"
+                class="flex flex-col h-full overflow-hidden bg-white rounded-lg shadow lg:w-1/2 dark:bg-gray-800 dark:text-gray-200"
             >
                 <div
-                    class="flex items-center justify-between p-2 border-b bg-gray-50"
+                    class="flex items-center justify-between p-2 border-b bg-gray-50 dark:bg-gray-900/50 dark:border-gray-700"
                 >
                     <div class="flex gap-2">
                         <input
                             v-model="searchQuery"
                             type="text"
                             placeholder="Search deeply..."
-                            class="px-2 py-1 text-sm border rounded"
+                            class="px-2 py-1 text-sm bg-white rounded border border-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
                             @keyup.enter="applySearch"
                         />
-                        <button
+                        <BaseIconButton
+                            icon="tabler:search"
+                            label="Deep search through all values"
                             @click="applySearch"
-                            class="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
-                            title="Deep search through all values"
-                        >
-                            <Icon icon="tabler:search" class="inline-block" />
-                        </button>
+                        />
                     </div>
                     <div class="flex gap-2">
-                        <button
+                        <BaseIconButton
+                            icon="heroicons:arrows-pointing-out"
+                            label="Expand All"
                             @click="expandAll"
-                            class="px-3 py-1 text-sm rounded hover:bg-gray-100"
-                            title="Expand All"
-                        >
-                            <Icon
-                                icon="heroicons:arrows-pointing-out"
-                                class="inline-block"
-                            />
-                        </button>
-                        <button
+                        />
+                        <BaseIconButton
+                            icon="heroicons:arrows-pointing-in"
+                            label="Collapse All"
                             @click="collapseAll"
-                            class="px-3 py-1 text-sm rounded hover:bg-gray-100"
-                            title="Collapse All"
-                        >
-                            <Icon
-                                icon="heroicons:arrows-pointing-in"
-                                class="inline-block"
-                            />
-                        </button>
+                        />
                     </div>
                 </div>
 
@@ -109,7 +95,7 @@
                     class="flex-1 overflow-auto"
                 >
                     <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="sticky top-0 bg-gray-50">
+                        <thead class="sticky top-0 bg-gray-50 dark:bg-gray-900/50">
                             <tr>
                                 <th
                                     v-for="header in gridHeaders"
@@ -120,7 +106,7 @@
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                             <tr
                                 v-for="(row, rowIndex) in filteredGridData"
                                 :key="rowIndex"
@@ -147,7 +133,7 @@
                                                         `${rowIndex}-${header}`
                                                     )
                                                 "
-                                                class="p-1 mr-1 text-blue-600 rounded hover:bg-blue-100"
+                                                class="p-1 mr-1 text-primary-600 rounded hover:bg-primary-100 dark:text-primary-400 dark:hover:bg-primary-900/40"
                                             >
                                                 <Icon
                                                     :icon="
@@ -185,7 +171,7 @@
                                                 class="array-grid"
                                             >
                                                 <table
-                                                    class="w-full text-sm bg-white border-collapse"
+                                                    class="w-full text-sm bg-white border-collapse dark:bg-gray-800"
                                                 >
                                                     <tbody>
                                                         <tr
@@ -196,7 +182,7 @@
                                                             class="border-t border-gray-100"
                                                         >
                                                             <td
-                                                                class="w-8 px-2 py-1.5 text-gray-500 font-mono bg-gray-50 text-center"
+                                                                class="w-8 px-2 py-1.5 text-gray-500 font-mono bg-gray-50 text-center dark:bg-gray-900/50 dark:text-gray-400"
                                                             >
                                                                 {{
                                                                     itemIndex +
@@ -348,7 +334,6 @@ import 'ace-builds/src-noconflict/theme-monokai';
 import 'ace-builds/src-noconflict/mode-json';
 import { debounce, isObject, isArray, includes, toString } from 'lodash-es';
 
-definePageMeta({ layout: 'fullscreen' });
 
 const toast = useToast();
 const { generateShareLink, getSharedData } = useShareLink();
@@ -640,7 +625,7 @@ function copyJson() {
         return;
     }
 
-    navigator.clipboard.writeText(jsonText.value);
+    copyText(jsonText.value);
     toast.success('Copied to clipboard');
 }
 
@@ -854,8 +839,7 @@ async function shareJson() {
         });
 
         if (link) {
-            navigator.clipboard.writeText(link);
-            toast.success('Share link copied to clipboard!');
+            showShareModal(link);
         } else {
             toast.error('Failed to generate share link');
         }

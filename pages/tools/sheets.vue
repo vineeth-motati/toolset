@@ -1,5 +1,5 @@
 <template>
-    <ToolLayout fluid class="flex flex-col p-4 h-full">
+    <ToolLayout size="full" class="flex flex-col p-4 h-full">
         <div class="flex flex-col flex-1 min-h-0">
             <SheetsToolbar
                 :activeSheet="activeSheet"
@@ -43,7 +43,6 @@ import { useSheetsFormulas } from '@/composables/useSheetsFormulas';
 import Papa from 'papaparse';
 import ExcelJS from 'exceljs';
 
-definePageMeta({ layout: 'fullscreen' });
 
 const toast = useToast();
 const { generateShareLink, getSharedData } = useShareLink();
@@ -299,8 +298,7 @@ const shareSheet = async () => {
         activeSheetId: activeSheetId.value,
     });
     if (link) {
-        navigator.clipboard.writeText(link);
-        toast.success('Share link copied to clipboard!');
+        showShareModal(link);
     } else {
         toast.error('Error generating share link');
     }

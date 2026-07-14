@@ -2,7 +2,9 @@
     <div>
         <div class="relative">
             <div class="overflow-x-auto scrollbar-hidden">
-                <div class="flex min-w-max border-b border-gray-200">
+                <div
+                    class="flex min-w-max border-b border-gray-200 dark:border-gray-700"
+                >
                     <button
                         v-for="(tab, index) in tabs"
                         :key="index"
@@ -10,8 +12,8 @@
                         :class="[
                             'py-2 px-4 text-sm font-medium focus:outline-none',
                             activeTab === index
-                                ? 'border-b-2 border-indigo-500 text-indigo-600'
-                                : 'text-gray-500 hover:text-indigo-600',
+                                ? 'border-b-2 border-primary-500 text-primary-600 dark:text-primary-400'
+                                : 'text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400',
                         ]"
                     >
                         {{ getAnimationLabel(tab) }}
@@ -66,5 +68,9 @@ watch(
 <style>
 .scrollbar-hidden {
     scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.scrollbar-hidden::-webkit-scrollbar {
+    display: none;
 }
 </style>

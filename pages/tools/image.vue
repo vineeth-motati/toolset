@@ -1,5 +1,5 @@
 <template>
-    <ToolLayout fluid>
+    <ToolLayout>
         <div class="mx-auto max-w-4xl">
             <BaseCard>
                 <BaseFormField label="Upload Image">

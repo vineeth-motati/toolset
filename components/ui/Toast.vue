@@ -10,10 +10,13 @@
             class="flex flex-col space-y-4"
         >
             <div
-                v-for="(toast, index) in toasts"
+                v-for="(toast, index) in visibleToasts"
                 :key="toast.id"
-                :style="{ zIndex: toasts.length - index }"
+                role="status"
+                :style="{ zIndex: visibleToasts.length - index }"
                 :class="getToastClasses(toast.type)"
+                @mouseenter="pauseToast(toast.id)"
+                @mouseleave="resumeToast(toast.id)"
             >
                 <div class="flex items-center p-4">
                     <!-- Icon and Message -->
@@ -37,10 +40,15 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import { useToast } from '@/composables/useToast';
 import { Icon } from '@iconify/vue';
 
-const { toasts, removeToast } = useToast();
+const { toasts, removeToast, pauseToast, resumeToast } = useToast();
+
+// Cap the stack; older toasts stay queued and appear as newer ones expire
+const MAX_VISIBLE = 3;
+const visibleToasts = computed(() => toasts.value.slice(0, MAX_VISIBLE));
 
 const getIcon = (type) => {
     switch (type) {

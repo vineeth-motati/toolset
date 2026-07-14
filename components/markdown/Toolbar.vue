@@ -1,14 +1,14 @@
 <template>
-    <div class="flex gap-2 p-2 bg-white border-b">
-        <button
+    <div
+        class="flex gap-2 p-2 bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+    >
+        <BaseIconButton
             v-for="action in actions"
             :key="action.label"
+            :icon="action.icon"
+            :label="action.label"
             @click="emitAction(action)"
-            class="p-2 rounded-lg transition-colors hover:bg-gray-100"
-            :title="action.label"
-        >
-            <Icon :icon="action.icon" class="w-5 h-5" />
-        </button>
+        />
     </div>
 </template>
 

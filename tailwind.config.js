@@ -27,13 +27,6 @@ module.exports = {
             borderRadius: {
                 card: '0.75rem',
             },
-            // Add any theme extensions needed for proper dark mode styling
-            backgroundColor: {
-                dark: '#1f2937',
-            },
-            textColor: {
-                dark: '#f9fafb',
-            },
         },
     },
     plugins: [],

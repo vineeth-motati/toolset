@@ -17,8 +17,9 @@
                     >
                 </NuxtLink>
 
-                <!-- Search Bar - Absolute Positioning for Perfect Centering - Only on lg screens -->
+                <!-- Search Bar — hidden on the homepage, which has its own hero search -->
                 <div
+                    v-if="!isHome"
                     class="absolute z-0 hidden w-full max-w-md transform -translate-x-1/2 -translate-y-1/2 lg:block left-1/2 top-1/2"
                 >
                     <div class="relative">
@@ -26,18 +27,22 @@
                             v-model="searchQuery"
                             type="text"
                             placeholder="Search tools..."
-                            class="w-full py-2 pl-10 pr-4 text-sm border border-gray-200 rounded-full bg-gray-50 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
+                            class="w-full py-2 pl-10 pr-14 text-sm border border-gray-200 rounded-full bg-gray-50 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
                             @focus="isSearchFocused = true"
-                            @blur="
-                                setTimeout(() => {
-                                    isSearchFocused = false;
-                                }, 100)
-                            "
+                            @blur="onSearchBlur"
                         />
                         <Icon
                             icon="heroicons:magnifying-glass"
                             class="absolute left-3 top-2.5 w-4 h-4 text-gray-400"
                         />
+                        <!-- ⌘K hint — opens the command palette -->
+                        <button
+                            class="flex absolute right-2 top-1/2 items-center px-1.5 py-0.5 text-xs text-gray-400 rounded border border-gray-200 -translate-y-1/2 hover:text-gray-600 dark:border-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+                            aria-label="Open command palette"
+                            @click="openPalette"
+                        >
+                            ⌘K
+                        </button>
 
                         <!-- Search Results -->
                         <div
@@ -46,7 +51,7 @@
                                 searchQuery &&
                                 filteredTools.length
                             "
-                            class="absolute left-0 right-0 z-50 mt-1 overflow-hidden overflow-y-auto bg-white border rounded-lg shadow-lg top-full max-h-72 dark:bg-gray-800 dark:border-gray-700"
+                            class="search-dropdown absolute left-0 right-0 z-50 mt-1 overflow-hidden overflow-y-auto bg-white border rounded-lg shadow-lg top-full max-h-72 dark:bg-gray-800 dark:border-gray-700"
                         >
                             <div
                                 v-for="tool in filteredTools"
@@ -86,23 +91,17 @@
 
                 <!-- Right section: theme toggle and search/menu buttons -->
                 <div class="z-10 flex items-center space-x-3">
-                    <!-- Theme toggle with animation -->
-                    <!-- <button
-                        @click="toggleTheme"
-                        class="p-2 text-gray-600 transition-colors duration-200 rounded-full hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-                        aria-label="Toggle theme"
-                    >
-                        <Icon
-                            v-if="isDark"
-                            icon="heroicons:sun"
-                            class="w-5 h-5 transition-transform duration-500"
+                    <!-- Theme toggle (ClientOnly: icon depends on localStorage) -->
+                    <ClientOnly>
+                        <BaseIconButton
+                            :icon="isDark ? 'heroicons:sun' : 'heroicons:moon'"
+                            label="Toggle theme"
+                            @click="toggleTheme"
                         />
-                        <Icon
-                            v-else
-                            icon="heroicons:moon"
-                            class="w-5 h-5 transition-transform duration-500"
-                        />
-                    </button> -->
+                        <template #fallback>
+                            <span class="inline-block p-2 w-9 h-9"></span>
+                        </template>
+                    </ClientOnly>
 
                     <!-- GitHub link -->
                     <a
@@ -118,36 +117,32 @@
                     </a>
 
                     <!-- Mobile search button - now shown on all screens below lg -->
-                    <button
+                    <BaseIconButton
+                        v-if="!isHome"
+                        class="lg:hidden"
+                        icon="heroicons:magnifying-glass"
+                        label="Toggle search"
                         @click="isMobileSearchOpen = !isMobileSearchOpen"
-                        class="p-2 text-gray-600 rounded-full hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 lg:hidden"
-                    >
-                        <Icon
-                            icon="heroicons:magnifying-glass"
-                            class="w-5 h-5"
-                        />
-                    </button>
+                    />
 
                     <!-- Mobile menu button -->
-                    <button
+                    <BaseIconButton
+                        class="lg:hidden"
+                        :icon="
+                            mobileMenuOpen
+                                ? 'heroicons:x-mark'
+                                : 'heroicons:bars-3'
+                        "
+                        label="Toggle menu"
                         @click="mobileMenuOpen = !mobileMenuOpen"
-                        class="p-2 text-gray-600 rounded-md lg:hidden dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                        aria-label="Toggle menu"
-                    >
-                        <Icon
-                            v-if="!mobileMenuOpen"
-                            icon="heroicons:bars-3"
-                            class="w-6 h-6"
-                        />
-                        <Icon v-else icon="heroicons:x-mark" class="w-6 h-6" />
-                    </button>
+                    />
                 </div>
             </div>
         </div>
 
         <!-- Mobile search - now shown on all screens below lg -->
         <div
-            v-if="isMobileSearchOpen"
+            v-if="isMobileSearchOpen && !isHome"
             class="p-3 border-t border-gray-100 lg:hidden dark:border-gray-800 animate-slideDown"
         >
             <div class="relative">
@@ -157,11 +152,7 @@
                     placeholder="Search tools..."
                     class="w-full py-2 pl-10 pr-4 text-sm border border-gray-200 rounded-full bg-gray-50 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
                     @focus="isSearchFocused = true"
-                    @blur="
-                        setTimeout(() => {
-                            isSearchFocused = false;
-                        }, 100)
-                    "
+                    @blur="onSearchBlur"
                 />
                 <Icon
                     icon="heroicons:magnifying-glass"
@@ -173,7 +164,7 @@
                     v-if="
                         isSearchFocused && searchQuery && filteredTools.length
                     "
-                    class="absolute left-0 right-0 z-50 mt-1 overflow-hidden overflow-y-auto bg-white border rounded-lg shadow-lg top-full max-h-60 dark:bg-gray-800 dark:border-gray-700"
+                    class="search-dropdown absolute left-0 right-0 z-50 mt-1 overflow-hidden overflow-y-auto bg-white border rounded-lg shadow-lg top-full max-h-60 dark:bg-gray-800 dark:border-gray-700"
                 >
                     <div
                         v-for="tool in filteredTools"
@@ -220,15 +211,20 @@
             class="absolute w-full bg-white border-b border-gray-200 shadow-lg lg:hidden dark:bg-gray-900 dark:border-gray-800 animate-slideDown"
         >
             <nav class="container px-6 pt-2 pb-4 max-h-[80vh] overflow-auto">
-                <div class="mt-2 mb-4">
+                <!-- Full categorized tool list, driven by tools.json -->
+                <div
+                    v-for="category in categoryList"
+                    :key="category.key"
+                    class="mt-2 mb-4"
+                >
                     <div
                         class="mb-2 text-sm font-medium text-gray-500 dark:text-gray-400"
                     >
-                        Popular Tools
+                        {{ category.label }}
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <NuxtLink
-                            v-for="tool in popularTools"
+                            v-for="tool in category.items"
                             :key="tool.path"
                             :to="tool.path"
                             class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
@@ -252,6 +248,10 @@ import { ref, computed } from 'vue';
 import { Icon } from '@iconify/vue';
 import { useTheme } from '@/composables/useTheme';
 import { useTools } from '@/composables/useTools';
+import { useCommandPalette } from '@/composables/useCommandPalette';
+
+const route = useRoute();
+const isHome = computed(() => route.path === '/');
 
 const mobileMenuOpen = ref(false);
 const isMobileSearchOpen = ref(false);
@@ -261,11 +261,20 @@ const searchQuery = ref('');
 // Use the theme composable - make sure we're using these variables in the template
 const { isDark, toggleTheme } = useTheme();
 
-// Tools data + search/popular derived from data/tools.json (single source of truth)
-const { search, popular } = useTools();
+const { open: openPalette } = useCommandPalette();
 
-// Popular tools for mobile menu — driven by each tool's `popular` flag
-const popularTools = popular();
+// Delay lets result-link clicks land before the dropdown unmounts
+const onSearchBlur = () => {
+    setTimeout(() => {
+        isSearchFocused.value = false;
+    }, 100);
+};
+
+// Tools data + search/popular derived from data/tools.json (single source of truth)
+const { search, categories } = useTools();
+
+// Mobile menu: full categorized tool list from tools.json
+const categoryList = categories();
 
 // Filter tools based on search query
 const filteredTools = computed(() => search(searchQuery.value));
@@ -294,14 +303,12 @@ const filteredTools = computed(() => search(searchQuery.value));
     overflow: hidden;
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
-::-webkit-scrollbar {
-    display: none;
+/* Hide the scrollbar inside the search-result dropdowns only */
+.search-dropdown {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
-
-/* Hide scrollbar for IE, Edge and Firefox */
-.search-result {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+.search-dropdown::-webkit-scrollbar {
+    display: none;
 }
 </style>

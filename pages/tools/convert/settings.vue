@@ -1,21 +1,18 @@
 <template>
-    <div class="h-[85vh] flex flex-col">
-        <div class="flex items-center mb-4">
+    <ToolLayout
+        title="Converter Settings"
+        description="Manage API keys and conversion preferences"
+        icon="tabler:settings"
+    >
+        <template #leading>
             <BaseIconButton
                 icon="tabler:arrow-left"
                 label="Back to converters"
                 @click="goBack"
-                class="mr-3"
             />
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Converter Settings</h1>
-                <p class="text-gray-600 dark:text-gray-400">
-                    Manage API keys and conversion preferences
-                </p>
-            </div>
-        </div>
+        </template>
 
-        <div class="overflow-auto flex-1">
+        <div>
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
                 <!-- Left sidebar with settings navigation -->
                 <div class="col-span-1">
@@ -72,7 +69,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </ToolLayout>
 </template>
 
 <script setup>

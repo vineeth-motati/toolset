@@ -1,5 +1,5 @@
 <template>
-    <ToolLayout fluid>
+    <ToolLayout>
         <template #actions>
             <BaseButton
                 variant="secondary"
@@ -503,7 +503,7 @@ const jumpToTimestamp = (seconds) => {
     }
 };
 
-const copyTranscript = () => {
+const copyTranscript = async () => {
     // Create a formatted transcript
     const formattedTranscript = transcriptorState.value.transcript
         .map((segment) => {
@@ -513,47 +513,10 @@ const copyTranscript = () => {
         })
         .join('\n');
 
-    // Try using the Clipboard API if available
-    if (navigator && navigator.clipboard) {
-        navigator.clipboard
-            .writeText(formattedTranscript)
-            .then(() => {
-                toast.success('Transcript copied to clipboard');
-            })
-            .catch((err) => {
-                console.error('Clipboard API failed:', err);
-                fallbackCopyToClipboard(formattedTranscript);
-            });
+    if (await copyText(formattedTranscript)) {
+        toast.success('Transcript copied to clipboard');
     } else {
-        // Fallback for browsers without Clipboard API support
-        fallbackCopyToClipboard(formattedTranscript);
-    }
-};
-
-// Fallback method using document.execCommand
-const fallbackCopyToClipboard = (text) => {
-    try {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        // Make the textarea out of viewport
-        textarea.style.position = 'fixed';
-        textarea.style.left = '-999999px';
-        textarea.style.top = '-999999px';
-        document.body.appendChild(textarea);
-        textarea.focus();
-        textarea.select();
-
-        const successful = document.execCommand('copy');
-        document.body.removeChild(textarea);
-
-        if (successful) {
-            toast.success('Transcript copied to clipboard');
-        } else {
-            toast.error('Unable to copy transcript');
-        }
-    } catch (err) {
-        console.error('Fallback clipboard copy failed:', err);
-        toast.error('Failed to copy transcript. Please try another method.');
+        toast.error('Unable to copy transcript');
     }
 };
 
@@ -838,20 +801,7 @@ const shareTranscript = async () => {
         );
 
         if (link) {
-            // Use the same clipboard handling pattern as in the copyTranscript function
-            if (navigator && navigator.clipboard) {
-                navigator.clipboard
-                    .writeText(link)
-                    .then(() => {
-                        toast.success('Share link copied to clipboard!');
-                    })
-                    .catch((err) => {
-                        console.error('Clipboard API failed:', err);
-                        fallbackCopyToClipboard(link);
-                    });
-            } else {
-                fallbackCopyToClipboard(link);
-            }
+            showShareModal(link);
         } else {
             toast.error('Failed to generate share link');
         }

@@ -20,7 +20,7 @@
                         />
                         <button
                             @click="testConverter"
-                            class="px-4 py-2 text-white bg-blue-600 rounded-r-md hover:bg-blue-700"
+                            class="px-4 py-2 text-white bg-primary-600 rounded-r-md hover:bg-primary-700"
                         >
                             Test
                         </button>
@@ -74,7 +74,7 @@
                         />
                         <button
                             @click="findConverterByApiType"
-                            class="px-4 py-2 text-white bg-blue-600 rounded-r-md hover:bg-blue-700"
+                            class="px-4 py-2 text-white bg-primary-600 rounded-r-md hover:bg-primary-700"
                         >
                             Find
                         </button>

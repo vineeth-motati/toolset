@@ -1,5 +1,5 @@
 <template>
-    <ToolLayout>
+    <ToolLayout size="narrow">
         <template #actions>
             <BaseButton
                 v-if="qrCodeDataUrl"
@@ -74,8 +74,7 @@ onMounted(async () => {
 const shareQRCode = async () => {
     const link = await generateShareLink('/tools/qr', { qrCode: text.value });
     if (link) {
-        navigator.clipboard.writeText(link);
-        toast.success('Share link copied to clipboard!');
+        showShareModal(link);
     } else {
         toast.error('Failed to generate share link');
     }

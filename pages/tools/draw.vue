@@ -1,5 +1,5 @@
 <template>
-    <ToolLayout fluid class="flex flex-col p-4 h-full">
+    <ToolLayout size="full" class="flex flex-col p-4 h-full">
         <template #actions>
             <BaseButton icon="tabler:share" size="sm" @click="shareDraw">
                 Share
@@ -18,15 +18,23 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { useLocalStorage } from '@vueuse/core';
 import { useToast } from '@/composables/useToast';
 import { useShareLink } from '@/composables/useShareLink';
-
-definePageMeta({ layout: 'fullscreen' });
+import { useTheme } from '@/composables/useTheme';
 
 const toast = useToast();
 const { generateShareLink, getSharedData } = useShareLink();
+const { isDark } = useTheme();
+
+const applyTldrawTheme = (editor, dark) => {
+    editor?.user.updateUserPreferences({
+        colorScheme: dark ? 'dark' : 'light',
+    });
+};
+
+watch(isDark, (dark) => applyTldrawTheme(tldrawEditor.value, dark));
 
 // Store for drawing state - only use this for shared data passing
 const drawState = useLocalStorage('draw', {});
@@ -38,6 +46,7 @@ const tldrawEditor = ref(null);
 // Handle the tldraw editor ready event
 const handleDrawReady = (editor) => {
     tldrawEditor.value = editor;
+    applyTldrawTheme(editor, isDark.value);
 };
 
 // Handle changes to the drawing
@@ -64,8 +73,7 @@ const shareDraw = async () => {
         });
 
         if (link) {
-            await navigator.clipboard.writeText(link);
-            toast.success('Share link copied to clipboard!');
+            await showShareModal(link);
         } else {
             toast.error('Failed to generate share link');
         }

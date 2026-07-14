@@ -1,41 +1,31 @@
 <template>
-    <div class="h-[85vh] flex flex-col">
-        <div class="flex justify-between items-center mb-4">
-            <div class="flex items-center">
-                <BaseIconButton
-                    icon="tabler:arrow-left"
-                    label="Back to converters"
-                    @click="goBack"
-                    class="mr-3"
-                />
-                <div v-if="currentConverter">
-                    <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                        {{ currentConverter.title }}
-                    </h1>
-                    <p class="text-gray-600 dark:text-gray-400">
-                        {{ currentConverter.description }}
-                    </p>
-                </div>
-                <div v-else>
-                    <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Converter Not Found</h1>
-                    <p class="text-gray-600 dark:text-gray-400">
-                        The requested converter could not be found
-                    </p>
-                </div>
-            </div>
-            <div class="flex gap-2" v-if="currentConverter">
-                <BaseButton
-                    variant="secondary"
-                    icon="tabler:settings"
-                    size="sm"
-                    @click="navigateToSettings"
-                >
-                    Settings
-                </BaseButton>
-            </div>
-        </div>
+    <ToolLayout
+        :title="currentConverter?.title || 'Converter Not Found'"
+        :description="
+            currentConverter?.description ||
+            'The requested converter could not be found'
+        "
+        :icon="currentConverter?.sourceIcon"
+    >
+        <template #leading>
+            <BaseIconButton
+                icon="tabler:arrow-left"
+                label="Back to converters"
+                @click="goBack"
+            />
+        </template>
+        <template v-if="currentConverter" #actions>
+            <BaseButton
+                variant="secondary"
+                icon="tabler:settings"
+                size="sm"
+                @click="navigateToSettings"
+            >
+                Settings
+            </BaseButton>
+        </template>
 
-        <div v-if="currentConverter" class="overflow-auto flex-1">
+        <div v-if="currentConverter">
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
                 <!-- Left sidebar with related converters -->
                 <div class="col-span-1">
@@ -134,8 +124,10 @@
             </div>
         </div>
 
-        <div v-else class="flex flex-col flex-1 justify-center items-center">
-            <p class="text-xl text-gray-500 dark:text-gray-400">Converter not found</p>
+        <div v-else class="flex flex-col justify-center items-center py-24">
+            <p class="text-xl text-gray-500 dark:text-gray-400">
+                Converter not found
+            </p>
             <p class="text-gray-500 dark:text-gray-400">
                 Path: {{ `/tools/convert/${converterType}` }}
             </p>
@@ -143,7 +135,7 @@
                 Back to converters
             </BaseButton>
         </div>
-    </div>
+    </ToolLayout>
 </template>
 
 <script setup>

@@ -1,6 +1,6 @@
 <template>
     <td
-        :class="['border  min-w-[100px] relative', { 'bg-blue-50 ': isActive }]"
+        :class="['border  min-w-[100px] relative', { 'bg-primary-50 dark:bg-primary-900/40': isActive }]"
         @click="$emit('cell-click', { row, col })"
         @mousedown="$emit('selection-start', { row, col })"
         @mouseenter="$emit('selection-move', { row, col })"

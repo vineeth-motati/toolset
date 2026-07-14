@@ -19,16 +19,20 @@
                                     v-for="(preset, index) in filteredPresets"
                                     :key="index"
                                     @click="applyPreset(preset)"
-                                    class="p-4 rounded-lg border border-gray-200 transition-shadow cursor-pointer hover:shadow-lg"
+                                    class="p-4 rounded-lg border border-gray-200 transition-shadow cursor-pointer hover:shadow-lg dark:border-gray-700 dark:hover:shadow-gray-900/50"
                                 >
-                                    <h4 class="mb-2 font-semibold text-md">
+                                    <h4
+                                        class="mb-2 font-semibold text-md text-gray-900 dark:text-gray-100"
+                                    >
                                         {{
                                             getAnimationLabel(
                                                 preset.animationName
                                             )
                                         }}
                                     </h4>
-                                    <p class="text-sm text-gray-600">
+                                    <p
+                                        class="text-sm text-gray-600 dark:text-gray-400"
+                                    >
                                         Duration: {{ preset.duration }}s,
                                         Timing: {{ preset.timingFunction }}
                                     </p>
