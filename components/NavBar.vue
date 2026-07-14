@@ -50,7 +50,7 @@
                                 searchQuery &&
                                 filteredTools.length
                             "
-                            class="absolute left-0 right-0 z-50 mt-1 overflow-hidden overflow-y-auto bg-white border rounded-lg shadow-lg top-full max-h-72 dark:bg-gray-800 dark:border-gray-700"
+                            class="search-dropdown absolute left-0 right-0 z-50 mt-1 overflow-hidden overflow-y-auto bg-white border rounded-lg shadow-lg top-full max-h-72 dark:bg-gray-800 dark:border-gray-700"
                         >
                             <div
                                 v-for="tool in filteredTools"
@@ -130,6 +130,7 @@
                     <button
                         @click="isMobileSearchOpen = !isMobileSearchOpen"
                         class="p-2 text-gray-600 rounded-full hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 lg:hidden"
+                        aria-label="Toggle search"
                     >
                         <Icon
                             icon="heroicons:magnifying-glass"
@@ -178,7 +179,7 @@
                     v-if="
                         isSearchFocused && searchQuery && filteredTools.length
                     "
-                    class="absolute left-0 right-0 z-50 mt-1 overflow-hidden overflow-y-auto bg-white border rounded-lg shadow-lg top-full max-h-60 dark:bg-gray-800 dark:border-gray-700"
+                    class="search-dropdown absolute left-0 right-0 z-50 mt-1 overflow-hidden overflow-y-auto bg-white border rounded-lg shadow-lg top-full max-h-60 dark:bg-gray-800 dark:border-gray-700"
                 >
                     <div
                         v-for="tool in filteredTools"
@@ -225,15 +226,20 @@
             class="absolute w-full bg-white border-b border-gray-200 shadow-lg lg:hidden dark:bg-gray-900 dark:border-gray-800 animate-slideDown"
         >
             <nav class="container px-6 pt-2 pb-4 max-h-[80vh] overflow-auto">
-                <div class="mt-2 mb-4">
+                <!-- Full categorized tool list, driven by tools.json -->
+                <div
+                    v-for="category in categoryList"
+                    :key="category.key"
+                    class="mt-2 mb-4"
+                >
                     <div
                         class="mb-2 text-sm font-medium text-gray-500 dark:text-gray-400"
                     >
-                        Popular Tools
+                        {{ category.label }}
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <NuxtLink
-                            v-for="tool in popularTools"
+                            v-for="tool in category.items"
                             :key="tool.path"
                             :to="tool.path"
                             class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
@@ -277,10 +283,10 @@ const onSearchBlur = () => {
 };
 
 // Tools data + search/popular derived from data/tools.json (single source of truth)
-const { search, popular } = useTools();
+const { search, categories } = useTools();
 
-// Popular tools for mobile menu — driven by each tool's `popular` flag
-const popularTools = popular();
+// Mobile menu: full categorized tool list from tools.json
+const categoryList = categories();
 
 // Filter tools based on search query
 const filteredTools = computed(() => search(searchQuery.value));
@@ -309,14 +315,12 @@ const filteredTools = computed(() => search(searchQuery.value));
     overflow: hidden;
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
-::-webkit-scrollbar {
-    display: none;
+/* Hide the scrollbar inside the search-result dropdowns only */
+.search-dropdown {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
-
-/* Hide scrollbar for IE, Edge and Firefox */
-.search-result {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+.search-dropdown::-webkit-scrollbar {
+    display: none;
 }
 </style>

@@ -290,8 +290,7 @@ const shareJson = async () => {
             json: json,
         });
         if (link) {
-            navigator.clipboard.writeText(link);
-            toast.success('Share link copied to clipboard!');
+            showShareModal(link);
         } else {
             toast.error('Failed to generate share link');
         }
@@ -381,7 +380,7 @@ function handleAction(action) {
             break;
 
         case 'copy':
-            navigator.clipboard.writeText(jsonText.value);
+            copyText(jsonText.value);
             toast.success('Copied to clipboard');
             break;
 

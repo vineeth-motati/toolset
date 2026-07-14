@@ -643,7 +643,7 @@ const playAnimation = () => {
 
 // Copy Code Method
 const copyCode = () => {
-    navigator.clipboard.writeText(generatedCSS.value);
+    copyText(generatedCSS.value);
     toast.success('CSS copied to clipboard!');
 };
 
@@ -651,8 +651,7 @@ const copyCode = () => {
 const shareAnimation = async () => {
     const link = await generateShareLink('/tools/animation', animation.value);
     if (link) {
-        navigator.clipboard.writeText(link);
-        toast.success('Share link copied to clipboard!');
+        showShareModal(link);
     } else {
         console.error('Failed to generate share link.');
         toast.error('Failed to generate share link.');

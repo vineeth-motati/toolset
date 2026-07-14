@@ -298,8 +298,7 @@ const shareSheet = async () => {
         activeSheetId: activeSheetId.value,
     });
     if (link) {
-        navigator.clipboard.writeText(link);
-        toast.success('Share link copied to clipboard!');
+        showShareModal(link);
     } else {
         toast.error('Error generating share link');
     }

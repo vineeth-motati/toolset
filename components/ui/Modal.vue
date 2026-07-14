@@ -25,11 +25,11 @@
                         leave-to="opacity-0 scale-95"
                     >
                         <DialogPanel
-                            class="overflow-hidden p-6 w-full max-w-md text-left align-middle bg-white rounded-2xl shadow-xl transition-all transform"
+                            class="overflow-hidden p-6 w-full max-w-md text-left align-middle bg-white rounded-2xl shadow-xl transition-all transform dark:bg-gray-800"
                         >
                             <DialogTitle
                                 as="h3"
-                                class="text-lg font-medium leading-6 text-gray-900"
+                                class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100"
                             >
                                 {{ title }}
                             </DialogTitle>
@@ -42,7 +42,7 @@
                                 <button
                                     v-if="showCancel"
                                     type="button"
-                                    class="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-md border border-gray-300 hover:bg-gray-50"
+                                    class="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-md border border-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700"
                                     @click="close"
                                 >
                                     Cancel
@@ -50,7 +50,7 @@
                                 <button
                                     v-if="showConfirm"
                                     type="button"
-                                    class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md border border-transparent hover:bg-blue-700"
+                                    class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-md border border-transparent hover:bg-primary-700"
                                     @click="confirm"
                                 >
                                     {{ confirmText }}

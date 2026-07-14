@@ -68,5 +68,9 @@ watch(
 <style>
 .scrollbar-hidden {
     scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.scrollbar-hidden::-webkit-scrollbar {
+    display: none;
 }
 </style>

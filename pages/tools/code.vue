@@ -194,8 +194,7 @@ onMounted(async () => {
 const shareCode = async () => {
     const link = await generateShareLink('/tools/code', { code: code.value });
     if (link) {
-        navigator.clipboard.writeText(link);
-        toast.success('Share link copied to clipboard!');
+        showShareModal(link);
     } else {
         console.error('Failed to generate share link.');
         toast.error('Failed to generate share link.');

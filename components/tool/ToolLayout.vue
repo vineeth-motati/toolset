@@ -46,6 +46,8 @@ const sizeClasses = {
 const { currentTool } = useTools();
 const tool = currentTool();
 
+useToolMeta(tool);
+
 const { recordUsage } = useToolUsage();
 onMounted(() => {
     if (tool) recordUsage(tool.path);

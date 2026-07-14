@@ -1,1 +1,4 @@
+User-agent: *
+Allow: /
 
+Sitemap: https://tools-set.vercel.app/sitemap.xml

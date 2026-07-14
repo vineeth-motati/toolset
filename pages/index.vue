@@ -125,6 +125,12 @@ import { useToolUsage } from '@/composables/useToolUsage';
 const { byPath, categories, search } = useTools();
 const { recents, favorites } = useToolUsage();
 
+useSeoMeta({
+    title: 'Tools-Set — Free, Private, In-Browser Tools',
+    description:
+        'A collection of free online tools — JSON formatter, Kanban board, QR generator, converters and more. Runs entirely in your browser.',
+});
+
 const query = ref('');
 const results = computed(() => search(query.value));
 const categoryList = categories();

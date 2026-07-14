@@ -170,7 +170,7 @@ const highlightedCode = computed(() => {
 
 // Methods
 const copyCode = () => {
-    navigator.clipboard.writeText(codeToShow.value);
+    copyText(codeToShow.value);
     copied.value = true;
     setTimeout(() => {
         copied.value = false;

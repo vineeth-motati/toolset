@@ -167,8 +167,7 @@ async function shareNote() {
             note: { ...currentNote.value },
         });
         if (link) {
-            await navigator.clipboard.writeText(link);
-            toast.success('Share link copied to clipboard!');
+            await showShareModal(link);
         } else {
             toast.error('Failed to generate share link.');
         }
