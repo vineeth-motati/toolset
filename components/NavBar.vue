@@ -17,8 +17,9 @@
                     >
                 </NuxtLink>
 
-                <!-- Search Bar - Absolute Positioning for Perfect Centering - Only on lg screens -->
+                <!-- Search Bar — hidden on the homepage, which has its own hero search -->
                 <div
+                    v-if="!isHome"
                     class="absolute z-0 hidden w-full max-w-md transform -translate-x-1/2 -translate-y-1/2 lg:block left-1/2 top-1/2"
                 >
                     <div class="relative">
@@ -92,22 +93,11 @@
                 <div class="z-10 flex items-center space-x-3">
                     <!-- Theme toggle (ClientOnly: icon depends on localStorage) -->
                     <ClientOnly>
-                        <button
+                        <BaseIconButton
+                            :icon="isDark ? 'heroicons:sun' : 'heroicons:moon'"
+                            label="Toggle theme"
                             @click="toggleTheme"
-                            class="p-2 text-gray-600 transition-colors duration-200 rounded-full hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-                            aria-label="Toggle theme"
-                        >
-                            <Icon
-                                v-if="isDark"
-                                icon="heroicons:sun"
-                                class="w-5 h-5 transition-transform duration-500"
-                            />
-                            <Icon
-                                v-else
-                                icon="heroicons:moon"
-                                class="w-5 h-5 transition-transform duration-500"
-                            />
-                        </button>
+                        />
                         <template #fallback>
                             <span class="inline-block p-2 w-9 h-9"></span>
                         </template>
@@ -127,37 +117,32 @@
                     </a>
 
                     <!-- Mobile search button - now shown on all screens below lg -->
-                    <button
+                    <BaseIconButton
+                        v-if="!isHome"
+                        class="lg:hidden"
+                        icon="heroicons:magnifying-glass"
+                        label="Toggle search"
                         @click="isMobileSearchOpen = !isMobileSearchOpen"
-                        class="p-2 text-gray-600 rounded-full hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 lg:hidden"
-                        aria-label="Toggle search"
-                    >
-                        <Icon
-                            icon="heroicons:magnifying-glass"
-                            class="w-5 h-5"
-                        />
-                    </button>
+                    />
 
                     <!-- Mobile menu button -->
-                    <button
+                    <BaseIconButton
+                        class="lg:hidden"
+                        :icon="
+                            mobileMenuOpen
+                                ? 'heroicons:x-mark'
+                                : 'heroicons:bars-3'
+                        "
+                        label="Toggle menu"
                         @click="mobileMenuOpen = !mobileMenuOpen"
-                        class="p-2 text-gray-600 rounded-md lg:hidden dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                        aria-label="Toggle menu"
-                    >
-                        <Icon
-                            v-if="!mobileMenuOpen"
-                            icon="heroicons:bars-3"
-                            class="w-6 h-6"
-                        />
-                        <Icon v-else icon="heroicons:x-mark" class="w-6 h-6" />
-                    </button>
+                    />
                 </div>
             </div>
         </div>
 
         <!-- Mobile search - now shown on all screens below lg -->
         <div
-            v-if="isMobileSearchOpen"
+            v-if="isMobileSearchOpen && !isHome"
             class="p-3 border-t border-gray-100 lg:hidden dark:border-gray-800 animate-slideDown"
         >
             <div class="relative">
@@ -264,6 +249,9 @@ import { Icon } from '@iconify/vue';
 import { useTheme } from '@/composables/useTheme';
 import { useTools } from '@/composables/useTools';
 import { useCommandPalette } from '@/composables/useCommandPalette';
+
+const route = useRoute();
+const isHome = computed(() => route.path === '/');
 
 const mobileMenuOpen = ref(false);
 const isMobileSearchOpen = ref(false);

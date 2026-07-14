@@ -15,7 +15,7 @@
                             <div class="flex items-center">
                                 <button
                                     @click="toggleExpand(key)"
-                                    class="p-1 mr-1 text-blue-600 rounded hover:bg-blue-100"
+                                    class="p-1 mr-1 text-primary-600 rounded hover:bg-primary-100 dark:text-primary-400 dark:hover:bg-primary-900/40"
                                 >
                                     <Icon
                                         :icon="
@@ -70,7 +70,7 @@
                                                                         `${key}-${index}`
                                                                     )
                                                                 "
-                                                                class="p-1 mr-1 text-blue-600 rounded hover:bg-blue-100"
+                                                                class="p-1 mr-1 text-primary-600 rounded hover:bg-primary-100 dark:text-primary-400 dark:hover:bg-primary-900/40"
                                                             >
                                                                 <Icon
                                                                     :icon="
@@ -181,7 +181,7 @@
                                                                         `${key}-${nestedKey}`
                                                                     )
                                                                 "
-                                                                class="p-1 mr-1 text-blue-600 rounded hover:bg-blue-100"
+                                                                class="p-1 mr-1 text-primary-600 rounded hover:bg-primary-100 dark:text-primary-400 dark:hover:bg-primary-900/40"
                                                             >
                                                                 <Icon
                                                                     :icon="

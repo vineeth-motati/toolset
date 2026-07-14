@@ -21,6 +21,7 @@
                     placeholder="Search tools…"
                     class="py-3 pr-4 pl-12 w-full text-sm bg-white rounded-full border border-gray-200 shadow-sm focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
                     aria-label="Search tools"
+                    @keydown.enter="openFirstResult"
                 />
             </div>
         </section>
@@ -134,6 +135,11 @@ useSeoMeta({
 const query = ref('');
 const results = computed(() => search(query.value));
 const categoryList = categories();
+
+const router = useRouter();
+const openFirstResult = () => {
+    if (results.value.length) router.push(results.value[0].path);
+};
 
 const recentTools = computed(() =>
     recents.value.map((r) => byPath(r.path)).filter(Boolean)

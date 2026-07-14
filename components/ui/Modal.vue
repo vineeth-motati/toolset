@@ -39,22 +39,16 @@
                             </div>
 
                             <div class="flex justify-end mt-4 space-x-2">
-                                <button
+                                <BaseButton
                                     v-if="showCancel"
-                                    type="button"
-                                    class="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-md border border-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700"
+                                    variant="secondary"
                                     @click="close"
                                 >
                                     Cancel
-                                </button>
-                                <button
-                                    v-if="showConfirm"
-                                    type="button"
-                                    class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-md border border-transparent hover:bg-primary-700"
-                                    @click="confirm"
-                                >
+                                </BaseButton>
+                                <BaseButton v-if="showConfirm" @click="confirm">
                                     {{ confirmText }}
-                                </button>
+                                </BaseButton>
                             </div>
                         </DialogPanel>
                     </TransitionChild>

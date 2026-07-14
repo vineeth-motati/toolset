@@ -16,15 +16,13 @@
                     class="flex items-center justify-between p-2 border-b bg-gray-50 dark:bg-gray-900/50 dark:border-gray-700"
                 >
                     <div class="flex gap-2">
-                        <button
+                        <BaseIconButton
                             v-for="action in editorActions"
                             :key="action.id"
+                            :icon="action.icon"
+                            :label="action.name"
                             @click="handleEditorAction(action.id)"
-                            class="px-3 py-1 text-sm rounded hover:bg-gray-100 dark:hover:bg-gray-700"
-                            :title="action.name"
-                        >
-                            <Icon :icon="action.icon" class="inline-block" />
-                        </button>
+                        />
                     </div>
                     <div class="flex items-center">
                         <div v-if="isValidJson" class="mr-2 text-green-600">
@@ -71,35 +69,23 @@
                             class="px-2 py-1 text-sm bg-white rounded border border-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
                             @keyup.enter="applySearch"
                         />
-                        <button
+                        <BaseIconButton
+                            icon="tabler:search"
+                            label="Deep search through all values"
                             @click="applySearch"
-                            class="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
-                            title="Deep search through all values"
-                        >
-                            <Icon icon="tabler:search" class="inline-block" />
-                        </button>
+                        />
                     </div>
                     <div class="flex gap-2">
-                        <button
+                        <BaseIconButton
+                            icon="heroicons:arrows-pointing-out"
+                            label="Expand All"
                             @click="expandAll"
-                            class="px-3 py-1 text-sm rounded hover:bg-gray-100 dark:hover:bg-gray-700"
-                            title="Expand All"
-                        >
-                            <Icon
-                                icon="heroicons:arrows-pointing-out"
-                                class="inline-block"
-                            />
-                        </button>
-                        <button
+                        />
+                        <BaseIconButton
+                            icon="heroicons:arrows-pointing-in"
+                            label="Collapse All"
                             @click="collapseAll"
-                            class="px-3 py-1 text-sm rounded hover:bg-gray-100 dark:hover:bg-gray-700"
-                            title="Collapse All"
-                        >
-                            <Icon
-                                icon="heroicons:arrows-pointing-in"
-                                class="inline-block"
-                            />
-                        </button>
+                        />
                     </div>
                 </div>
 
@@ -147,7 +133,7 @@
                                                         `${rowIndex}-${header}`
                                                     )
                                                 "
-                                                class="p-1 mr-1 text-blue-600 rounded hover:bg-blue-100"
+                                                class="p-1 mr-1 text-primary-600 rounded hover:bg-primary-100 dark:text-primary-400 dark:hover:bg-primary-900/40"
                                             >
                                                 <Icon
                                                     :icon="

@@ -258,12 +258,11 @@
                                 <h2 class="text-lg font-semibold">
                                     {{ selectedItem.content }} Properties
                                 </h2>
-                                <button
+                                <BaseIconButton
+                                    icon="mdi:close"
+                                    label="Deselect item"
                                     @click="deselectItem"
-                                    class="p-1 text-gray-500 rounded-full hover:text-gray-700"
-                                >
-                                    <Icon icon="mdi:close" class="w-5 h-5" />
-                                </button>
+                                />
                             </div>
 
                             <div class="mb-4">
@@ -469,50 +468,39 @@
                         <div class="flex items-center justify-between mb-2">
                             <h2 class="text-lg font-semibold">Preview</h2>
                             <div class="flex gap-2">
-                                <button
+                                <BaseButton
                                     v-if="selectedItem"
+                                    variant="secondary"
+                                    size="sm"
+                                    icon="mdi:content-duplicate"
                                     @click="duplicateSelectedItem"
-                                    class="flex items-center px-3 py-1.5 text-sm font-medium text-primary-700 bg-primary-100 border border-primary-300 rounded-md hover:bg-primary-200 dark:text-primary-300 dark:bg-primary-900/40 dark:border-primary-800 dark:hover:bg-primary-900/60 transition-colors"
                                 >
-                                    <Icon
-                                        icon="mdi:content-duplicate"
-                                        class="w-4 h-4 mr-1"
-                                    />
                                     Duplicate
-                                </button>
-                                <button
+                                </BaseButton>
+                                <BaseButton
                                     v-if="selectedItem"
+                                    variant="danger"
+                                    size="sm"
+                                    icon="mdi:delete"
                                     @click="deleteSelectedItem"
-                                    class="flex items-center px-3 py-1.5 text-sm font-medium text-red-700 bg-red-100 border border-red-300 rounded-md hover:bg-red-200 dark:text-red-300 dark:bg-red-900/40 dark:border-red-800 dark:hover:bg-red-900/60 transition-colors"
                                 >
-                                    <Icon
-                                        icon="mdi:delete"
-                                        class="w-4 h-4 mr-1"
-                                    />
                                     Delete
-                                </button>
-                                <button
+                                </BaseButton>
+                                <BaseButton
+                                    size="sm"
+                                    icon="mdi:plus"
                                     @click="addFlexItem"
-                                    class="flex items-center px-3 py-1.5 text-sm font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700 transition-colors"
-                                    title="Add new item"
                                 >
-                                    <Icon
-                                        icon="mdi:plus"
-                                        class="w-4 h-4 mr-1"
-                                    />
                                     Add Item
-                                </button>
-                                <button
+                                </BaseButton>
+                                <BaseButton
+                                    variant="secondary"
+                                    size="sm"
+                                    icon="mdi:refresh"
                                     @click="resetFlexbox"
-                                    class="flex items-center px-3 py-1.5 text-sm font-medium text-white bg-gray-600 rounded-md hover:bg-gray-700 transition-colors"
-                                    title="Reset flexbox"
                                 >
-                                    <Icon
-                                        icon="mdi:refresh"
-                                        class="w-4 h-4 mr-1"
-                                    />
                                     Reset
-                                </button>
+                                </BaseButton>
                             </div>
                         </div>
 

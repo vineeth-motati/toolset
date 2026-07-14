@@ -1,6 +1,10 @@
 <template>
-    <div class="p-6 bg-white rounded-lg shadow">
-        <h2 class="mb-4 text-xl font-semibold">API Key Management</h2>
+    <div class="p-6 bg-white rounded-lg shadow dark:bg-gray-800">
+        <h2
+            class="mb-4 text-xl font-semibold text-gray-900 dark:text-gray-100"
+        >
+            API Key Management
+        </h2>
 
         <!-- API Key is configured -->
         <div v-if="hasApiKey()" class="mb-6">
@@ -21,18 +25,20 @@
                         </p>
                     </div>
                     <div class="flex gap-2">
-                        <button
+                        <BaseButton
+                            variant="secondary"
+                            size="sm"
                             @click="showReplaceModal = true"
-                            class="px-3 py-1 text-sm text-blue-600 border border-blue-200 rounded bg-blue-50 hover:bg-blue-100"
                         >
                             Replace
-                        </button>
-                        <button
+                        </BaseButton>
+                        <BaseButton
+                            variant="danger"
+                            size="sm"
                             @click="confirmDeleteKey"
-                            class="px-3 py-1 text-sm text-red-600 border border-red-200 rounded bg-red-50 hover:bg-red-100"
                         >
                             Delete
-                        </button>
+                        </BaseButton>
                     </div>
                 </div>
             </div>
@@ -56,19 +62,15 @@
                     </p>
                 </div>
             </div>
-            <button
-                @click="showAddModal = true"
-                class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-            >
-                <Icon icon="tabler:key" class="inline-block mr-1" />
+            <BaseButton icon="tabler:key" @click="showAddModal = true">
                 Add API Key
-            </button>
+            </BaseButton>
         </div>
 
         <!-- Information button -->
         <button
             @click="showInfoModal = true"
-            class="flex items-center mt-4 text-blue-600 hover:underline"
+            class="flex items-center mt-4 text-primary-600 hover:underline dark:text-primary-400"
         >
             <Icon icon="tabler:info-circle" class="inline-block mr-1" />
             How to get an API Key

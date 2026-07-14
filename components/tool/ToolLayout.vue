@@ -6,8 +6,19 @@
             :description="description"
             :icon="icon"
         >
-            <template v-if="$slots.leading" #leading>
-                <slot name="leading" />
+            <template #leading>
+                <!-- Pages may override (e.g. convert sub-pages); default is a
+                     way back home from every tool -->
+                <slot name="leading">
+                    <NuxtLink
+                        to="/"
+                        aria-label="Back to all tools"
+                        title="All tools"
+                        class="inline-flex justify-center items-center p-2 text-gray-500 rounded-full transition-colors duration-150 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                    >
+                        <Icon icon="mdi:arrow-left" class="w-5 h-5" />
+                    </NuxtLink>
+                </slot>
             </template>
             <template v-if="$slots.actions" #actions>
                 <ToolActions>
@@ -23,6 +34,7 @@
 
 <script setup>
 import { onMounted } from 'vue';
+import { Icon } from '@iconify/vue';
 import RelatedTools from '@/components/tool/RelatedTools.vue';
 import { useTools } from '@/composables/useTools';
 import { useToolUsage } from '@/composables/useToolUsage';

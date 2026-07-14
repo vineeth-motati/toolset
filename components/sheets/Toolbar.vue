@@ -18,13 +18,11 @@
                 >
                     {{ sheet.name }}
                 </button>
-                <button
+                <BaseIconButton
+                    icon="mdi:plus"
+                    label="Add sheet"
                     @click="$emit('add-sheet')"
-                    class="p-2 rounded hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
-                    aria-label="Add sheet"
-                >
-                    <Icon icon="mdi:plus" class="w-5 h-5" />
-                </button>
+                />
             </div>
 
             <!-- Formatting Tools -->
