@@ -26,18 +26,22 @@
                             v-model="searchQuery"
                             type="text"
                             placeholder="Search tools..."
-                            class="w-full py-2 pl-10 pr-4 text-sm border border-gray-200 rounded-full bg-gray-50 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
+                            class="w-full py-2 pl-10 pr-14 text-sm border border-gray-200 rounded-full bg-gray-50 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
                             @focus="isSearchFocused = true"
-                            @blur="
-                                setTimeout(() => {
-                                    isSearchFocused = false;
-                                }, 100)
-                            "
+                            @blur="onSearchBlur"
                         />
                         <Icon
                             icon="heroicons:magnifying-glass"
                             class="absolute left-3 top-2.5 w-4 h-4 text-gray-400"
                         />
+                        <!-- ⌘K hint — opens the command palette -->
+                        <button
+                            class="flex absolute right-2 top-1/2 items-center px-1.5 py-0.5 text-xs text-gray-400 rounded border border-gray-200 -translate-y-1/2 hover:text-gray-600 dark:border-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+                            aria-label="Open command palette"
+                            @click="openPalette"
+                        >
+                            ⌘K
+                        </button>
 
                         <!-- Search Results -->
                         <div
@@ -162,11 +166,7 @@
                     placeholder="Search tools..."
                     class="w-full py-2 pl-10 pr-4 text-sm border border-gray-200 rounded-full bg-gray-50 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
                     @focus="isSearchFocused = true"
-                    @blur="
-                        setTimeout(() => {
-                            isSearchFocused = false;
-                        }, 100)
-                    "
+                    @blur="onSearchBlur"
                 />
                 <Icon
                     icon="heroicons:magnifying-glass"
@@ -257,6 +257,7 @@ import { ref, computed } from 'vue';
 import { Icon } from '@iconify/vue';
 import { useTheme } from '@/composables/useTheme';
 import { useTools } from '@/composables/useTools';
+import { useCommandPalette } from '@/composables/useCommandPalette';
 
 const mobileMenuOpen = ref(false);
 const isMobileSearchOpen = ref(false);
@@ -265,6 +266,15 @@ const searchQuery = ref('');
 
 // Use the theme composable - make sure we're using these variables in the template
 const { isDark, toggleTheme } = useTheme();
+
+const { open: openPalette } = useCommandPalette();
+
+// Delay lets result-link clicks land before the dropdown unmounts
+const onSearchBlur = () => {
+    setTimeout(() => {
+        isSearchFocused.value = false;
+    }, 100);
+};
 
 // Tools data + search/popular derived from data/tools.json (single source of truth)
 const { search, popular } = useTools();

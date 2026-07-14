@@ -3,6 +3,7 @@
         <PageLoading />
         <NavBar />
         <Toast />
+        <CommandPalette />
         <NuxtLayout>
             <NuxtPage />
         </NuxtLayout>
@@ -11,4 +12,5 @@
 <script setup>
 import PageLoading from '@/components/ui/PageLoading.vue';
 import Toast from '@/components/ui/Toast.vue';
+import CommandPalette from '@/components/palette/CommandPalette.vue';
 </script>

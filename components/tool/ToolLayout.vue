@@ -16,11 +16,16 @@
             </template>
         </ToolHeader>
         <slot />
+        <!-- Fullscreen canvas tools have no scroll room for a footer strip -->
+        <RelatedTools v-if="tool && tool.layout === 'default'" :tool="tool" />
     </div>
 </template>
 
 <script setup>
+import { onMounted } from 'vue';
+import RelatedTools from '@/components/tool/RelatedTools.vue';
 import { useTools } from '@/composables/useTools';
+import { useToolUsage } from '@/composables/useToolUsage';
 
 const props = defineProps({
     // Manual overrides — normally the tool is resolved from the current
@@ -40,4 +45,9 @@ const sizeClasses = {
 
 const { currentTool } = useTools();
 const tool = currentTool();
+
+const { recordUsage } = useToolUsage();
+onMounted(() => {
+    if (tool) recordUsage(tool.path);
+});
 </script>
