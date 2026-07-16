@@ -253,7 +253,7 @@ export default [
     // PDF Converter Group
     {
         path: '/tools/convert/html-to-pdf',
-        apiType: 'convert.website_to_pdf',
+        apiType: 'convert.html_to_pdf',
         title: 'HTML to PDF Converter',
         description: 'Convert HTML files or web pages to PDF format',
         sourceFormat: 'HTML',

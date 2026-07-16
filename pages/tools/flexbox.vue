@@ -559,7 +559,7 @@
 import { ref, onMounted, computed, watch, nextTick } from 'vue';
 import { useLocalStorage } from '@vueuse/core';
 import { Icon } from '@iconify/vue';
-import { v4 as uuidv4 } from 'uuid';
+import { nanoid } from 'nanoid';
 import { useShareLink } from '@/composables/useShareLink';
 import { useToast } from '@/composables/useToast';
 import { cloneDeep } from 'lodash-es';
@@ -624,7 +624,7 @@ const flexboxStorage = useLocalStorage('flexbox', {
     },
     items: [
         {
-            id: uuidv4(),
+            id: nanoid(),
             content: 'Item 1',
             styles: {
                 flexGrow: 0,
@@ -638,7 +638,7 @@ const flexboxStorage = useLocalStorage('flexbox', {
             },
         },
         {
-            id: uuidv4(),
+            id: nanoid(),
             content: 'Item 2',
             styles: {
                 flexGrow: 0,
@@ -652,7 +652,7 @@ const flexboxStorage = useLocalStorage('flexbox', {
             },
         },
         {
-            id: uuidv4(),
+            id: nanoid(),
             content: 'Item 3',
             styles: {
                 flexGrow: 0,
@@ -687,7 +687,7 @@ const updateItemDefaults = (defaults) => {
 
 const addFlexItem = () => {
     const newItem = {
-        id: uuidv4(),
+        id: nanoid(),
         content: `Item ${flexbox.value.items.length + 1}`,
         styles: {
             ...JSON.parse(JSON.stringify(flexbox.value.itemDefaults)),
@@ -707,7 +707,7 @@ const duplicateFlexItem = (id) => {
     if (item) {
         const newItem = {
             ...JSON.parse(JSON.stringify(item)),
-            id: uuidv4(),
+            id: nanoid(),
             content: `${item.content} (copy)`,
         };
         flexbox.value.items.push(newItem);
@@ -748,7 +748,7 @@ const resetFlexbox = () => {
         },
         items: [
             {
-                id: uuidv4(),
+                id: nanoid(),
                 content: 'Item 1',
                 styles: {
                     ...flexbox.value.itemDefaults,
@@ -759,7 +759,7 @@ const resetFlexbox = () => {
                 },
             },
             {
-                id: uuidv4(),
+                id: nanoid(),
                 content: 'Item 2',
                 styles: {
                     ...flexbox.value.itemDefaults,
@@ -770,7 +770,7 @@ const resetFlexbox = () => {
                 },
             },
             {
-                id: uuidv4(),
+                id: nanoid(),
                 content: 'Item 3',
                 styles: {
                     ...flexbox.value.itemDefaults,
@@ -838,7 +838,7 @@ const duplicateSelectedItem = () => {
 
     const newItem = {
         ...cloneDeep(selectedItem.value),
-        id: uuidv4(),
+        id: nanoid(),
         content: `${selectedItem.value.content} (copy)`,
     };
 

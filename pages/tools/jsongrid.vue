@@ -164,7 +164,7 @@
                                                     `${rowIndex}-${header}`
                                                 )
                                             "
-                                            class="pl-6 mt-2 border-l-2 border-blue-200"
+                                            class="pl-6 mt-2 border-l-2 border-blue-200 dark:border-blue-900"
                                         >
                                             <div
                                                 v-if="isArray(row[header])"
@@ -179,7 +179,7 @@
                                                                 item, itemIndex
                                                             ) in row[header]"
                                                             :key="`${rowIndex}-${header}-${itemIndex}`"
-                                                            class="border-t border-gray-100"
+                                                            class="border-t border-gray-100 dark:border-gray-700"
                                                         >
                                                             <td
                                                                 class="w-8 px-2 py-1.5 text-gray-500 font-mono bg-gray-50 text-center dark:bg-gray-900/50 dark:text-gray-400"
@@ -295,7 +295,9 @@
                     v-else-if="!isValidJson && jsonText.trim().length > 0"
                     class="flex-1 p-4"
                 >
-                    <div class="p-4 text-red-800 rounded bg-red-50">
+                    <div
+                        class="p-4 text-red-800 rounded bg-red-50 dark:bg-red-900/30 dark:text-red-300"
+                    >
                         <p class="font-bold">Invalid JSON</p>
                         <p>{{ jsonError }}</p>
                     </div>
@@ -403,16 +405,27 @@ const gridHeaders = computed(() => {
     return [...headers];
 });
 
-// Improved filteredGridData computed property with deep search
-const filteredGridData = computed(() => {
-    if (!searchQuery.value.trim()) return gridData.value;
+// Indices into gridData for the rows that pass the current search filter.
+// Grid rows render from filteredGridData, but edits must write to the
+// original array position — never the filtered position.
+const filteredIndices = computed(() => {
+    if (!searchQuery.value.trim()) return gridData.value.map((_, i) => i);
 
     const query = searchQuery.value.toLowerCase();
-    return gridData.value.filter((row) => {
-        if (!row) return false;
-        return deepSearch(row, query);
+    const indices = [];
+    gridData.value.forEach((row, i) => {
+        if (row && deepSearch(row, query)) indices.push(i);
     });
+    return indices;
 });
+
+const filteredGridData = computed(() =>
+    filteredIndices.value.map((i) => gridData.value[i])
+);
+
+function sourceIndexFor(rowIndex) {
+    return filteredIndices.value[rowIndex] ?? rowIndex;
+}
 
 // Add new helper function for deep searching
 function deepSearch(obj, query) {
@@ -700,20 +713,15 @@ function loadSampleData() {
 // Update the JSON when a cell is edited in the grid
 function updateCellValue(rowIndex, header, event) {
     const newValue = event.target.innerText;
+    const srcIndex = sourceIndexFor(rowIndex);
 
     try {
-        // Try to parse the value if it looks like a number, boolean, or null
-        let parsedValue = newValue;
-
-        if (newValue.toLowerCase() === 'true') parsedValue = true;
-        else if (newValue.toLowerCase() === 'false') parsedValue = false;
-        else if (newValue.toLowerCase() === 'null') parsedValue = null;
-        else if (!isNaN(Number(newValue))) parsedValue = Number(newValue);
+        const parsedValue = parseCellInput(newValue);
 
         // Update the grid data
         const updatedJson = JSON.parse(jsonText.value);
         if (Array.isArray(updatedJson)) {
-            updatedJson[rowIndex][header] = parsedValue;
+            updatedJson[srcIndex][header] = parsedValue;
         } else {
             updatedJson[header] = parsedValue;
         }
@@ -723,21 +731,27 @@ function updateCellValue(rowIndex, header, event) {
     } catch (e) {
         toast.error('Error updating JSON');
         // Reset to original value
-        event.target.innerText = gridData.value[rowIndex][header];
+        event.target.innerText = gridData.value[srcIndex][header];
     }
+}
+
+// Shared coercion for contenteditable input. Blank/whitespace stays a
+// string — Number('') is 0, which silently corrupted cleared cells.
+function parseCellInput(newValue) {
+    if (newValue.toLowerCase() === 'true') return true;
+    if (newValue.toLowerCase() === 'false') return false;
+    if (newValue.toLowerCase() === 'null') return null;
+    if (newValue.trim() !== '' && !isNaN(Number(newValue)))
+        return Number(newValue);
+    return newValue;
 }
 
 // Add this new function to handle direct array item updates
 function updateArrayItem(rowIndex, arrayField, itemIndex, event) {
     const newValue = event.target.innerText;
+    const srcIndex = sourceIndexFor(rowIndex);
     try {
-        // Parse the value appropriately
-        let parsedValue = newValue;
-
-        if (newValue.toLowerCase() === 'true') parsedValue = true;
-        else if (newValue.toLowerCase() === 'false') parsedValue = false;
-        else if (newValue.toLowerCase() === 'null') parsedValue = null;
-        else if (!isNaN(Number(newValue))) parsedValue = Number(newValue);
+        const parsedValue = parseCellInput(newValue);
 
         // Update the grid data
         const updatedJson = JSON.parse(jsonText.value);
@@ -745,10 +759,10 @@ function updateArrayItem(rowIndex, arrayField, itemIndex, event) {
         // Make sure we're dealing with an array
         if (
             Array.isArray(updatedJson) &&
-            Array.isArray(updatedJson[rowIndex][arrayField])
+            Array.isArray(updatedJson[srcIndex][arrayField])
         ) {
             // Update the specific array item
-            updatedJson[rowIndex][arrayField][itemIndex] = parsedValue;
+            updatedJson[srcIndex][arrayField][itemIndex] = parsedValue;
 
             // Update the JSON text
             jsonText.value = JSON.stringify(updatedJson, null, 2);
@@ -757,11 +771,10 @@ function updateArrayItem(rowIndex, arrayField, itemIndex, event) {
             toast.success(`Updated array item in "${arrayField}"`);
         }
     } catch (e) {
-        console.error('Error updating array item:', e);
         toast.error('Failed to update array item');
 
         // Reset to original value on error
-        const originalItem = gridData.value[rowIndex][arrayField][itemIndex];
+        const originalItem = gridData.value[srcIndex][arrayField][itemIndex];
         event.target.innerText = originalItem;
     }
 }
@@ -769,9 +782,11 @@ function updateArrayItem(rowIndex, arrayField, itemIndex, event) {
 // Add this new function to handle nested value updates
 function updateNestedValue(update) {
     try {
-        // Parse the path to navigate the JSON structure
+        // Parse the path to navigate the JSON structure. The path's first
+        // segment is the rendered (filtered) row index — map it back to the
+        // source array position.
         const parts = update.path.split('.');
-        const rootIndex = parseInt(parts[0]);
+        const rootIndex = sourceIndexFor(parseInt(parts[0]));
 
         // Start with the parsed JSON
         const updatedJson = JSON.parse(jsonText.value);

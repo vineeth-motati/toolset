@@ -6,7 +6,7 @@
                 <tr
                     v-for="(val, key) in value"
                     :key="key"
-                    class="border-t border-gray-100"
+                    class="border-t border-gray-100 dark:border-gray-700"
                 >
                     <td class="px-2 py-1 font-medium">{{ key }}</td>
                     <td class="px-2 py-1">
@@ -47,7 +47,7 @@
                                             <tr
                                                 v-for="(item, index) in val"
                                                 :key="`${key}-${index}`"
-                                                class="border-t border-gray-100"
+                                                class="border-t border-gray-100 dark:border-gray-700"
                                             >
                                                 <td
                                                     class="w-8 px-2 py-1.5 text-gray-500 font-mono bg-gray-50 text-center dark:bg-gray-900/50 dark:text-gray-400"
@@ -156,10 +156,10 @@
                                                     nestedVal, nestedKey
                                                 ) in val"
                                                 :key="`${key}-${nestedKey}`"
-                                                class="border-t border-gray-100"
+                                                class="border-t border-gray-100 dark:border-gray-700"
                                             >
                                                 <td
-                                                    class="px-2 py-1 font-medium text-gray-700"
+                                                    class="px-2 py-1 font-medium text-gray-700 dark:text-gray-300"
                                                 >
                                                     {{ nestedKey }}
                                                 </td>
@@ -338,7 +338,8 @@ function parseValue(value) {
     if (value.toLowerCase() === 'undefined') return undefined;
     if (value.toLowerCase() === 'true') return true;
     if (value.toLowerCase() === 'false') return false;
-    if (!isNaN(Number(value))) return Number(value);
+    // Blank/whitespace must stay a string — Number('') is 0.
+    if (value.trim() !== '' && !isNaN(Number(value))) return Number(value);
     return value;
 }
 

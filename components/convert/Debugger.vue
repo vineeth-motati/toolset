@@ -1,5 +1,5 @@
 <template>
-    <div class="p-6 bg-white rounded-lg shadow">
+    <div class="p-6 bg-white rounded-lg shadow dark:bg-gray-800">
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <!-- Left column -->
             <div>
@@ -15,7 +15,7 @@
                         <input
                             v-model="testPath"
                             type="text"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-l-md"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-l-md dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
                             placeholder="/tools/convert/xml-to-json"
                         />
                         <button
@@ -32,8 +32,8 @@
                     class="p-4 border rounded-md"
                     :class="
                         testResult.found
-                            ? 'border-green-300 bg-green-50'
-                            : 'border-red-300 bg-red-50'
+                            ? 'border-green-300 bg-green-50 dark:border-green-900 dark:bg-green-900/20'
+                            : 'border-red-300 bg-red-50 dark:border-red-900 dark:bg-red-900/20'
                     "
                 >
                     <p
@@ -69,7 +69,7 @@
                         <input
                             v-model="apiTestType"
                             type="text"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-l-md"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-l-md dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
                             placeholder="convert.website_to_jpg"
                         />
                         <button
@@ -85,8 +85,8 @@
                         class="p-4 border rounded-md"
                         :class="
                             apiTypeResult.found
-                                ? 'border-green-300 bg-green-50'
-                                : 'border-red-300 bg-red-50'
+                                ? 'border-green-300 bg-green-50 dark:border-green-900 dark:bg-green-900/20'
+                                : 'border-red-300 bg-red-50 dark:border-red-900 dark:bg-red-900/20'
                         "
                     >
                         <p
@@ -119,13 +119,13 @@
                     <input
                         v-model="filterText"
                         type="text"
-                        class="w-full px-3 py-2 mb-4 border border-gray-300 rounded-md"
+                        class="w-full px-3 py-2 mb-4 border border-gray-300 rounded-md dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
                         placeholder="Filter converters..."
                     />
                 </div>
                 <div class="overflow-auto border rounded-md max-h-96">
                     <table class="w-full text-sm">
-                        <thead class="sticky top-0 bg-gray-100">
+                        <thead class="sticky top-0 bg-gray-100 dark:bg-gray-900">
                             <tr>
                                 <th class="px-2 py-3 text-left">Path</th>
                                 <th class="px-2 py-3 text-left">API Type</th>
@@ -135,7 +135,7 @@
                             <tr
                                 v-for="converter in filteredConverters"
                                 :key="converter.path"
-                                class="border-t hover:bg-gray-50"
+                                class="border-t hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-700/50"
                             >
                                 <td class="px-2 py-3">
                                     {{ converter.path }}

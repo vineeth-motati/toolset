@@ -65,10 +65,12 @@
                 <div class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                     Preview
                 </div>
+                <!-- allow-same-origin must NOT be combined with allow-scripts:
+                     the framed user code could lift its own sandbox. -->
                 <iframe
                     ref="previewFrame"
                     class="w-full h-full bg-white rounded-md border dark:border-gray-700"
-                    sandbox="allow-scripts allow-same-origin"
+                    sandbox="allow-scripts allow-modals allow-forms allow-popups"
                 ></iframe>
             </div>
         </div>
@@ -159,15 +161,20 @@ const runCode = () => {
     const iframe = previewFrame.value;
     if (!iframe) return;
 
-    const scriptContent = `
-    ${code.value.javascript}
-  `;
+    // A literal closing script tag inside user JS would terminate the
+    // injected block early; escape the slash so it can't. Same for the
+    // closing style tag in user CSS.
+    const scriptContent = code.value.javascript.replace(
+        /<\/(script)/gi,
+        '<\\/$1'
+    );
+    const styleContent = code.value.css.replace(/<\/(style)/gi, '<\\/$1');
 
     const html = `
     <!DOCTYPE html>
     <html>
       <head>
-        <style>${code.value.css}</style>
+        <style>${styleContent}</style>
       </head>
       <body>
         ${code.value.html}

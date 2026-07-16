@@ -108,7 +108,6 @@ onMounted(async () => {
 /* Import tldraw styles */
 @import '@tldraw/tldraw/tldraw.css';
 
-.tl-watermark_SEE-LICENSE {
-    display: none !important;
-}
+/* Note: the tldraw watermark must stay visible unless a license key is
+   purchased — hiding it via CSS violates the tldraw license. */
 </style>

@@ -169,7 +169,6 @@ const updateCellFormat = (format) => {
 };
 
 const importFile = async (file) => {
-    debugger;
     try {
         if (file.type === 'text/csv') {
             const text = await file.text();

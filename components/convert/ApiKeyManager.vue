@@ -9,7 +9,7 @@
         <!-- API Key is configured -->
         <div v-if="hasApiKey()" class="mb-6">
             <div
-                class="p-4 mb-4 border border-green-200 rounded-lg bg-green-50"
+                class="p-4 mb-4 border border-green-200 rounded-lg bg-green-50 dark:border-green-900 dark:bg-green-900/20"
             >
                 <div class="flex items-center justify-between">
                     <div>
@@ -20,7 +20,7 @@
                             />
                             API Key is configured
                         </p>
-                        <p class="mt-1 text-sm text-gray-600">
+                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                             Your API key is securely stored in your browser.
                         </p>
                     </div>
@@ -47,7 +47,7 @@
         <!-- No API Key configured -->
         <div v-else class="mb-6">
             <div
-                class="p-4 mb-4 border border-yellow-200 rounded-lg bg-yellow-50"
+                class="p-4 mb-4 border border-yellow-200 rounded-lg bg-yellow-50 dark:border-yellow-900 dark:bg-yellow-900/20"
             >
                 <div>
                     <p class="text-yellow-700">
@@ -57,7 +57,7 @@
                         />
                         No API Key configured
                     </p>
-                    <p class="mt-1 text-sm text-gray-600">
+                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                         You need an API key to use the conversion tools.
                     </p>
                 </div>
@@ -86,13 +86,13 @@
             @confirm="addApiKey"
         >
             <div class="mb-4">
-                <label class="block mb-1 text-sm font-medium text-gray-700"
+                <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300"
                     >API Key</label
                 >
                 <input
                     v-model="newApiKey"
                     type="text"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
                     placeholder="Enter your API key"
                 />
             </div>
@@ -108,13 +108,13 @@
             @confirm="replaceApiKey"
         >
             <div class="mb-4">
-                <label class="block mb-1 text-sm font-medium text-gray-700"
+                <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300"
                     >New API Key</label
                 >
                 <input
                     v-model="newApiKey"
                     type="text"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
                     placeholder="Enter your new API key"
                 />
             </div>
@@ -128,7 +128,7 @@
             @close="showDeleteModal = false"
             @confirm="deleteApiKey"
         >
-            <p class="text-gray-600">
+            <p class="text-gray-600 dark:text-gray-400">
                 Are you sure you want to delete your API key? You won't be able
                 to use the conversion tools without an API key.
             </p>
@@ -143,7 +143,7 @@
             @close="showInfoModal = false"
             @confirm="showInfoModal = false"
         >
-            <div class="text-sm text-gray-700">
+            <div class="text-sm text-gray-700 dark:text-gray-300">
                 <ol class="ml-5 space-y-2 list-decimal">
                     <li>
                         Visit
@@ -159,7 +159,7 @@
                     <li>Find your API key in the API Access section</li>
                     <li>Copy and paste it here</li>
                 </ol>
-                <p class="mt-4 text-xs text-gray-500">
+                <p class="mt-4 text-xs text-gray-500 dark:text-gray-400">
                     Note: The API key is stored locally in your browser and not
                     sent to our servers.
                 </p>

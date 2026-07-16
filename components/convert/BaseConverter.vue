@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-white rounded-lg shadow">
+    <div class="bg-white rounded-lg shadow dark:bg-gray-800">
         <div class="p-6">
             <!-- Only show header when not embedded in sidebar layout -->
             <div
@@ -9,14 +9,14 @@
                 <div class="flex items-center">
                     <button
                         @click="goBack"
-                        class="p-2 mr-3 text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200"
+                        class="p-2 mr-3 text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
                         title="Back to converters"
                     >
                         <Icon icon="tabler:arrow-left" class="text-xl" />
                     </button>
                     <div>
                         <h1 class="text-2xl font-bold">{{ title }}</h1>
-                        <p class="text-gray-600">{{ description }}</p>
+                        <p class="text-gray-600 dark:text-gray-400">{{ description }}</p>
                     </div>
                 </div>
                 <div class="flex gap-2">
@@ -47,31 +47,31 @@
                 @close="closeApiKeyModal"
                 @confirm="saveApiKey"
             >
-                <p class="mb-4 text-gray-600">
+                <p class="mb-4 text-gray-600 dark:text-gray-400">
                     To use the conversion tools, you need to provide an API key
                     from ConversionTools.io
                 </p>
                 <div class="mb-4">
-                    <label class="block mb-1 text-sm font-medium text-gray-700">
+                    <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                         API Key
                     </label>
                     <input
                         v-model="tempApiKey"
                         type="text"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
                         placeholder="Enter your API key"
                     />
                 </div>
 
                 <!-- API Key Information -->
                 <div
-                    class="p-3 mt-6 border border-blue-200 rounded-md bg-blue-50"
+                    class="p-3 mt-6 border border-blue-200 rounded-md bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20"
                 >
-                    <h3 class="mb-2 text-sm font-medium text-blue-700">
+                    <h3 class="mb-2 text-sm font-medium text-blue-700 dark:text-blue-300">
                         How to get an API Key
                     </h3>
                     <ol
-                        class="ml-5 space-y-1 text-xs text-gray-700 list-decimal"
+                        class="ml-5 space-y-1 text-xs text-gray-700 list-decimal dark:text-gray-300"
                     >
                         <li>
                             Visit
@@ -87,7 +87,7 @@
                         <li>Find your API key in the API Access section</li>
                         <li>Copy and paste it here</li>
                     </ol>
-                    <p class="mt-2 text-xs text-gray-500">
+                    <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
                         Note: The API key is stored locally in your browser and
                         not sent to our servers.
                     </p>
@@ -97,13 +97,13 @@
             <div>
                 <div class="grid grid-cols-1 gap-6">
                     <!-- Source Section -->
-                    <div class="p-4 border rounded-lg">
+                    <div class="p-4 border rounded-lg dark:border-gray-700">
                         <h2 class="mb-2 text-lg font-medium">
                             Source {{ sourceFormat }}
                         </h2>
                         <div class="mb-4">
                             <label
-                                class="block mb-1 text-sm font-medium text-gray-700"
+                                class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300"
                             >
                                 {{
                                     sourceFormat === 'URL'
@@ -117,7 +117,7 @@
                                 <input
                                     v-model="sourceUrl"
                                     type="url"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
                                     placeholder="https://example.com"
                                 />
                             </div>
@@ -131,8 +131,8 @@
                                 @click="$refs.fileInput.click()"
                                 class="flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-md cursor-pointer"
                                 :class="{
-                                    'border-blue-500 bg-blue-50': dragOver,
-                                    'border-gray-300 hover:border-blue-500':
+                                    'border-blue-500 bg-blue-50 dark:bg-blue-900/20': dragOver,
+                                    'border-gray-300 hover:border-blue-500 dark:border-gray-600':
                                         !dragOver,
                                 }"
                             >
@@ -151,16 +151,16 @@
                                 />
                                 <p
                                     v-if="sourceFile"
-                                    class="mb-1 text-green-600"
+                                    class="mb-1 text-green-600 dark:text-green-400"
                                 >
                                     {{ sourceFile.name }}
                                 </p>
-                                <p v-else class="mb-1 text-gray-500">
+                                <p v-else class="mb-1 text-gray-500 dark:text-gray-400">
                                     Drag and drop or click to upload
                                 </p>
                                 <p
                                     v-if="!sourceFile"
-                                    class="text-xs text-gray-400"
+                                    class="text-xs text-gray-400 dark:text-gray-500"
                                 >
                                     Max file size: {{ fileSizeLimit }}
                                 </p>
@@ -176,7 +176,7 @@
 
                         <!-- Additional options depending on converter type -->
                         <div v-if="showOptions && hasParams" class="mb-4">
-                            <h3 class="mb-2 text-sm font-medium text-gray-700">
+                            <h3 class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Conversion Options
                             </h3>
                             <div class="space-y-2">
@@ -187,7 +187,7 @@
                     </div>
 
                     <!-- Target Section -->
-                    <div class="p-4 border rounded-lg">
+                    <div class="p-4 border rounded-lg dark:border-gray-700">
                         <h2 class="mb-2 text-lg font-medium">Output</h2>
 
                         <!-- Conversion Status -->
@@ -196,23 +196,25 @@
                             class="mb-4"
                         >
                             <div class="flex items-center justify-between mb-2">
-                                <span class="text-sm font-medium text-gray-700"
+                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300"
                                     >Conversion Status</span
                                 >
                                 <span
                                     class="px-2 py-1 text-xs rounded"
                                     :class="{
-                                        'bg-blue-100 text-blue-700': [
-                                            'STARTING',
-                                            'UPLOADING',
-                                            'PREPARING',
-                                            'PENDING',
-                                            'RUNNING',
-                                            'DOWNLOADING',
-                                        ].includes(state.progress),
-                                        'bg-green-100 text-green-700':
+                                        'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300':
+                                            [
+                                                'STARTING',
+                                                'UPLOADING',
+                                                'PREPARING',
+                                                'PENDING',
+                                                'RUNNING',
+                                                'SUCCESS',
+                                                'DOWNLOADING',
+                                            ].includes(state.progress),
+                                        'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300':
                                             state.progress === 'COMPLETE',
-                                        'bg-red-100 text-red-700':
+                                        'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300':
                                             state.progress === 'ERROR',
                                     }"
                                 >
@@ -220,7 +222,7 @@
                                 </span>
                             </div>
                             <div
-                                class="w-full h-2 overflow-hidden bg-gray-200 rounded-full"
+                                class="w-full h-2 overflow-hidden bg-gray-200 rounded-full dark:bg-gray-700"
                             >
                                 <div
                                     class="h-full transition-all duration-500"
@@ -241,7 +243,7 @@
                         <!-- Error Message -->
                         <div
                             v-if="state.error"
-                            class="p-3 mb-4 text-sm text-red-700 border border-red-200 rounded-md bg-red-50"
+                            class="p-3 mb-4 text-sm text-red-700 border border-red-200 rounded-md bg-red-50 dark:text-red-300 dark:border-red-900 dark:bg-red-900/30"
                         >
                             {{ state.error }}
                         </div>
@@ -249,7 +251,7 @@
                         <!-- Output Display -->
                         <div class="mb-4">
                             <label
-                                class="block mb-1 text-sm font-medium text-gray-700"
+                                class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300"
                             >
                                 {{ targetFormat }} Output
                             </label>
@@ -257,7 +259,7 @@
                                 <!-- Preview for Images -->
                                 <div
                                     v-if="isImageOutput && previewUrl"
-                                    class="h-64 p-4 overflow-auto border border-gray-300 rounded-md bg-gray-50"
+                                    class="h-64 p-4 overflow-auto border border-gray-300 rounded-md bg-gray-50 dark:border-gray-600 dark:bg-gray-900/50"
                                 >
                                     <img
                                         :src="previewUrl"
@@ -269,7 +271,7 @@
                                 <!-- Preview for Text -->
                                 <div
                                     v-else-if="isTextOutput && outputText"
-                                    class="h-64 p-4 overflow-auto font-mono text-sm border border-gray-300 rounded-md bg-gray-50"
+                                    class="h-64 p-4 overflow-auto font-mono text-sm border border-gray-300 rounded-md bg-gray-50 dark:border-gray-600 dark:bg-gray-900/50"
                                 >
                                     {{ outputText }}
                                 </div>
@@ -277,16 +279,16 @@
                                 <!-- Generic output placeholder -->
                                 <div
                                     v-else
-                                    class="h-64 p-4 overflow-auto border border-gray-300 rounded-md bg-gray-50"
+                                    class="h-64 p-4 overflow-auto border border-gray-300 rounded-md bg-gray-50 dark:border-gray-600 dark:bg-gray-900/50"
                                 >
                                     <p
                                         v-if="state.result"
-                                        class="text-green-600"
+                                        class="text-green-600 dark:text-green-400"
                                     >
                                         Conversion complete! Click the Download
                                         button to save the file.
                                     </p>
-                                    <p v-else class="text-gray-500">
+                                    <p v-else class="text-gray-500 dark:text-gray-400">
                                         Converted output will appear here
                                     </p>
                                 </div>
@@ -341,6 +343,7 @@ import { Icon } from '@iconify/vue';
 import { useToast } from '@/composables/useToast';
 import { useRouter, useRoute } from 'vue-router';
 import { useConverter } from '@/composables/useConverter';
+import { FILE_SIZE_LIMIT } from '@/utils/converterApi';
 import Modal from '@/components/ui/Modal.vue';
 
 const props = defineProps({
@@ -462,21 +465,25 @@ const goBack = () => {
     router.push('/tools/convert/');
 };
 
-const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        sourceFile.value = file;
-        toast.success(`${file.name} selected`);
+const selectFile = (file) => {
+    if (!file) return;
+    if (file.size > FILE_SIZE_LIMIT) {
+        toast.error(
+            `File is too large (${(file.size / (1024 * 1024)).toFixed(1)}MB). Max size: ${fileSizeLimit.value}`
+        );
+        return;
     }
+    sourceFile.value = file;
+    toast.success(`${file.name} selected`);
+};
+
+const handleFileUpload = (event) => {
+    selectFile(event.target.files[0]);
 };
 
 const onFileDrop = (event) => {
     dragOver.value = false;
-    const file = event.dataTransfer.files[0];
-    if (file) {
-        sourceFile.value = file;
-        toast.success(`${file.name} selected`);
-    }
+    selectFile(event.dataTransfer.files[0]);
 };
 
 const closeApiKeyModal = () => {
@@ -504,6 +511,7 @@ const formatProgress = (progress) => {
         PREPARING: 'Preparing',
         PENDING: 'In Queue',
         RUNNING: 'Converting',
+        SUCCESS: 'Converted',
         DOWNLOADING: 'Downloading',
         COMPLETE: 'Completed',
         ERROR: 'Error',
@@ -519,6 +527,7 @@ const getProgressWidth = () => {
         'PREPARING',
         'PENDING',
         'RUNNING',
+        'SUCCESS',
         'DOWNLOADING',
         'COMPLETE',
     ];

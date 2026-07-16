@@ -7,7 +7,7 @@ import converters from '@/config/converters';
 
 const API_BASE_URL = 'https://api.conversiontools.io/v1';
 const POLLING_INTERVAL = 2000; // 2 seconds
-const FILE_SIZE_LIMIT = 100 * 1024 * 1024; // 100MB default size limit
+export const FILE_SIZE_LIMIT = 100 * 1024 * 1024; // 100MB default size limit
 
 /**
  * Handles file conversion using the ConversionTools API

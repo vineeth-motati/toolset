@@ -14,7 +14,7 @@
                 <div
                     v-if="originalImage || compressedImage"
                     key="images"
-                    class="grid grid-cols-2 gap-4 mt-6"
+                    class="grid grid-cols-1 gap-4 mt-6 sm:grid-cols-2"
                 >
                     <div>
                         <h3
@@ -70,22 +70,51 @@
 <script setup>
 import imageCompression from 'browser-image-compression';
 
+const toast = useToast();
+
 const originalImage = ref('');
 const compressedImage = ref('');
 const originalSize = ref('');
 const compressedSize = ref('');
+const compressedFileName = ref('');
 
 const formatSize = (bytes) => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.min(
+        Math.floor(Math.log(bytes) / Math.log(k)),
+        sizes.length - 1
+    );
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+};
+
+const MIME_EXTENSIONS = {
+    'image/jpeg': 'jpg',
+    'image/png': 'png',
+    'image/webp': 'webp',
+    'image/gif': 'gif',
+    'image/avif': 'avif',
+    'image/bmp': 'bmp',
+};
+
+const revokeUrls = () => {
+    if (originalImage.value) URL.revokeObjectURL(originalImage.value);
+    if (compressedImage.value) URL.revokeObjectURL(compressedImage.value);
 };
 
 const handleImageUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        toast.error('Please select an image file');
+        return;
+    }
+
+    revokeUrls();
+    compressedImage.value = '';
+    compressedSize.value = '';
 
     originalSize.value = formatSize(file.size);
     originalImage.value = URL.createObjectURL(file);
@@ -97,20 +126,30 @@ const handleImageUpload = async (event) => {
     };
 
     try {
-        const compressedFile = await imageCompression(file, options);
-        compressedSize.value = formatSize(compressedFile.size);
-        compressedImage.value = URL.createObjectURL(compressedFile);
+        let result = await imageCompression(file, options);
+        // Re-encoding can inflate already-optimized images; keep the smaller.
+        if (result.size >= file.size) {
+            result = file;
+            toast.info('Image is already optimized — keeping the original');
+        }
+        const extension = MIME_EXTENSIONS[result.type] || 'jpg';
+        const baseName = (file.name || 'image').replace(/\.[^.]+$/, '');
+        compressedFileName.value = `${baseName}-compressed.${extension}`;
+        compressedSize.value = formatSize(result.size);
+        compressedImage.value = URL.createObjectURL(result);
     } catch (error) {
-        console.error('Error compressing image:', error);
+        toast.error(`Failed to compress image: ${error.message || error}`);
     }
 };
 
 const downloadImage = () => {
     const link = document.createElement('a');
     link.href = compressedImage.value;
-    link.download = 'compressed-image.jpg';
+    link.download = compressedFileName.value || 'compressed-image.jpg';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 };
+
+onBeforeUnmount(revokeUrls);
 </script>

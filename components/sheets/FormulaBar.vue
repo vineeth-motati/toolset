@@ -1,5 +1,5 @@
 <template>
-    <div class="flex items-center p-2 space-x-2 bg-white border-y">
+    <div class="flex items-center p-2 space-x-2 bg-white border-y dark:bg-gray-800 dark:border-gray-700">
         <div class="flex items-center space-x-2 min-w-[100px]">
             <span class="text-sm font-medium">
                 {{ getCellReference(activeCell) }}
@@ -10,7 +10,7 @@
                 :value="modelValue"
                 @input="$emit('update:modelValue', $event.target.value)"
                 @keydown.enter="$emit('formula-submit', $event.target.value)"
-                class="px-2 py-1 w-full rounded border"
+                class="px-2 py-1 w-full rounded border dark:bg-gray-900 dark:border-gray-600 dark:text-gray-100"
                 placeholder="Enter value or formula (start with =)"
             />
         </div>

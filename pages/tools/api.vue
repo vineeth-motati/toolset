@@ -132,7 +132,7 @@
                             <h3 class="mb-1 font-medium text-gray-900 dark:text-gray-100">HTML Content:</h3>
                             <div
                                 class="overflow-auto p-3 bg-gray-100 rounded-lg dark:bg-gray-900 dark:text-gray-200"
-                                v-html="api.response.data"
+                                v-html="sanitizedHtmlResponse"
                             ></div>
                         </div>
                         <div v-else>
@@ -178,6 +178,7 @@
 
 <script setup>
 import { useLocalStorage } from '@vueuse/core';
+import DOMPurify from 'isomorphic-dompurify';
 
 const { generateShareLink, getSharedData } = useShareLink();
 const { $axios } = useNuxtApp();
@@ -196,7 +197,7 @@ const authTypeOptions = [
     { label: 'Custom Header', value: 'Custom' },
 ];
 
-const api = useLocalStorage('api', {
+const apiDefaults = {
     endpoint: '',
     method: 'GET',
     contentType: 'application/json',
@@ -212,7 +213,41 @@ const api = useLocalStorage('api', {
         password: '',
         customHeader: '',
     },
+};
+
+// Volatile request state must never be persisted: a page closed mid-request
+// would otherwise restore loading:true and leave Send disabled forever, and
+// stale responses would reappear on reload.
+const stripVolatile = (value) => ({
+    ...value,
+    response: null,
+    error: null,
+    loading: false,
 });
+
+const api = useLocalStorage('api', apiDefaults, {
+    // Read storage only after mount: the server renders with defaults, so
+    // hydrating against localStorage state would mismatch and leave stale
+    // SSR attributes (e.g. a disabled Send button) in the DOM.
+    initOnMounted: true,
+    serializer: {
+        read: (raw) => {
+            try {
+                return stripVolatile({ ...apiDefaults, ...JSON.parse(raw) });
+            } catch {
+                return { ...apiDefaults };
+            }
+        },
+        write: (value) => JSON.stringify(stripVolatile(value)),
+    },
+});
+
+// Sanitized HTML preview — raw v-html of an untrusted response is XSS.
+const sanitizedHtmlResponse = computed(() =>
+    api.value.response?.isHtml
+        ? DOMPurify.sanitize(api.value.response.data)
+        : ''
+);
 
 let isCurlModalOpen = ref(false);
 let curlCommand = ref('');
@@ -374,11 +409,19 @@ const sendRequest = async () => {
 
 const shareApi = async () => {
     try {
+        // Never share credentials or response data — share links are stored
+        // server-side and readable by anyone with the URL.
+        const shareable = stripVolatile(api.value);
+        shareable.auth = {
+            ...apiDefaults.auth,
+            type: api.value.auth.type,
+        };
         const link = await generateShareLink('/tools/api', {
-            api: api.value,
+            api: shareable,
         });
         if (link) {
             await showShareModal(link);
+            toast.info('Auth credentials are not included in shared links');
         } else {
             toast.error('Failed to generate share link.');
         }
@@ -390,7 +433,7 @@ const shareApi = async () => {
 onMounted(async () => {
     const sharedData = await getSharedData();
     if (sharedData?.api) {
-        Object.assign(api.value, sharedData.api);
+        Object.assign(api.value, stripVolatile(sharedData.api));
         toast.success('Loaded shared API state successfully!');
     }
 });
