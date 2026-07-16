@@ -16,6 +16,14 @@
         </template>
         <template v-if="currentConverter" #actions>
             <BaseButton
+                v-if="isLocalConverter"
+                icon="mdi:share-variant"
+                size="sm"
+                @click="shareConversion"
+            >
+                Share
+            </BaseButton>
+            <BaseButton
                 variant="secondary"
                 icon="tabler:settings"
                 size="sm"
@@ -70,6 +78,7 @@
                 <!-- Right content area with converter -->
                 <div class="col-span-1 lg:col-span-3">
                     <BaseConverter
+                        ref="converterRef"
                         :title="currentConverter.title"
                         :description="currentConverter.description"
                         :sourceFormat="currentConverter.sourceFormat"
@@ -143,12 +152,23 @@ import { ref, computed, onMounted, reactive, provide } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import converterConfig from '@/config/converters';
 import BaseConverter from '@/components/convert/BaseConverter.vue';
+import { getLocalConverter } from '@/utils/localConverters';
 import { Icon } from '@iconify/vue';
 
 const route = useRoute();
 const router = useRouter();
 const converterType = computed(() => route.params.converter);
 const currentConverter = ref(null);
+const converterRef = ref(null);
+
+// Local converters support sharing their input/output as a link
+const isLocalConverter = computed(
+    () => !!getLocalConverter(`/tools/convert/${converterType.value}`)
+);
+
+const shareConversion = () => {
+    converterRef.value?.share();
+};
 
 // Store parameter values; BaseConverter injects these and passes them as
 // conversion options to the API.

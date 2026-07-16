@@ -340,10 +340,17 @@
 <script setup>
 import { ref, computed, onMounted, watch, onBeforeUnmount, inject } from 'vue';
 import { Icon } from '@iconify/vue';
+import { useLocalStorage } from '@vueuse/core';
 import { useToast } from '@/composables/useToast';
 import { useRouter, useRoute } from 'vue-router';
 import { useConverter } from '@/composables/useConverter';
+import { useShareLink } from '@/composables/useShareLink';
+import { showShareModal } from '@/composables/useShareModal';
 import { FILE_SIZE_LIMIT } from '@/utils/converterApi';
+import {
+    getLocalConverter,
+    LOCAL_PERSIST_MAX_CHARS,
+} from '@/utils/localConverters';
 import Modal from '@/components/ui/Modal.vue';
 
 const props = defineProps({
@@ -416,6 +423,47 @@ const fileSizeLimit = ref('100MB'); // Default value
 // Get parameters from parent component via provide/inject
 const paramValues = inject('paramValues', {});
 
+// Local converters run entirely in the browser: no API key required, and
+// their text-based input/output can be persisted and shared.
+const isLocal = computed(() => !!getLocalConverter(route.path));
+const { generateShareLink, getSharedData } = useShareLink();
+
+// Keyed by converter path so each local converter restores its own last
+// conversion after a reload. Text inputs/outputs are stored verbatim;
+// small binary ones (images, xlsx, pdf) as base64 data URLs.
+const emptyPersistedState = () => ({
+    input: '',
+    filename: '',
+    filetype: '',
+    inputEncoding: 'text',
+    output: '',
+    outputFilename: '',
+    outputType: '',
+    outputEncoding: 'text',
+});
+const persisted = useLocalStorage(
+    `converter-state:${route.path}`,
+    emptyPersistedState()
+);
+
+const TEXT_INPUT_PATTERN = /\.(json|xml|ya?ml|csv|srt|html?|txt)$/i;
+const isTextFile = (file) =>
+    file.type.startsWith('text/') ||
+    TEXT_INPUT_PATTERN.test(file.name) ||
+    ['application/json', 'application/xml', 'application/x-subrip'].includes(
+        file.type
+    );
+
+const blobToDataUrl = (blob) =>
+    new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(blob);
+    });
+
+const dataUrlToBlob = async (dataUrl) => (await fetch(dataUrl)).blob();
+
 // Computed properties
 const hasParams = computed(() => props.params && props.params.length > 0);
 
@@ -433,14 +481,23 @@ const isImageOutput = computed(() => {
 });
 
 const isTextOutput = computed(() => {
-    return ['Text', 'JSON', 'XML', 'YAML', 'CSV', 'HTML'].includes(
-        props.targetFormat
-    );
+    return [
+        'Text',
+        'JSON',
+        'XML',
+        'YAML',
+        'CSV',
+        'HTML',
+        'SRT',
+        'Formatted JSON',
+        'Validation Result',
+        'Fixed XML',
+    ].includes(props.targetFormat);
 });
 
 // Check for API key on mount and get file size limit
-onMounted(() => {
-    if (!hasApiKey()) {
+onMounted(async () => {
+    if (!isLocal.value && !hasApiKey()) {
         showApiKeyModal.value = true;
     }
 
@@ -448,7 +505,57 @@ onMounted(() => {
     if (hasApiKey()) {
         fileSizeLimit.value = getFileSizeLimit();
     }
+
+    if (isLocal.value) {
+        await restoreState();
+    }
 });
+
+// Rebuild UI state from a saved conversion (shared link or localStorage)
+const applyState = async (data) => {
+    if (data.input) {
+        const contents =
+            data.inputEncoding === 'base64'
+                ? await dataUrlToBlob(data.input)
+                : data.input;
+        sourceFile.value = new File(
+            [contents],
+            data.filename || 'input.txt',
+            { type: data.filetype || 'text/plain' }
+        );
+    }
+    if (data.output) {
+        if (data.outputEncoding === 'base64') {
+            state.result = {
+                blob: await dataUrlToBlob(data.output),
+                filename: data.outputFilename || 'output',
+            };
+            if (isImageOutput.value) {
+                previewUrl.value = data.output;
+            }
+        } else {
+            outputText.value = data.output;
+            state.result = {
+                blob: new Blob([data.output], {
+                    type: data.outputType || 'text/plain',
+                }),
+                filename: data.outputFilename || 'output.txt',
+            };
+        }
+    }
+};
+
+const restoreState = async () => {
+    const shared = await getSharedData();
+    if (shared?.input || shared?.output) {
+        await applyState(shared);
+        toast.success('Shared conversion loaded');
+        return;
+    }
+    if (persisted.value.input || persisted.value.output) {
+        await applyState(persisted.value);
+    }
+};
 
 // Update file size limit when API key changes
 watch(
@@ -475,6 +582,27 @@ const selectFile = (file) => {
     }
     sourceFile.value = file;
     toast.success(`${file.name} selected`);
+    if (isLocal.value) {
+        persistInput(file);
+    }
+};
+
+// Save small inputs so the conversion survives a reload — text verbatim,
+// binary (images, xlsx) as a base64 data URL. Oversized files still convert
+// fine; they just don't persist or share.
+const persistInput = async (file) => {
+    if (file.size > LOCAL_PERSIST_MAX_CHARS) {
+        persisted.value = emptyPersistedState();
+        return;
+    }
+    const isText = isTextFile(file);
+    persisted.value = {
+        ...emptyPersistedState(),
+        input: isText ? await file.text() : await blobToDataUrl(file),
+        filename: file.name,
+        filetype: file.type,
+        inputEncoding: isText ? 'text' : 'base64',
+    };
 };
 
 const handleFileUpload = (event) => {
@@ -541,7 +669,7 @@ const getProgressWidth = () => {
 };
 
 const handleConvert = async () => {
-    if (!hasApiKey()) {
+    if (!isLocal.value && !hasApiKey()) {
         showApiKeyModal.value = true;
         return;
     }
@@ -573,6 +701,31 @@ const handleConvert = async () => {
                 const text = await result.blob.text();
                 outputText.value = text;
             }
+            if (isLocal.value) {
+                if (
+                    result.text &&
+                    result.text.length <= LOCAL_PERSIST_MAX_CHARS
+                ) {
+                    persisted.value = {
+                        ...persisted.value,
+                        output: result.text,
+                        outputFilename: result.filename,
+                        outputType: result.blob.type,
+                        outputEncoding: 'text',
+                    };
+                } else if (
+                    !result.text &&
+                    result.blob.size <= LOCAL_PERSIST_MAX_CHARS
+                ) {
+                    persisted.value = {
+                        ...persisted.value,
+                        output: await blobToDataUrl(result.blob),
+                        outputFilename: result.filename,
+                        outputType: result.blob.type,
+                        outputEncoding: 'base64',
+                    };
+                }
+            }
             toast.success('Conversion successful!');
         }
     } catch (error) {
@@ -593,6 +746,25 @@ const isValidUrl = (url) => {
 const showHelp = () => {
     toast.info('Help documentation will be available soon!');
 };
+
+// Share the current conversion (input + output) via a short link
+const share = async () => {
+    if (!persisted.value.input && !persisted.value.output) {
+        toast.error(
+            'Nothing to share yet — select a file under the size limit first'
+        );
+        return;
+    }
+
+    const link = await generateShareLink(route.path, { ...persisted.value });
+    if (link) {
+        showShareModal(link);
+    } else {
+        toast.error('Failed to generate share link');
+    }
+};
+
+defineExpose({ share });
 
 // Clean up resources on unmount
 onBeforeUnmount(() => {
