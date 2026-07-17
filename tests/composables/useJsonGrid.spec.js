@@ -2,7 +2,7 @@
  * Grid engine behind the JSON Grid tool (/tools/jsongrid): JSON ↔ grid
  * conversion, sorting and filtering.
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { useJsonGrid } from '@/composables/useJsonGrid';
 
 const grid = useJsonGrid();
@@ -66,6 +66,37 @@ describe('jsonToGrid', () => {
         expect(data).toEqual([]);
         expect(grid.error.value).toBeTruthy();
     });
+
+    it('wraps non-object items (primitives, null) as their own {value} row', () => {
+        const { headers, data } = grid.jsonToGrid('[1,null,{"a":1}]');
+        expect(headers).toEqual(['a']);
+        expect(data).toEqual([{ value: 1 }, { value: null }, { a: 1 }]);
+    });
+
+    it('treats an empty array as a single object with no headers (not the array branch)', () => {
+        // parsed.length > 0 is false, so it falls through to the
+        // "single object" branch — typeof [] === 'object' is true too.
+        const { headers, data } = grid.jsonToGrid('[]');
+        expect(headers).toEqual([]);
+        expect(data).toEqual([[]]);
+    });
+
+    it('records the error and returns an empty grid on unexpected parse failures', () => {
+        // Contrived: validateJson's JSON.parse succeeds but the second,
+        // independent JSON.parse call inside jsonToGrid then fails — this
+        // pins the catch-all fallback for that gap between validation and use.
+        const originalParse = JSON.parse;
+        const spy = vi.spyOn(JSON, 'parse');
+        spy.mockImplementationOnce((s) => originalParse(s));
+        spy.mockImplementationOnce(() => {
+            throw new Error('parse exploded');
+        });
+        const { headers, data } = grid.jsonToGrid('{"a":1}');
+        expect(headers).toEqual([]);
+        expect(data).toEqual([]);
+        expect(grid.error.value).toBe('parse exploded');
+        spy.mockRestore();
+    });
 });
 
 describe('gridToJson', () => {
@@ -87,6 +118,11 @@ describe('gridToJson', () => {
             JSON.parse(source)
         );
     });
+
+    it('records the error and returns an empty string for non-array data', () => {
+        expect(grid.gridToJson(['a'], null)).toBe('');
+        expect(grid.error.value).toBeTruthy();
+    });
 });
 
 describe('sortGridData', () => {
@@ -101,6 +137,13 @@ describe('sortGridData', () => {
     it('sorts descending', () => {
         const sorted = grid.sortGridData(rows, 'n', 'desc');
         expect(sorted.slice(0, 3).map((r) => r.n)).toEqual([3, 2, 1]);
+    });
+
+    it('treats equal values as already in order', () => {
+        const tied = [{ n: 1 }, { n: 1 }, { n: 1 }];
+        expect(grid.sortGridData(tied, 'n', 'asc').map((r) => r.n)).toEqual([
+            1, 1, 1,
+        ]);
     });
 });
 

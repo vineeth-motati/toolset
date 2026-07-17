@@ -66,6 +66,11 @@ describe('useToast', () => {
         expect(toast.toasts.value).toHaveLength(0);
     });
 
+    it('resumeToast on an unknown/already-removed id is a no-op', () => {
+        expect(() => toast.resumeToast(999999)).not.toThrow();
+        expect(toast.toasts.value).toHaveLength(0);
+    });
+
     it('removeToast cancels the pending timer', () => {
         toast.info('gone early', 1000);
         const id = toast.toasts.value[0].id;

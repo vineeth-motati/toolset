@@ -93,6 +93,51 @@ describe('excelToJson (/tools/convert/excel-to-json)', () => {
         const file = await makeExcelFile([['only', 'headers']]);
         await expect(excelToJson(file)).rejects.toThrow(/no data rows/);
     });
+
+    it('rejects a workbook with no worksheets at all', async () => {
+        const workbook = new ExcelJS.Workbook();
+        const buffer = await workbook.xlsx.writeBuffer();
+        await expect(
+            excelToJson(new File([buffer], 'blank.xlsx', { type: XLSX_MIME }))
+        ).rejects.toThrow(/no worksheets/);
+    });
+
+    it('rejects a worksheet with no header row', async () => {
+        const workbook = new ExcelJS.Workbook();
+        workbook.addWorksheet('Empty');
+        const buffer = await workbook.xlsx.writeBuffer();
+        await expect(
+            excelToJson(new File([buffer], 'empty.xlsx', { type: XLSX_MIME }))
+        ).rejects.toThrow(/Worksheet is empty/);
+    });
+
+    it('falls back to column<N> for a blank cell in the header row', async () => {
+        const file = await makeExcelFile([
+            ['name', '', 'age'],
+            ['Alice', 'x', 30],
+        ]);
+        const result = await excelToJson(file);
+        expect(JSON.parse(result.text)).toEqual([
+            { name: 'Alice', column2: 'x', age: 30 },
+        ]);
+    });
+
+    it('normalizes null cells and unrecognized rich cell shapes', async () => {
+        const workbook = new ExcelJS.Workbook();
+        const sheet = workbook.addWorksheet('Edge');
+        sheet.addRow(['blank', 'status']);
+        const row = sheet.addRow([]);
+        row.getCell(1).value = null;
+        row.getCell(2).value = { error: '#N/A' }; // no richText/result/text/hyperlink
+        const buffer = await workbook.xlsx.writeBuffer();
+
+        const result = await excelToJson(
+            new File([buffer], 'edge.xlsx', { type: XLSX_MIME })
+        );
+        expect(JSON.parse(result.text)).toEqual([
+            { blank: '', status: '{"error":"#N/A"}' },
+        ]);
+    });
 });
 
 describe('excelToCsv (/tools/convert/excel-to-csv)', () => {

@@ -49,3 +49,21 @@ describe('useTheme', () => {
         expect(document.documentElement.classList.contains('dark')).toBe(true);
     });
 });
+
+describe('useTheme (server-side, no process.client)', () => {
+    it('tracks state without touching the DOM', () => {
+        delete process.client;
+        document.documentElement.classList.remove('dark');
+
+        const { isDark, toggleTheme } = useTheme();
+        // No pre-hydration adoption happens server-side, so isDarkTheme
+        // stays unset until a toggle — unlike the client branch.
+        expect(isDark.value).toBe(false);
+
+        toggleTheme();
+        expect(isDark.value).toBe(true);
+        // The class watcher is only wired up when process.client is
+        // truthy, so the DOM must stay untouched despite the state flip.
+        expect(document.documentElement.classList.contains('dark')).toBe(false);
+    });
+});
