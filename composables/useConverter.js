@@ -1,6 +1,7 @@
 import { ref, reactive } from 'vue';
 import { useLocalStorage } from '@vueuse/core';
 import ConverterApi from '@/utils/converterApi';
+import { getLocalConverter } from '@/utils/localConverters';
 
 export function useConverter() {
     // Store API key in local storage
@@ -51,6 +52,17 @@ export function useConverter() {
         state.result = null;
 
         try {
+            // Local converters run entirely in the browser — no API key,
+            // no upload, no polling.
+            const localConverter = getLocalConverter(converterPath);
+            if (localConverter) {
+                state.progress = 'RUNNING';
+                const result = await localConverter.convert(file, options);
+                state.result = result;
+                state.progress = 'COMPLETE';
+                return result;
+            }
+
             const api = getApiInstance();
 
             const handleProgress = (progress) => {

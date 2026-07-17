@@ -9,7 +9,10 @@
         "generate": "nuxt generate",
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare",
-        "format": "prettier --write ."
+        "format": "prettier --write .",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:coverage": "vitest run --coverage"
     },
     "dependencies": {
         "@headlessui/vue": "^1.7.19",
@@ -22,8 +25,10 @@
         "axios": "^1.7.7",
         "browser-image-compression": "^2.0.2",
         "exceljs": "^4.4.0",
+        "fast-xml-parser": "^5.10.1",
         "highlight.js": "^11.9.0",
         "isomorphic-dompurify": "^2.16.0",
+        "js-yaml": "^5.2.1",
         "json5": "^2.2.3",
         "jspdf": "^2.5.1",
         "lodash-es": "^4.17.21",
@@ -43,6 +48,9 @@
     },
     "devDependencies": {
         "@iconify/vue": "^4.1.2",
-        "prettier": "^3.3.3"
+        "@vitest/coverage-v8": "^4.1.10",
+        "happy-dom": "^20.10.6",
+        "prettier": "^3.3.3",
+        "vitest": "^4.1.10"
     }
 }
