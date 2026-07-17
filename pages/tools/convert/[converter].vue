@@ -139,7 +139,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, reactive } from 'vue';
+import { ref, computed, onMounted, reactive, provide } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import converterConfig from '@/config/converters';
 import BaseConverter from '@/components/convert/BaseConverter.vue';
@@ -150,8 +150,10 @@ const router = useRouter();
 const converterType = computed(() => route.params.converter);
 const currentConverter = ref(null);
 
-// Store parameter values
+// Store parameter values; BaseConverter injects these and passes them as
+// conversion options to the API.
 const paramValues = reactive({});
+provide('paramValues', paramValues);
 
 // Find related converters (converters in the same category)
 const relatedConverters = computed(() => {
@@ -166,13 +168,10 @@ const relatedConverters = computed(() => {
 onMounted(() => {
     // Find the converter configuration based on the path
     const path = `/tools/convert/${converterType.value}`;
-    console.log('Looking for converter with path:', path);
-
     const config = converterConfig.find((item) => item.path === path);
 
     if (config) {
         currentConverter.value = config;
-        console.log('Found converter:', config.title);
 
         // Initialize parameter values with defaults
         if (config.params && config.params.length > 0) {
@@ -182,8 +181,6 @@ onMounted(() => {
                 }
             });
         }
-    } else {
-        console.error('Converter not found for path:', path);
     }
 });
 

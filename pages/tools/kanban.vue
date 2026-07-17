@@ -70,6 +70,7 @@
 import draggable from 'vuedraggable';
 import Modal from '@/components/ui/Modal.vue';
 import { useLocalStorage } from '@vueuse/core';
+import { nanoid } from 'nanoid';
 
 
 const { generateShareLink, getSharedData } = useShareLink();
@@ -88,10 +89,23 @@ const activeColumnIndex = ref(0);
 const isEditing = ref(false);
 const activeTask = ref(null);
 
+// Older boards (and shared payloads) may contain tasks without ids; the
+// draggable list is keyed by id, so backfill them.
+const ensureTaskIds = (columns) => {
+    if (!Array.isArray(columns)) return columns;
+    columns.forEach((column) => {
+        (column?.items || []).forEach((task) => {
+            if (task && !task.id) task.id = nanoid();
+        });
+    });
+    return columns;
+};
+
 onMounted(async () => {
+    ensureTaskIds(board.value);
     const shared = await getSharedData();
     if (shared?.kanban) {
-        board.value = shared.kanban;
+        board.value = ensureTaskIds(shared.kanban);
     }
 });
 
@@ -134,6 +148,7 @@ const confirmTask = () => {
         toast.success('Task updated successfully');
     } else {
         board.value[activeColumnIndex.value].items.push({
+            id: nanoid(),
             text: newTaskText.value,
         });
         toast.success('Task added successfully');

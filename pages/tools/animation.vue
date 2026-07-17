@@ -622,7 +622,7 @@ const resetAnimation = () => {
         const element = previewElement.value;
         element.style.animation = 'none';
         void element.offsetHeight;
-        element.style.animation = null;
+        element.style.animation = '';
     }
 };
 
@@ -677,6 +677,11 @@ watch(
     { immediate: true }
 );
 
+onBeforeUnmount(() => {
+    styleElement?.remove();
+    styleElement = null;
+});
+
 // Keyframe Selection Method
 const toggleKeyframeSelection = (keyframe) => {
     selectedKeyframe.value =
@@ -729,12 +734,4 @@ const clampPercentage = (percentage) => {
     return Math.max(0, Math.min(100, percentage));
 };
 
-watch(
-    () => animation.value,
-    () => {
-        console.log('Animation updated:', animation.value);
-        playAnimation();
-    },
-    { deep: true }
-);
 </script>

@@ -235,24 +235,34 @@ const generatePalette = () => {
                 ];
                 break;
 
-            case 'complementary':
+            case 'complementary': {
                 const compHSL = hexToHsl(palette.value.baseColor);
-                const complementaryHSL = [
+                const complementHex = hslToHex(
                     (compHSL[0] + 180) % 360,
                     compHSL[1],
-                    compHSL[2],
-                ];
+                    compHSL[2]
+                );
+                const complementValues = new Values(complementHex);
                 palette.value.colors = [
                     ...values
-                        .tints(3)
+                        .tints(20)
                         .reverse()
                         .map((color) => ({ hex: color.hexString() })),
                     { hex: palette.value.baseColor },
                     ...values
-                        .shades(3)
+                        .shades(20)
+                        .map((color) => ({ hex: color.hexString() })),
+                    ...complementValues
+                        .tints(20)
+                        .reverse()
+                        .map((color) => ({ hex: color.hexString() })),
+                    { hex: complementHex },
+                    ...complementValues
+                        .shades(20)
                         .map((color) => ({ hex: color.hexString() })),
                 ];
                 break;
+            }
 
             case 'triadic':
                 const triadicHSL = hexToHsl(palette.value.baseColor);

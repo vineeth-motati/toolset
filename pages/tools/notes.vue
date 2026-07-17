@@ -68,22 +68,27 @@
 <script setup>
 import draggable from 'vuedraggable';
 import { useLocalStorage } from '@vueuse/core';
-import { marked } from 'marked';
-import DOMPurify from 'dompurify';
+import { Marked } from 'marked';
+import { markedHighlight } from 'marked-highlight';
+import DOMPurify from 'isomorphic-dompurify';
 import 'highlight.js/styles/github.css';
 import hljs from 'highlight.js';
+import { nanoid } from 'nanoid';
 
 const { generateShareLink, getSharedData } = useShareLink();
 const toast = useToast();
 
-marked.setOptions({
-    highlight: function (code, lang) {
-        if (lang && hljs.getLanguage(lang)) {
-            return hljs.highlight(code, { language: lang }).value;
-        }
-        return hljs.highlightAuto(code).value;
-    },
-});
+// Own Marked instance — setOptions on the shared singleton collides with
+// other tools, and the global `highlight` option is gone since marked v5.
+const markedRenderer = new Marked(
+    markedHighlight({
+        langPrefix: 'hljs language-',
+        highlight(code, lang) {
+            const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+            return hljs.highlight(code, { language }).value;
+        },
+    })
+);
 
 const notes = useLocalStorage('notes', []);
 
@@ -98,12 +103,12 @@ onMounted(async () => {
 });
 
 const renderMarkdown = (content) => {
-    return DOMPurify.sanitize(marked(content));
+    return DOMPurify.sanitize(markedRenderer.parse(content || ''));
 };
 
 const addNote = () => {
     notes.value.unshift({
-        id: Date.now(),
+        id: nanoid(),
         title: '',
         content: '',
         date: new Date().toISOString(),

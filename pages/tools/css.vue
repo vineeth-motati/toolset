@@ -25,6 +25,28 @@
                         <BaseSelect v-model="fromUnit" :options="units" label="From" />
                         <BaseSelect v-model="toUnit" :options="units" label="To" />
                     </div>
+
+                    <div class="grid grid-cols-3 gap-4 mt-4">
+                        <BaseInput
+                            v-model.number="baseFontSize"
+                            type="number"
+                            label="Base font (px)"
+                        />
+                        <BaseInput
+                            v-model.number="viewportWidth"
+                            type="number"
+                            label="Viewport W (px)"
+                        />
+                        <BaseInput
+                            v-model.number="viewportHeight"
+                            type="number"
+                            label="Viewport H (px)"
+                        />
+                    </div>
+                    <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                        rem, em and % are relative to the base font size;
+                        vh/vw to the viewport dimensions.
+                    </p>
                 </BaseCard>
 
                 <!-- Result Section -->
@@ -81,6 +103,12 @@ const value = ref(0);
 const fromUnit = ref('px');
 const toUnit = ref('rem');
 
+// Conversion context — these units are relative, so the reference values
+// are explicit and editable instead of hidden magic numbers.
+const baseFontSize = ref(16); // px — root font size (rem/em/%)
+const viewportWidth = ref(1920); // px — for vw
+const viewportHeight = ref(1080); // px — for vh
+
 // Units and Conversions
 const units = [
     { value: 'px', label: 'Pixels (px)' },
@@ -101,76 +129,41 @@ const commonConversions = [
     { label: 'Points to Pixels', from: 'pt', to: 'px' },
 ];
 
-const conversionRates = {
-    px: {
-        rem: 1 / 16,
-        em: 1 / 16,
-        pt: 0.75,
-        '%': 100 / 16,
-        vh: 100 / 937,
-        vw: 100 / 1920,
-    },
-    rem: {
-        px: 16,
-        em: 1,
-        pt: 12,
-        '%': 100,
-        vh: 100 / 58.5625,
-        vw: 100 / 120,
-    },
-    em: {
-        px: 16,
-        rem: 1,
-        pt: 12,
-        '%': 100,
-        vh: 100 / 58.5625,
-        vw: 100 / 120,
-    },
-    pt: {
-        px: 1.333333,
-        rem: 1 / 12,
-        em: 1 / 12,
-        '%': 100 / 12,
-        vh: 100 / 702.75,
-        vw: 100 / 1440,
-    },
-    '%': {
-        px: 0.16,
-        rem: 0.01,
-        em: 0.01,
-        pt: 0.12,
-        vh: 1,
-        vw: 1,
-    },
-    vh: {
-        px: 9.37,
-        rem: 0.585625,
-        em: 0.585625,
-        pt: 7.0275,
-        '%': 1,
-        vw: 1,
-    },
-    vw: {
-        px: 19.2,
-        rem: 1.2,
-        em: 1.2,
-        pt: 14.4,
-        '%': 1,
-        vh: 1,
-    },
+// Canonical model: every unit has a px size derived from the context above.
+// Converting goes value → px → target, so all pairs are consistent and
+// invertible (the old hand-written rate matrix returned wrong numbers for
+// %/vh/vw pairs and didn't round-trip).
+const pxPerUnit = (unit) => {
+    switch (unit) {
+        case 'px':
+            return 1;
+        case 'rem':
+        case 'em':
+            return baseFontSize.value;
+        case 'pt':
+            return 96 / 72; // CSS defines 1pt = 1/72in, 1in = 96px
+        case '%':
+            return baseFontSize.value / 100; // % of base font size
+        case 'vh':
+            return viewportHeight.value / 100;
+        case 'vw':
+            return viewportWidth.value / 100;
+        default:
+            return NaN;
+    }
 };
 
 function convert(value, from, to) {
     if (from === to) return value;
-    return value * conversionRates[from][to];
+    return (value * pxPerUnit(from)) / pxPerUnit(to);
 }
 
 // Computed Result
 const result = computed(() => {
     if (!value.value) return 0;
-    return Number(convert(value.value, fromUnit.value, toUnit.value)).toFixed(
-        4
-    );
+    const converted = convert(value.value, fromUnit.value, toUnit.value);
+    if (!Number.isFinite(converted)) return '—';
+    return parseFloat(converted.toFixed(4));
 });
 
 // Common Conversions
@@ -190,6 +183,9 @@ async function shareConversion() {
                 value: value.value,
                 fromUnit: fromUnit.value,
                 toUnit: toUnit.value,
+                baseFontSize: baseFontSize.value,
+                viewportWidth: viewportWidth.value,
+                viewportHeight: viewportHeight.value,
             },
         });
         if (link) {
@@ -210,6 +206,9 @@ onMounted(async () => {
         value.value = sharedData.css.value || 0;
         fromUnit.value = sharedData.css.fromUnit || 'px';
         toUnit.value = sharedData.css.toUnit || 'rem';
+        baseFontSize.value = sharedData.css.baseFontSize || 16;
+        viewportWidth.value = sharedData.css.viewportWidth || 1920;
+        viewportHeight.value = sharedData.css.viewportHeight || 1080;
         toast.success('Loaded shared conversion successfully!');
     }
 });
