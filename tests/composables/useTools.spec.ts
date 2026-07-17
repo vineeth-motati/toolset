@@ -64,3 +64,39 @@ describe('search', () => {
         }
     });
 });
+
+describe('categories — fallback label for an unmapped category', () => {
+    it('falls back to the raw category key when CATEGORY_LABELS has no entry', async () => {
+        // tools.json today only ever uses categories with a configured
+        // label; mock the data source to exercise the defensive fallback
+        // that protects against a future category added without one.
+        vi.resetModules();
+        vi.doMock('@/data/tools.json', () => ({
+            default: [
+                {
+                    name: 'Mystery Tool',
+                    path: '/tools/mystery',
+                    icon: 'mdi:help',
+                    description: 'A tool in an unlabeled category',
+                    category: 'mystery',
+                    keywords: ['mystery'],
+                    layout: 'default',
+                    popular: false,
+                    seo: { title: 'Mystery Tool', description: 'desc' },
+                },
+            ],
+        }));
+
+        const { useTools: useFreshTools } = await import(
+            '@/composables/useTools'
+        );
+        const categories = useFreshTools().categories();
+
+        expect(categories).toHaveLength(1);
+        expect(categories[0].key).toBe('mystery');
+        expect(categories[0].label).toBe('mystery');
+
+        vi.doUnmock('@/data/tools.json');
+        vi.resetModules();
+    });
+});

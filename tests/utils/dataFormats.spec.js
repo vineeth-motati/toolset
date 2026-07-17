@@ -97,6 +97,16 @@ describe('validateJson (/tools/convert/validate-json)', () => {
         const result = await validateJson(makeFile('{oops}', 'x.json'));
         expect(result.text).toContain('✗ Invalid JSON');
     });
+
+    it('reports primitive and null roots by their string value, not key/item counts', async () => {
+        const number = await validateJson(makeFile('42', 'n.json'));
+        expect(number.text).toContain('Root type: number');
+        expect(number.text).toContain('Size: 42');
+
+        const nullRoot = await validateJson(makeFile('null', 'z.json'));
+        expect(nullRoot.text).toContain('Root type: object');
+        expect(nullRoot.text).toContain('Size: null');
+    });
 });
 
 describe('jsonToXml (/tools/convert/json-to-xml)', () => {
@@ -235,6 +245,17 @@ describe('xmlToCsv (/tools/convert/xml-to-csv)', () => {
             xmlToCsv(makeFile('<root><only>1</only></root>', 'x.xml'))
         ).rejects.toThrow(/No repeating elements/);
     });
+
+    it('skips a repeating element whose values are primitives, not records', async () => {
+        // <nums> repeats, but its parsed value is an array of numbers, not
+        // objects — findRecordArray must reject it and keep searching
+        // (finding nothing else here, so it still reports "no repeating").
+        await expect(
+            xmlToCsv(
+                makeFile('<root><nums>1</nums><nums>2</nums></root>', 'x.xml')
+            )
+        ).rejects.toThrow(/No repeating elements/);
+    });
 });
 
 describe('xmlFileToRecords (shared XML → rows pipeline)', () => {
@@ -288,5 +309,12 @@ describe('htmlTableToCsv (/tools/convert/html-to-csv)', () => {
         await expect(
             htmlTableToCsv(makeFile('<p>no table</p>', 'p.html'))
         ).rejects.toThrow(/No <table>/);
+    });
+
+    it('rejects a table with no rows at all', async () => {
+        const html = '<html><body><table></table></body></html>';
+        await expect(
+            htmlTableToCsv(makeFile(html, 'empty.html'))
+        ).rejects.toThrow(/Table contains no rows/);
     });
 });

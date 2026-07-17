@@ -53,6 +53,12 @@ describe('getTargetExtension', () => {
     it('falls back to txt for unknown types', () => {
         expect(api.getTargetExtension('convert.made_up')).toBe('txt');
     });
+
+    it('falls back to txt when a known converter has no extension mapping', () => {
+        // "Validation Result" (validate-json, validate-xml-xsd) has no
+        // entry in the PDF/JSON/CSV/... formatToExt table.
+        expect(api.getTargetExtension('convert.validate_json')).toBe('txt');
+    });
 });
 
 describe('convert — full pipeline', () => {
@@ -153,6 +159,49 @@ describe('convert — full pipeline', () => {
         ).rejects.toThrow(/File upload failed: quota exceeded/);
     });
 
+    it('surfaces task-creation errors from the API', async () => {
+        vi.stubGlobal(
+            'fetch',
+            vi
+                .fn()
+                .mockResolvedValueOnce(jsonResponse({ file_id: 'f' }))
+                .mockResolvedValueOnce(
+                    jsonResponse({ error: 'invalid options' })
+                )
+        );
+        await expect(
+            api.convert('/tools/convert/csv-to-json', makeFile('x', 'x.csv'))
+        ).rejects.toThrow(/Conversion task creation failed: invalid options/);
+    });
+
+    it('surfaces network failures during status polling', async () => {
+        vi.stubGlobal(
+            'fetch',
+            vi
+                .fn()
+                .mockResolvedValueOnce(jsonResponse({ file_id: 'f' }))
+                .mockResolvedValueOnce(jsonResponse({ task_id: 't' }))
+                .mockRejectedValueOnce(new Error('network blip'))
+        );
+        await expect(
+            api.convert('/tools/convert/csv-to-json', makeFile('x', 'x.csv'))
+        ).rejects.toThrow(/Task status check failed: network blip/);
+    });
+
+    it('rejects when a poll response carries an error without a status', async () => {
+        vi.stubGlobal(
+            'fetch',
+            vi
+                .fn()
+                .mockResolvedValueOnce(jsonResponse({ file_id: 'f' }))
+                .mockResolvedValueOnce(jsonResponse({ task_id: 't' }))
+                .mockResolvedValueOnce(jsonResponse({ error: 'task vanished' }))
+        );
+        await expect(
+            api.convert('/tools/convert/csv-to-json', makeFile('x', 'x.csv'))
+        ).rejects.toThrow(/Conversion failed: task vanished/);
+    });
+
     it('rejects when the conversion task errors', async () => {
         vi.stubGlobal(
             'fetch',
@@ -218,5 +267,36 @@ describe('convertUrl — URL-based pipeline', () => {
         expect(result.filename).toMatch(/^my_site_dev\./);
         const taskBody = JSON.parse(fetchMock.mock.calls[0][1].body);
         expect(taskBody.options.url).toBe('https://my.site.dev/page');
+    });
+
+    it('rejects unknown converter paths without touching the network', async () => {
+        const api = new ConverterApi('token');
+        const fetchMock = vi.fn();
+        vi.stubGlobal('fetch', fetchMock);
+        await expect(
+            api.convertUrl('/tools/convert/unknown', 'https://x.y')
+        ).rejects.toThrow(/Unsupported conversion type/);
+        expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('reports progress through the URL pipeline', async () => {
+        const api = new ConverterApi('token');
+        const fetchMock = vi
+            .fn()
+            .mockResolvedValueOnce(jsonResponse({ task_id: 't' }))
+            .mockResolvedValueOnce(
+                jsonResponse({ status: 'SUCCESS', file_id: 'f' })
+            )
+            .mockResolvedValueOnce(jsonResponse({}));
+        vi.stubGlobal('fetch', fetchMock);
+
+        const progress = [];
+        await api.convertUrl(
+            '/tools/convert/csv-to-json',
+            'https://my.site.dev/page',
+            {},
+            (p) => progress.push(p)
+        );
+        expect(progress).toEqual(['PREPARING', 'SUCCESS', 'DOWNLOADING']);
     });
 });

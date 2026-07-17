@@ -152,6 +152,24 @@ describe('convertUrl', () => {
         expect(converter.state.error).toBe('boom');
         expect(converter.state.progress).toBe('ERROR');
     });
+
+    it('pipes API progress callbacks into state', async () => {
+        const converter = useConverter();
+        converter.saveApiKey('k');
+        const seenDuringCallback = [];
+        apiMocks.convertUrl.mockImplementation(
+            async (path, url, options, onProgress) => {
+                onProgress('PREPARING');
+                seenDuringCallback.push(converter.state.progress);
+                return { blob: new Blob(['pdf']), filename: 'site.pdf' };
+            }
+        );
+        await converter.convertUrl(
+            '/tools/convert/website-to-pdf',
+            'https://example.com'
+        );
+        expect(seenDuringCallback).toEqual(['PREPARING']);
+    });
 });
 
 describe('downloadResult', () => {

@@ -45,6 +45,19 @@ describe('useToolMeta', () => {
         expect(jsonLd.offers.price).toBe('0'); // every tool stays free
     });
 
+    it('falls back to the tool name/description when seo is not configured', () => {
+        const bareTool = {
+            name: 'Bare Tool',
+            path: '/tools/bare',
+            description: 'A tool with no seo block',
+        } as Tool;
+        useToolMeta(bareTool);
+
+        const meta = seoMeta.mock.calls[0][0];
+        expect(meta.title).toBe('Bare Tool · Tools-Set');
+        expect(meta.description).toBe('A tool with no seo block');
+    });
+
     it.each(toolsData.map((t) => [t.path, t]))(
         '%s produces a complete meta set',
         (_path, tool) => {
