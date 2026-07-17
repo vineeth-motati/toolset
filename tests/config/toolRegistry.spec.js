@@ -108,7 +108,7 @@ describe('config/converters.js — every converter tool', () => {
 });
 
 describe('utils/localConverters.js — the in-browser registry', () => {
-    // The product rule: these 31 conversions are free, client-side and
+    // The product rule: these 41 conversions are free, client-side and
     // private — they must never fall back to the API. This list is the spec;
     // a converter dropped from the registry fails here by name.
     const EXPECTED_LOCAL = [
@@ -131,12 +131,22 @@ describe('utils/localConverters.js — the in-browser registry', () => {
         '/tools/convert/csv-to-excel',
         '/tools/convert/jpg-to-pdf',
         '/tools/convert/png-to-pdf',
+        '/tools/convert/pdf-to-text',
+        '/tools/convert/pdf-to-jpg',
+        '/tools/convert/pdf-to-png',
         '/tools/convert/png-to-webp',
         '/tools/convert/jpg-to-webp',
         '/tools/convert/webp-to-png',
         '/tools/convert/webp-to-jpg',
         '/tools/convert/png-to-jpg',
         '/tools/convert/jpg-to-png',
+        '/tools/convert/heic-to-png',
+        '/tools/convert/heic-to-jpg',
+        '/tools/convert/ocr-png-to-text',
+        '/tools/convert/ocr-jpg-to-text',
+        '/tools/convert/ocr-png-to-pdf',
+        '/tools/convert/ocr-jpg-to-pdf',
+        '/tools/convert/ocr-pdf-to-text',
         '/tools/convert/srt-to-csv',
         '/tools/convert/srt-to-excel',
         '/tools/convert/srt-to-text',
@@ -145,9 +155,9 @@ describe('utils/localConverters.js — the in-browser registry', () => {
         '/tools/convert/fix-xml-escaping',
     ];
 
-    it('the spec list itself covers 31 tools', () => {
-        expect(EXPECTED_LOCAL).toHaveLength(31);
-        expect(new Set(EXPECTED_LOCAL).size).toBe(31);
+    it('the spec list itself covers 41 tools', () => {
+        expect(EXPECTED_LOCAL).toHaveLength(41);
+        expect(new Set(EXPECTED_LOCAL).size).toBe(41);
     });
 
     it('registers no local converters beyond the spec list', () => {
@@ -173,10 +183,15 @@ describe('utils/localConverters.js — the in-browser registry', () => {
         expect(getLocalConverter('')).toBeNull();
     });
 
-    it('keeps API-only converters (OCR, video, eBooks...) off the registry', () => {
+    it('keeps API-only converters (video, eBooks, website capture, PDF rendering...) off the registry', () => {
         const apiOnlySamples = converters
             .map((c) => c.path)
-            .filter((p) => /ocr|video|epub|heic|website|pdf-to/.test(p));
+            .filter((p) => /ocr|video|epub|heic|website|pdf-to/.test(p))
+            .filter((p) => !EXPECTED_LOCAL.includes(p));
+        // Sanity check: the regex above should still match *some* paths that
+        // stay API-only (e.g. pdf-to-jpg, ocr-png-to-pdf, video-* — this
+        // guards against the filter silently matching nothing).
+        expect(apiOnlySamples.length).toBeGreaterThan(0);
         for (const path of apiOnlySamples) {
             expect(getLocalConverter(path)).toBeNull();
         }
