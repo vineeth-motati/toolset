@@ -15,6 +15,7 @@ import {
 } from './shared';
 import { parseSrt, buildSrt, rowsToCues } from './srtConverters';
 import { xmlFileToRecords } from './dataFormats';
+import { wrapHtmlDocument } from './docConverters';
 
 const XLSX_MIME =
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
@@ -122,6 +123,36 @@ export const excelToXml = async (file) => {
         output,
         replaceExtension(file.name, 'xml'),
         'application/xml'
+    );
+};
+
+const escapeHtml = (value) =>
+    String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+
+export const excelToHtml = async (file) => {
+    const records = await readRecords(file);
+    const { headers, rows } = toTable(records);
+    const thead = `<tr>${headers
+        .map((h) => `<th>${escapeHtml(h)}</th>`)
+        .join('')}</tr>`;
+    const tbody = rows
+        .map(
+            (row) =>
+                `<tr>${row
+                    .map((cell) => `<td>${escapeHtml(cell)}</td>`)
+                    .join('')}</tr>`
+        )
+        .join('\n');
+    const title = file.name.replace(/\.[^.]+$/, '');
+    const table = `<table border="1">\n<thead>${thead}</thead>\n<tbody>\n${tbody}\n</tbody>\n</table>`;
+    return textResult(
+        wrapHtmlDocument(title, table),
+        replaceExtension(file.name, 'html'),
+        'text/html'
     );
 };
 

@@ -29,7 +29,7 @@ const drawToCanvas = async (file, { background } = {}) => {
     return canvas;
 };
 
-const canvasToBlob = (canvas, mime, quality) =>
+export const canvasToBlob = (canvas, mime, quality) =>
     new Promise((resolve, reject) => {
         canvas.toBlob(
             (blob) =>

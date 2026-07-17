@@ -87,7 +87,7 @@ describe('convertFile — API dispatch', () => {
         const converter = useConverter();
         await expect(
             converter.convertFile(
-                '/tools/convert/pdf-to-text',
+                '/tools/convert/pdf-to-word',
                 makeFile('x', 'doc.pdf')
             )
         ).rejects.toThrow('API key not set');
@@ -110,14 +110,14 @@ describe('convertFile — API dispatch', () => {
 
         const file = makeFile('x', 'doc.pdf');
         const result = await converter.convertFile(
-            '/tools/convert/pdf-to-text',
+            '/tools/convert/pdf-to-word',
             file,
             { deep: true }
         );
 
         expect(result).toBe(apiResult);
         expect(apiMocks.convert).toHaveBeenCalledWith(
-            '/tools/convert/pdf-to-text',
+            '/tools/convert/pdf-to-word',
             file,
             { deep: true },
             expect.any(Function)

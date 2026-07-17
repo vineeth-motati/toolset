@@ -530,7 +530,9 @@ const applyState = async (data) => {
                 blob: await dataUrlToBlob(data.output),
                 filename: data.outputFilename || 'output',
             };
-            if (isImageOutput.value) {
+            // Same guard as the live-conversion path: image converters
+            // can persist non-image outputs (multi-page PDF → zip).
+            if (isImageOutput.value && data.output.startsWith('data:image/')) {
                 previewUrl.value = data.output;
             }
         } else {
@@ -693,9 +695,20 @@ const handleConvert = async () => {
             result = await convertFile(route.path, sourceFile.value, options);
         }
 
-        // Handle result preview
+        // Handle result preview. Image converters can produce non-image
+        // blobs (multi-page PDF → zip of images), so only preview blobs
+        // that are images — an untyped blob is trusted to match the
+        // target format (API downloads may lack a Content-Type). Stale
+        // previews from a prior conversion are cleared either way.
         if (result && result.blob) {
-            if (isImageOutput.value) {
+            if (previewUrl.value.startsWith('blob:')) {
+                URL.revokeObjectURL(previewUrl.value);
+            }
+            previewUrl.value = '';
+            outputText.value = '';
+            const blobIsImage =
+                !result.blob.type || result.blob.type.startsWith('image/');
+            if (isImageOutput.value && blobIsImage) {
                 previewUrl.value = URL.createObjectURL(result.blob);
             } else if (isTextOutput.value) {
                 const text = await result.blob.text();
