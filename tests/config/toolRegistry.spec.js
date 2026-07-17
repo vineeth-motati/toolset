@@ -108,7 +108,7 @@ describe('config/converters.js — every converter tool', () => {
 });
 
 describe('utils/localConverters.js — the in-browser registry', () => {
-    // The product rule: these 41 conversions are free, client-side and
+    // The product rule: these 47 conversions are free, client-side and
     // private — they must never fall back to the API. This list is the spec;
     // a converter dropped from the registry fails here by name.
     const EXPECTED_LOCAL = [
@@ -152,12 +152,18 @@ describe('utils/localConverters.js — the in-browser registry', () => {
         '/tools/convert/srt-to-text',
         '/tools/convert/csv-to-srt',
         '/tools/convert/excel-to-srt',
+        '/tools/convert/wav-to-mp3',
+        '/tools/convert/flac-to-mp3',
+        '/tools/convert/mp3-to-wav',
+        '/tools/convert/mp4-to-mp3',
+        '/tools/convert/word-to-html',
+        '/tools/convert/excel-to-html',
         '/tools/convert/fix-xml-escaping',
     ];
 
-    it('the spec list itself covers 41 tools', () => {
-        expect(EXPECTED_LOCAL).toHaveLength(41);
-        expect(new Set(EXPECTED_LOCAL).size).toBe(41);
+    it('the spec list itself covers 47 tools', () => {
+        expect(EXPECTED_LOCAL).toHaveLength(47);
+        expect(new Set(EXPECTED_LOCAL).size).toBe(47);
     });
 
     it('registers no local converters beyond the spec list', () => {

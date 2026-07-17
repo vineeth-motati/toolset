@@ -8,8 +8,8 @@
  * { blob, filename, text? } — `text` enables persistence/sharing for
  * text outputs; small binary outputs are persisted as base64 by the UI.
  *
- * Converters NOT in this registry stay on the API: audio/video, eBooks,
- * website capture, XSD validation, Office ↔ PDF/HTML, and PDF layout
+ * Converters NOT in this registry stay on the API: video transcoding,
+ * eBooks, website capture, XSD validation, Office → PDF, and PDF layout
  * extraction (→ Word/Excel/CSV/HTML) all need engines the browser
  * doesn't ship.
  */
@@ -32,6 +32,7 @@ import {
     excelToCsv,
     excelToXml,
     excelToSrt,
+    excelToHtml,
     jsonToExcel,
     csvToExcel,
     srtToExcel,
@@ -60,6 +61,13 @@ import {
     ocrPdfToText,
 } from './converters/ocrConverters';
 import { pdfToText, pdfToJpg, pdfToPng } from './converters/pdfConverters';
+import {
+    wavToMp3,
+    flacToMp3,
+    mp3ToWav,
+    mp4ToMp3,
+} from './converters/audioConverters';
+import { wordToHtml } from './converters/docConverters';
 
 // Inputs/outputs larger than this are still converted, but skipped
 // for localStorage persistence and share links (sqlite row + 5MB
@@ -121,6 +129,18 @@ const localConverters = {
     '/tools/convert/srt-to-text': { convert: srtToText },
     '/tools/convert/csv-to-srt': { convert: csvToSrt },
     '/tools/convert/excel-to-srt': { convert: excelToSrt },
+
+    // Audio group (Web Audio decode + lamejs encode — video transcoding
+    // to MP4 stays on the API)
+    '/tools/convert/wav-to-mp3': { convert: wavToMp3 },
+    '/tools/convert/flac-to-mp3': { convert: flacToMp3 },
+    '/tools/convert/mp3-to-wav': { convert: mp3ToWav },
+    '/tools/convert/mp4-to-mp3': { convert: mp4ToMp3 },
+
+    // Document group (semantic HTML output — layout-faithful Office → PDF
+    // stays on the API)
+    '/tools/convert/word-to-html': { convert: wordToHtml },
+    '/tools/convert/excel-to-html': { convert: excelToHtml },
 
     // Misc XML utilities
     '/tools/convert/fix-xml-escaping': { convert: fixXmlEscaping },

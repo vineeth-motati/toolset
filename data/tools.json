@@ -79,14 +79,23 @@
         "name": "Image Tools",
         "path": "/tools/image",
         "icon": "mdi:image",
-        "description": "Compress and optimize your images",
+        "description": "Resize, convert, rotate, and compress images",
         "category": "media",
-        "keywords": ["image compression", "optimize", "resize", "photo"],
+        "keywords": [
+            "image compression",
+            "optimize",
+            "resize",
+            "convert",
+            "webp",
+            "rotate",
+            "flip",
+            "photo"
+        ],
         "layout": "default",
         "popular": false,
         "seo": {
-            "title": "Image Optimizer — Compress Images Online",
-            "description": "Compress and optimize images in your browser without uploading them anywhere."
+            "title": "Image Tools — Resize, Convert & Compress Online",
+            "description": "Resize, convert (PNG/JPEG/WebP), rotate, and compress images in your browser without uploading them anywhere."
         }
     },
     {

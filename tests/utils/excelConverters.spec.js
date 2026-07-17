@@ -11,6 +11,7 @@ import {
     excelToCsv,
     excelToXml,
     excelToSrt,
+    excelToHtml,
     jsonToExcel,
     csvToExcel,
     srtToExcel,
@@ -171,6 +172,38 @@ describe('excelToXml (/tools/convert/excel-to-xml)', () => {
         expect(result.text).toContain('<Full_Name>Alice</Full_Name>');
         expect(result.text).toMatch(/^<\?xml version="1.0"/);
         expect(result.filename).toBe('people.xml');
+    });
+});
+
+describe('excelToHtml (/tools/convert/excel-to-html)', () => {
+    it('renders the worksheet as an escaped HTML table', async () => {
+        const file = await makeExcelFile(
+            [
+                ['name', 'note'],
+                ['Alice', '<b>bold</b> & "quoted"'],
+                ['Bob', 'plain'],
+            ],
+            'people.xlsx'
+        );
+
+        const result = await excelToHtml(file);
+
+        expect(result.filename).toBe('people.html');
+        expect(result.blob.type).toBe('text/html');
+        expect(result.text).toContain('<!DOCTYPE html>');
+        expect(result.text).toContain('<title>people</title>');
+        expect(result.text).toContain('<th>name</th><th>note</th>');
+        expect(result.text).toContain('<td>Alice</td>');
+        // Cell content must be escaped, never raw markup.
+        expect(result.text).toContain(
+            '&lt;b&gt;bold&lt;/b&gt; &amp; &quot;quoted&quot;'
+        );
+        expect(result.text).not.toContain('<b>bold</b>');
+    });
+
+    it('rejects workbooks with no data rows', async () => {
+        const file = await makeExcelFile([['only', 'headers']]);
+        await expect(excelToHtml(file)).rejects.toThrow('no data rows');
     });
 });
 
