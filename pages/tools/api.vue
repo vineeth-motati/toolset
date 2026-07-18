@@ -409,8 +409,8 @@ const sendRequest = async () => {
 
 const shareApi = async () => {
     try {
-        // Never share credentials or response data — share links are stored
-        // server-side and readable by anyone with the URL.
+        // Never share credentials or response data — the payload is encoded
+        // into the URL itself, so it ends up in address bars and history.
         const shareable = stripVolatile(api.value);
         shareable.auth = {
             ...apiDefaults.auth,
