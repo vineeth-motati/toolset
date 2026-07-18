@@ -13,6 +13,15 @@
 
         <div class="h-[85vh] flex flex-col">
             <BaseCard class="overflow-auto flex-1">
+                <p class="mb-4 text-xs text-gray-500 dark:text-gray-400">
+                    <span
+                        class="rounded px-1 py-0.5 text-[10px] font-semibold uppercase tracking-wide bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400"
+                        >API</span
+                    >
+                    converters run on ConversionTools.io — they upload your
+                    file and need an API key from Settings. Everything else
+                    converts entirely in your browser.
+                </p>
                 <!-- Conversion categories -->
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                     <div
@@ -34,9 +43,18 @@
                             >
                                 <Icon
                                     :icon="option.icon"
-                                    class="mr-2 text-primary-600 dark:text-primary-400"
+                                    class="mr-2 shrink-0 text-primary-600 dark:text-primary-400"
                                 />
-                                <span>{{ option.title }}</span>
+                                <span class="truncate">{{
+                                    option.title
+                                }}</span>
+                                <span
+                                    v-if="option.apiOnly"
+                                    class="ml-auto shrink-0 rounded px-1 py-0.5 text-[10px] font-semibold uppercase tracking-wide bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400"
+                                    title="Runs on the external ConversionTools API — needs an API key and uploads your file"
+                                >
+                                    API
+                                </span>
                             </button>
                         </div>
                     </div>
@@ -52,11 +70,11 @@ import { Icon } from '@iconify/vue';
 import { useToast } from '@/composables/useToast';
 import { useRouter } from 'vue-router';
 import converters from '@/config/converters';
+import { getLocalConverter } from '@/utils/localConverters';
 
 const router = useRouter();
 const toast = useToast();
 
-// Function to navigate to the converter or show "coming soon" message
 const navigateToConverter = (option) => {
     router.push(option.path);
 };
@@ -81,6 +99,7 @@ const generateCategories = () => {
                     title: c.sourceFormat + ' to ' + c.targetFormat,
                     path: c.path,
                     icon: c.sourceIcon,
+                    apiOnly: !getLocalConverter(c.path),
                 })),
         };
     });

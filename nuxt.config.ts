@@ -38,5 +38,13 @@ export default defineNuxtConfig({
         },
     },
 
+    // libxml2-wasm (XML/XSD validator) ships top-level await, which the
+    // default es2020 build target rejects. es2022 ≈ Chrome 89+/Safari 15+ —
+    // in line with the WebCodecs-era browsers the video converters need.
+    vite: {
+        build: { target: 'es2022' },
+        optimizeDeps: { esbuildOptions: { target: 'es2022' } },
+    },
+
     compatibilityDate: '2024-11-16',
 });

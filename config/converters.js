@@ -201,6 +201,17 @@ export default [
         sourceIcon: 'tabler:file-type-xml',
         sourceAccept: '.xml,.xsd,application/xml,text/xml',
         category: 'XML Converter',
+        params: [
+            {
+                name: 'xsd',
+                label: 'XSD Schema',
+                type: 'textarea',
+                required: false,
+                placeholder: '<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">…</xs:schema>',
+                description:
+                    'Paste the XSD to validate against (XSD 1.0). Leave empty to only check that the XML is well-formed.',
+            },
+        ],
     },
 
     // CSV Converter Group

@@ -1,4 +1,6 @@
 import toolsData from '@/data/tools.json';
+import converterConfigs from '@/config/converters';
+import { getLocalConverter } from '@/utils/localConverters';
 
 export interface ToolSeo {
     title: string;
@@ -15,6 +17,11 @@ export interface Tool {
     layout: 'default' | 'fullscreen';
     popular: boolean;
     seo: ToolSeo;
+    // Entries projected from config/converters.js (absent on tools.json entries)
+    kind?: 'tool' | 'converter';
+    // True when conversion runs on the external ConversionTools API — the
+    // file is uploaded and a user-supplied API key is required.
+    apiOnly?: boolean;
 }
 
 export const CATEGORY_LABELS: Record<string, string> = {
@@ -27,9 +34,34 @@ export const CATEGORY_LABELS: Record<string, string> = {
 
 const tools = toolsData as Tool[];
 
+// The converters from config/converters.js projected into the Tool shape so
+// search, byPath and recents treat them as first-class tools. They stay out
+// of `all`/`categories` — the home grid keeps the single Convert hub card.
+const converterTools: Tool[] = converterConfigs.map((c: any) => ({
+    name: c.title,
+    path: c.path,
+    icon: c.sourceIcon,
+    description: c.description,
+    category: 'convert',
+    keywords: [
+        c.sourceFormat,
+        c.targetFormat,
+        `${c.sourceFormat} to ${c.targetFormat}`,
+        c.category,
+    ].map((k: string) => k.toLowerCase()),
+    layout: 'default',
+    popular: false,
+    seo: { title: c.title, description: c.description },
+    kind: 'converter',
+    apiOnly: !getLocalConverter(c.path),
+}));
+
+// Tools first so they outrank converters in search results.
+const searchable: Tool[] = [...tools, ...converterTools];
+
 export function useTools() {
     const byPath = (path: string): Tool | undefined =>
-        tools.find((t) => t.path === path);
+        searchable.find((t) => t.path === path);
 
     const currentTool = (): Tool | undefined => {
         const route = useRoute();
@@ -54,7 +86,7 @@ export function useTools() {
     const search = (query: string): Tool[] => {
         const q = query.trim().toLowerCase();
         if (!q) return [];
-        return tools.filter(
+        return searchable.filter(
             (tool) =>
                 tool.name.toLowerCase().includes(q) ||
                 tool.description.toLowerCase().includes(q) ||
@@ -64,6 +96,7 @@ export function useTools() {
 
     return {
         all: tools,
+        converters: converterTools,
         byPath,
         currentTool,
         popular,

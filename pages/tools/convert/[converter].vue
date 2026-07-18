@@ -34,6 +34,30 @@
         </template>
 
         <div v-if="currentConverter">
+            <div
+                v-if="!isLocalConverter"
+                class="p-3 mb-4 text-sm rounded-lg border border-amber-200 bg-amber-50 text-amber-800 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-300"
+            >
+                <Icon
+                    icon="mdi:cloud-upload-outline"
+                    class="inline-block mr-1 w-4 h-4 align-text-bottom"
+                />
+                This converter runs on the external ConversionTools API — your
+                file is uploaded to convert it, and it needs an API key from
+                <button
+                    class="font-medium underline"
+                    @click="navigateToSettings"
+                >
+                    Settings</button
+                >.
+            </div>
+            <p
+                v-else
+                class="flex gap-1 items-center mb-4 text-xs text-emerald-600 dark:text-emerald-400"
+            >
+                <Icon icon="mdi:shield-check" class="w-4 h-4" />
+                Runs 100% in your browser — this file never leaves your device.
+            </p>
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
                 <!-- Left sidebar with related converters -->
                 <div class="col-span-1">
@@ -113,6 +137,14 @@
                                     :label="param.label"
                                     :placeholder="param.placeholder || ''"
                                 />
+                                <BaseTextarea
+                                    v-else-if="param.type === 'textarea'"
+                                    v-model="paramValues[param.name]"
+                                    :label="param.label"
+                                    :placeholder="param.placeholder || ''"
+                                    :rows="6"
+                                    class="font-mono"
+                                />
                                 <BaseInput
                                     v-else
                                     v-model="paramValues[param.name]"
@@ -154,6 +186,11 @@ import converterConfig from '@/config/converters';
 import BaseConverter from '@/components/convert/BaseConverter.vue';
 import { getLocalConverter } from '@/utils/localConverters';
 import { Icon } from '@iconify/vue';
+
+// Remount per converter path: currentConverter/paramValues are initialized
+// in onMounted, and ToolLayout resolves its tool once per setup — reusing the
+// component across converter navigations would leave both stale.
+definePageMeta({ key: (route) => route.fullPath });
 
 const route = useRoute();
 const router = useRouter();

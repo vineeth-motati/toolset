@@ -1,8 +1,8 @@
 /**
  * Audio converters — the browser's own decoder (Web Audio API) reads
  * WAV/FLAC/MP3/MP4 input, lamejs encodes MP3, and WAV output is a plain
- * PCM16 RIFF writer. No ffmpeg-style wasm payload needed; real video
- * transcoding (MOV/MKV/AVI → MP4) stays on the API.
+ * PCM16 RIFF writer. No ffmpeg-style wasm payload needed; MOV/MKV → MP4
+ * lives in videoConverters.js (mediabunny), AVI stays on the API.
  */
 import { replaceExtension } from './shared';
 
