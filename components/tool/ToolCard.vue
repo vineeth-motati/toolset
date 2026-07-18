@@ -13,11 +13,20 @@
                 />
             </div>
             <div class="min-w-0">
-                <h3
-                    class="text-base font-semibold text-gray-900 truncate dark:text-gray-100"
-                >
-                    {{ tool.name }}
-                </h3>
+                <div class="flex gap-2 items-center">
+                    <h3
+                        class="text-base font-semibold text-gray-900 truncate dark:text-gray-100"
+                    >
+                        {{ tool.name }}
+                    </h3>
+                    <span
+                        v-if="tool.apiOnly"
+                        class="shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400"
+                        title="Runs on the external ConversionTools API — needs an API key and uploads your file"
+                    >
+                        API
+                    </span>
+                </div>
                 <p
                     class="text-sm text-gray-600 line-clamp-2 dark:text-gray-400"
                 >

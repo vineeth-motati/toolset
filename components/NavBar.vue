@@ -71,11 +71,19 @@
                                             class="w-4 h-4 text-indigo-600 dark:text-indigo-400"
                                         />
                                     </div>
-                                    <div>
-                                        <div
-                                            class="font-medium text-gray-900 dark:text-white"
-                                        >
-                                            {{ tool.name }}
+                                    <div class="min-w-0">
+                                        <div class="flex gap-2 items-center">
+                                            <span
+                                                class="font-medium text-gray-900 truncate dark:text-white"
+                                            >
+                                                {{ tool.name }}
+                                            </span>
+                                            <span
+                                                v-if="tool.apiOnly"
+                                                class="shrink-0 rounded px-1 py-0.5 text-[10px] font-semibold uppercase tracking-wide bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400"
+                                            >
+                                                API
+                                            </span>
                                         </div>
                                         <div
                                             class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1"
@@ -187,11 +195,19 @@
                                     class="w-4 h-4 text-indigo-600 dark:text-indigo-400"
                                 />
                             </div>
-                            <div>
-                                <div
-                                    class="font-medium text-gray-900 dark:text-white"
-                                >
-                                    {{ tool.name }}
+                            <div class="min-w-0">
+                                <div class="flex gap-2 items-center">
+                                    <span
+                                        class="font-medium text-gray-900 truncate dark:text-white"
+                                    >
+                                        {{ tool.name }}
+                                    </span>
+                                    <span
+                                        v-if="tool.apiOnly"
+                                        class="shrink-0 rounded px-1 py-0.5 text-[10px] font-semibold uppercase tracking-wide bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400"
+                                    >
+                                        API
+                                    </span>
                                 </div>
                                 <div
                                     class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1"

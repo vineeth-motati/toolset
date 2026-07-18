@@ -88,9 +88,19 @@
                                         </span>
                                         <span class="min-w-0">
                                             <span
-                                                class="block text-sm font-medium text-gray-900 truncate dark:text-gray-100"
+                                                class="flex gap-2 items-center"
                                             >
-                                                {{ tool.name }}
+                                                <span
+                                                    class="text-sm font-medium text-gray-900 truncate dark:text-gray-100"
+                                                >
+                                                    {{ tool.name }}
+                                                </span>
+                                                <span
+                                                    v-if="tool.apiOnly"
+                                                    class="shrink-0 rounded px-1 py-0.5 text-[10px] font-semibold uppercase tracking-wide bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400"
+                                                >
+                                                    API
+                                                </span>
                                             </span>
                                             <span
                                                 class="block text-xs text-gray-500 truncate dark:text-gray-400"

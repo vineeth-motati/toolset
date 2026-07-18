@@ -5,6 +5,8 @@
 import { describe, it, expect, vi } from 'vitest';
 import { useTools, CATEGORY_LABELS } from '@/composables/useTools';
 import toolsData from '@/data/tools.json';
+import converterConfigs from '@/config/converters';
+import { getLocalConverter } from '@/utils/localConverters';
 
 const tools = useTools();
 
@@ -62,6 +64,67 @@ describe('search', () => {
                 `search("${tool.name}") should find ${tool.path}`
             ).toContain(tool.path);
         }
+    });
+});
+
+describe('converter integration — the unified search index', () => {
+    it('exposes every converter from config/converters.js', () => {
+        expect(tools.converters).toHaveLength(converterConfigs.length);
+    });
+
+    it('finds converters by name from any search box', () => {
+        expect(tools.search('pdf to word').map((t) => t.path)).toContain(
+            '/tools/convert/pdf-to-word'
+        );
+        expect(tools.search('MP4 to MP3').map((t) => t.path)).toContain(
+            '/tools/convert/mp4-to-mp3'
+        );
+    });
+
+    it('every converter is findable by its own title — no dead entries', () => {
+        for (const c of converterConfigs) {
+            expect(
+                tools.search(c.title).map((t) => t.path),
+                `search("${c.title}") should find ${c.path}`
+            ).toContain(c.path);
+        }
+    });
+
+    it('ranks top-level tools ahead of converters', () => {
+        const results = tools.search('json');
+        const firstConverter = results.findIndex(
+            (t) => t.kind === 'converter'
+        );
+        const lastTool = results.map((t) => t.kind !== 'converter').lastIndexOf(true);
+        expect(firstConverter).toBeGreaterThan(-1);
+        expect(lastTool).toBeLessThan(firstConverter);
+    });
+
+    it('byPath resolves converter paths', () => {
+        expect(tools.byPath('/tools/convert/csv-to-json')?.kind).toBe(
+            'converter'
+        );
+    });
+
+    it('apiOnly agrees with the local-converter registry for every converter', () => {
+        for (const c of converterConfigs) {
+            expect(
+                tools.byPath(c.path)?.apiOnly,
+                `${c.path} apiOnly flag`
+            ).toBe(!getLocalConverter(c.path));
+        }
+        // Spot-check both directions so a registry-wide failure can't
+        // trivially satisfy the loop above.
+        expect(tools.byPath('/tools/convert/pdf-to-word')?.apiOnly).toBe(true);
+        expect(tools.byPath('/tools/convert/csv-to-json')?.apiOnly).toBe(
+            false
+        );
+    });
+
+    it('keeps converters out of the home grid (all/categories stay tools.json-only)', () => {
+        expect(tools.all).toHaveLength(toolsData.length);
+        const bucketed = tools.categories().flatMap((c) => c.items);
+        expect(bucketed.every((t) => t.kind !== 'converter')).toBe(true);
     });
 });
 
