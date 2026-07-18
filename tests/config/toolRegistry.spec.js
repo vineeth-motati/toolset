@@ -108,7 +108,7 @@ describe('config/converters.js — every converter tool', () => {
 });
 
 describe('utils/localConverters.js — the in-browser registry', () => {
-    // The product rule: these 47 conversions are free, client-side and
+    // The product rule: these 53 conversions are free, client-side and
     // private — they must never fall back to the API. This list is the spec;
     // a converter dropped from the registry fails here by name.
     const EXPECTED_LOCAL = [
@@ -159,11 +159,17 @@ describe('utils/localConverters.js — the in-browser registry', () => {
         '/tools/convert/word-to-html',
         '/tools/convert/excel-to-html',
         '/tools/convert/fix-xml-escaping',
+        '/tools/convert/mov-to-mp4',
+        '/tools/convert/mkv-to-mp4',
+        '/tools/convert/html-to-png',
+        '/tools/convert/html-to-jpg',
+        '/tools/convert/html-to-pdf',
+        '/tools/convert/validate-xml-xsd',
     ];
 
-    it('the spec list itself covers 47 tools', () => {
-        expect(EXPECTED_LOCAL).toHaveLength(47);
-        expect(new Set(EXPECTED_LOCAL).size).toBe(47);
+    it('the spec list itself covers 53 tools', () => {
+        expect(EXPECTED_LOCAL).toHaveLength(53);
+        expect(new Set(EXPECTED_LOCAL).size).toBe(53);
     });
 
     it('registers no local converters beyond the spec list', () => {
@@ -189,7 +195,7 @@ describe('utils/localConverters.js — the in-browser registry', () => {
         expect(getLocalConverter('')).toBeNull();
     });
 
-    it('keeps API-only converters (video, eBooks, website capture, PDF rendering...) off the registry', () => {
+    it('keeps API-only converters (AVI, eBooks, website capture, PDF layout extraction...) off the registry', () => {
         const apiOnlySamples = converters
             .map((c) => c.path)
             .filter((p) => /ocr|video|epub|heic|website|pdf-to/.test(p))

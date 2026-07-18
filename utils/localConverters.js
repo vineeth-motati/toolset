@@ -8,10 +8,12 @@
  * { blob, filename, text? } — `text` enables persistence/sharing for
  * text outputs; small binary outputs are persisted as base64 by the UI.
  *
- * Converters NOT in this registry stay on the API: video transcoding,
- * eBooks, website capture, XSD validation, Office → PDF, and PDF layout
- * extraction (→ Word/Excel/CSV/HTML) all need engines the browser
- * doesn't ship.
+ * Converters NOT in this registry stay on the API: AVI transcoding
+ * (pre-WebCodecs codecs), eBooks, live-website capture (blocked by the
+ * Same-Origin Policy), Office → PDF, and PDF layout extraction
+ * (→ Word/Excel/CSV/HTML) all need engines the browser doesn't ship yet.
+ * See docs/API_TO_LOCAL_CONVERTERS_PLAN.md (local-only) for the migration
+ * plan off the API entirely.
  */
 import {
     xmlToJson,
@@ -68,6 +70,13 @@ import {
     mp4ToMp3,
 } from './converters/audioConverters';
 import { wordToHtml } from './converters/docConverters';
+import { movToMp4, mkvToMp4 } from './converters/videoConverters';
+import {
+    htmlToPng,
+    htmlToJpg,
+    htmlToPdf,
+} from './converters/htmlConverters';
+import { validateXmlXsd } from './converters/xsdValidator';
 
 // Inputs/outputs larger than this are still converted, but skipped
 // for localStorage persistence and share links (sqlite row + 5MB
@@ -130,12 +139,22 @@ const localConverters = {
     '/tools/convert/csv-to-srt': { convert: csvToSrt },
     '/tools/convert/excel-to-srt': { convert: excelToSrt },
 
-    // Audio group (Web Audio decode + lamejs encode — video transcoding
-    // to MP4 stays on the API)
+    // Audio group (Web Audio decode + lamejs encode)
     '/tools/convert/wav-to-mp3': { convert: wavToMp3 },
     '/tools/convert/flac-to-mp3': { convert: flacToMp3 },
     '/tools/convert/mp3-to-wav': { convert: mp3ToWav },
     '/tools/convert/mp4-to-mp3': { convert: mp4ToMp3 },
+
+    // Video group (mediabunny remux/WebCodecs — AVI stays on the API,
+    // its codecs pre-date WebCodecs)
+    '/tools/convert/mov-to-mp4': { convert: movToMp4 },
+    '/tools/convert/mkv-to-mp4': { convert: mkvToMp4 },
+
+    // HTML capture group (sandboxed-iframe render — capture of LIVE
+    // websites by URL can't work in a browser: Same-Origin Policy)
+    '/tools/convert/html-to-png': { convert: htmlToPng },
+    '/tools/convert/html-to-jpg': { convert: htmlToJpg },
+    '/tools/convert/html-to-pdf': { convert: htmlToPdf },
 
     // Document group (semantic HTML output — layout-faithful Office → PDF
     // stays on the API)
@@ -144,6 +163,7 @@ const localConverters = {
 
     // Misc XML utilities
     '/tools/convert/fix-xml-escaping': { convert: fixXmlEscaping },
+    '/tools/convert/validate-xml-xsd': { convert: validateXmlXsd },
 };
 
 export const getLocalConverter = (path) => localConverters[path] || null;

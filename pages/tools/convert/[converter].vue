@@ -137,6 +137,14 @@
                                     :label="param.label"
                                     :placeholder="param.placeholder || ''"
                                 />
+                                <BaseTextarea
+                                    v-else-if="param.type === 'textarea'"
+                                    v-model="paramValues[param.name]"
+                                    :label="param.label"
+                                    :placeholder="param.placeholder || ''"
+                                    :rows="6"
+                                    class="font-mono"
+                                />
                                 <BaseInput
                                     v-else
                                     v-model="paramValues[param.name]"
