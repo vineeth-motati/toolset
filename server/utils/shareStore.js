@@ -26,7 +26,8 @@ export const getStoreConfig = () => {
     return url && token ? { url, token } : null;
 };
 
-const command = async (config, cmd) => {
+// Exported for reuse by aliasStore.js — one REST client, two key spaces.
+export const redisCommand = async (config, cmd) => {
     const response = await fetch(config.url, {
         method: 'POST',
         headers: {
@@ -48,7 +49,7 @@ const command = async (config, cmd) => {
 // NX: a colliding id must fail (false) rather than overwrite someone
 // else's share.
 export const putShare = async (config, id, ciphertext) => {
-    const result = await command(config, [
+    const result = await redisCommand(config, [
         'SET',
         KEY_PREFIX + id,
         ciphertext,
@@ -61,4 +62,9 @@ export const putShare = async (config, id, ciphertext) => {
 
 // GETEX (not GET) so every open pushes expiry out again.
 export const getShare = (config, id) =>
-    command(config, ['GETEX', KEY_PREFIX + id, 'EX', String(SHARE_TTL_SECONDS)]);
+    redisCommand(config, [
+        'GETEX',
+        KEY_PREFIX + id,
+        'EX',
+        String(SHARE_TTL_SECONDS),
+    ]);

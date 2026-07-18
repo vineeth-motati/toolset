@@ -8,10 +8,7 @@
  */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useShareLink } from '@/composables/useShareLink';
-import {
-    encodeSharePayload,
-    encryptSharePayload,
-} from '@/utils/shareCodec';
+import { encodeSharePayload, encryptSharePayload } from '@/utils/shareCodec';
 
 // Incompressible data: deterministic pseudo-random strings, comfortably
 // past the self-contained link cap once encoded.
@@ -143,10 +140,9 @@ describe('getSharedData — fragment links', () => {
 
 describe('getSharedData — stored #p= links', () => {
     it('fetches the ciphertext, decrypts, confirms, strips, and returns data', async () => {
-        const { ciphertext, key } = await encryptSharePayload(
-            '/tools/notes',
-            { text: 'big shared thing' }
-        );
+        const { ciphertext, key } = await encryptSharePayload('/tools/notes', {
+            text: 'big shared thing',
+        });
         axios.get.mockResolvedValue({ data: { ciphertext } });
         setHash(`#p=abc123.${key}`);
         const { getSharedData } = useShareLink();
@@ -158,10 +154,9 @@ describe('getSharedData — stored #p= links', () => {
     });
 
     it('returns null when the user declines the confirmation', async () => {
-        const { ciphertext, key } = await encryptSharePayload(
-            '/tools/notes',
-            { text: 'x' }
-        );
+        const { ciphertext, key } = await encryptSharePayload('/tools/notes', {
+            text: 'x',
+        });
         axios.get.mockResolvedValue({ data: { ciphertext } });
         confirmSpy.mockReturnValue(false);
         setHash(`#p=abc123.${key}`);
@@ -175,10 +170,9 @@ describe('getSharedData — stored #p= links', () => {
         const consoleError = vi
             .spyOn(console, 'error')
             .mockImplementation(() => {});
-        const { ciphertext, key } = await encryptSharePayload(
-            '/tools/kanban',
-            { kanban: [] }
-        );
+        const { ciphertext, key } = await encryptSharePayload('/tools/kanban', {
+            kanban: [],
+        });
         axios.get.mockResolvedValue({ data: { ciphertext } });
         setHash(`#p=abc123.${key}`);
         const { getSharedData } = useShareLink();
@@ -229,6 +223,124 @@ describe('getSharedData — stored #p= links', () => {
         expect(await getSharedData()).toBeNull();
         expect(axios.get).not.toHaveBeenCalled();
         expect(consoleError).toHaveBeenCalled();
+    });
+});
+
+describe('createMemorableLink', () => {
+    it('decodes a #s= link and trades it for a /s/<code> alias', async () => {
+        axios.post.mockResolvedValue({ data: { code: 'swift-otter-lake' } });
+        const url =
+            'https://tools.test/tools/notes#s=' +
+            encodeSharePayload('/tools/notes', { text: 'hi' });
+        const { createMemorableLink } = useShareLink();
+
+        expect(await createMemorableLink(url)).toBe(
+            'https://tools.test/s/swift-otter-lake'
+        );
+        expect(axios.post).toHaveBeenCalledWith('/api/aliases', {
+            tool: '/tools/notes',
+            data: { text: 'hi' },
+        });
+    });
+
+    it('fetches and decrypts a #p= link before aliasing it', async () => {
+        const { ciphertext, key } = await encryptSharePayload('/tools/sheets', {
+            rows: [1, 2],
+        });
+        axios.get.mockResolvedValue({ data: { ciphertext } });
+        axios.post.mockResolvedValue({ data: { code: 'amber-canyon-drift' } });
+        const { createMemorableLink } = useShareLink();
+
+        const url = `https://tools.test/tools/sheets#p=abc123.${key}`;
+        expect(await createMemorableLink(url)).toBe(
+            'https://tools.test/s/amber-canyon-drift'
+        );
+        expect(axios.get).toHaveBeenCalledWith('/api/shares/abc123');
+        expect(axios.post).toHaveBeenCalledWith('/api/aliases', {
+            tool: '/tools/sheets',
+            data: { rows: [1, 2] },
+        });
+    });
+
+    it('returns null for a URL without a share fragment', async () => {
+        const consoleError = vi
+            .spyOn(console, 'error')
+            .mockImplementation(() => {});
+        const { createMemorableLink } = useShareLink();
+
+        expect(
+            await createMemorableLink('https://tools.test/tools/notes')
+        ).toBeNull();
+        expect(axios.post).not.toHaveBeenCalled();
+        expect(consoleError).toHaveBeenCalled();
+    });
+
+    it('returns null when the alias API fails', async () => {
+        const consoleError = vi
+            .spyOn(console, 'error')
+            .mockImplementation(() => {});
+        axios.post.mockRejectedValue(new Error('503'));
+        const url =
+            'https://tools.test/tools/notes#s=' +
+            encodeSharePayload('/tools/notes', { text: 'hi' });
+        const { createMemorableLink } = useShareLink();
+
+        expect(await createMemorableLink(url)).toBeNull();
+        expect(consoleError).toHaveBeenCalled();
+    });
+});
+
+describe('getSharedData — memorable ?alias= links', () => {
+    it('fetches the envelope, confirms, strips, and returns data', async () => {
+        routeQuery.alias = 'swift-otter-lake';
+        axios.get.mockResolvedValue({
+            data: { tool: '/tools/notes', v: 1, data: { text: 'spoken' } },
+        });
+        const { getSharedData } = useShareLink();
+
+        expect(await getSharedData()).toEqual({ text: 'spoken' });
+        expect(axios.get).toHaveBeenCalledWith('/api/aliases/swift-otter-lake');
+        expect(confirmSpy).toHaveBeenCalled();
+        expect(replaceStateSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('ignores aliases belonging to a different tool', async () => {
+        const consoleError = vi
+            .spyOn(console, 'error')
+            .mockImplementation(() => {});
+        routeQuery.alias = 'swift-otter-lake';
+        axios.get.mockResolvedValue({
+            data: { tool: '/tools/kanban', v: 1, data: {} },
+        });
+        const { getSharedData } = useShareLink();
+
+        expect(await getSharedData()).toBeNull();
+        expect(confirmSpy).not.toHaveBeenCalled();
+        expect(consoleError).toHaveBeenCalled();
+    });
+
+    it('returns null when the alias has expired (404)', async () => {
+        const consoleError = vi
+            .spyOn(console, 'error')
+            .mockImplementation(() => {});
+        routeQuery.alias = 'gone-gone-gone';
+        axios.get.mockRejectedValue(new Error('404'));
+        const { getSharedData } = useShareLink();
+
+        expect(await getSharedData()).toBeNull();
+        expect(consoleError).toHaveBeenCalled();
+    });
+
+    it('returns null when the user declines the confirmation', async () => {
+        routeQuery.alias = 'swift-otter-lake';
+        axios.get.mockResolvedValue({
+            data: { tool: '/tools/notes', v: 1, data: { text: 'x' } },
+        });
+        confirmSpy.mockReturnValue(false);
+        const { getSharedData } = useShareLink();
+
+        expect(await getSharedData()).toBeNull();
+        expect(replaceStateSpy).not.toHaveBeenCalled();
     });
 });
 
