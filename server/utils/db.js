@@ -1,3 +1,11 @@
+/**
+ * LEGACY, read-only: backs the old server-stored share links
+ * (?share=<id>) so they keep resolving. New share links are
+ * self-contained (payload in the URL fragment — see utils/shareCodec.ts)
+ * and never touch this database. Note the /tmp copy below is ephemeral
+ * on serverless hosts, which is exactly why the server-stored approach
+ * was abandoned.
+ */
 import sqlite3 from 'sqlite3';
 import path from 'path';
 import fs from 'fs';
