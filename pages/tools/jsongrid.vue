@@ -75,7 +75,7 @@
                             @click="applySearch"
                         />
                     </div>
-                    <div class="flex gap-2">
+                    <div class="flex items-center gap-2">
                         <BaseIconButton
                             icon="heroicons:arrows-pointing-out"
                             label="Expand All"
@@ -86,7 +86,166 @@
                             label="Collapse All"
                             @click="collapseAll"
                         />
+                        <!-- Export the current view (visible columns, filtered
+                             + sorted rows) — copy or download in four formats. -->
+                        <Menu
+                            v-if="isValidJson && gridData.length > 0"
+                            as="div"
+                            class="relative"
+                        >
+                            <MenuButton
+                                class="inline-flex items-center justify-center p-2 text-gray-600 rounded-full transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                                title="Export current view"
+                                aria-label="Export current view"
+                            >
+                                <Icon icon="tabler:download" class="w-5 h-5" />
+                            </MenuButton>
+                            <MenuItems
+                                class="absolute right-0 z-20 mt-1 w-56 py-1 text-sm bg-white rounded-md shadow-lg ring-1 ring-black/5 focus:outline-none dark:bg-gray-800 dark:ring-white/10"
+                            >
+                                <div
+                                    class="px-3 py-1 text-[11px] font-medium tracking-wider text-gray-400 uppercase"
+                                >
+                                    Copy view
+                                </div>
+                                <MenuItem
+                                    v-for="f in exportFormats"
+                                    :key="`copy-${f.id}`"
+                                    v-slot="{ active }"
+                                >
+                                    <button
+                                        type="button"
+                                        class="flex items-center w-full gap-2 px-3 py-1.5 text-left"
+                                        :class="
+                                            active
+                                                ? 'bg-gray-100 dark:bg-gray-700'
+                                                : ''
+                                        "
+                                        @click="copyExport(f.id)"
+                                    >
+                                        <Icon
+                                            icon="tabler:copy"
+                                            class="w-4 h-4 text-gray-400"
+                                        />
+                                        {{ f.label }}
+                                    </button>
+                                </MenuItem>
+                                <div
+                                    class="my-1 border-t border-gray-100 dark:border-gray-700"
+                                ></div>
+                                <div
+                                    class="px-3 py-1 text-[11px] font-medium tracking-wider text-gray-400 uppercase"
+                                >
+                                    Download
+                                </div>
+                                <MenuItem
+                                    v-for="f in exportFormats"
+                                    :key="`dl-${f.id}`"
+                                    v-slot="{ active }"
+                                >
+                                    <button
+                                        type="button"
+                                        class="flex items-center w-full gap-2 px-3 py-1.5 text-left"
+                                        :class="
+                                            active
+                                                ? 'bg-gray-100 dark:bg-gray-700'
+                                                : ''
+                                        "
+                                        @click="downloadExport(f.id)"
+                                    >
+                                        <Icon
+                                            icon="tabler:file-download"
+                                            class="w-4 h-4 text-gray-400"
+                                        />
+                                        {{ f.label }}
+                                    </button>
+                                </MenuItem>
+                            </MenuItems>
+                        </Menu>
                     </div>
+                </div>
+
+                <!-- Root-path selector: pivot the grid onto an array buried
+                     inside a nested document instead of showing one giant row. -->
+                <div
+                    v-if="isValidJson && rootCandidates.length"
+                    class="flex flex-wrap items-center gap-2 px-2 py-1.5 text-xs border-b bg-white dark:bg-gray-800 dark:border-gray-700"
+                >
+                    <span class="text-gray-500 dark:text-gray-400"
+                        >Table root</span
+                    >
+                    <Menu as="div" class="relative">
+                        <MenuButton
+                            class="inline-flex items-center gap-1 px-2 py-1 font-mono rounded border border-gray-300 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700"
+                        >
+                            <Icon
+                                icon="tabler:binary-tree"
+                                class="w-3.5 h-3.5"
+                            />
+                            <span class="max-w-[16rem] truncate">{{
+                                rootLabel
+                            }}</span>
+                            <Icon
+                                icon="tabler:chevron-down"
+                                class="w-3.5 h-3.5"
+                            />
+                        </MenuButton>
+                        <MenuItems
+                            class="absolute left-0 z-20 mt-1 w-80 max-h-80 overflow-auto py-1 bg-white rounded-md shadow-lg ring-1 ring-black/5 focus:outline-none dark:bg-gray-800 dark:ring-white/10"
+                        >
+                            <MenuItem v-slot="{ active }">
+                                <button
+                                    type="button"
+                                    class="flex items-center justify-between w-full px-3 py-1.5 text-left"
+                                    :class="[
+                                        active
+                                            ? 'bg-gray-100 dark:bg-gray-700'
+                                            : '',
+                                        rootLabel === '(whole document)'
+                                            ? 'text-primary-600 dark:text-primary-400 font-medium'
+                                            : '',
+                                    ]"
+                                    @click="selectRoot([])"
+                                >
+                                    <span>Whole document</span>
+                                </button>
+                            </MenuItem>
+                            <MenuItem
+                                v-for="cand in rootCandidates"
+                                :key="cand.label"
+                                v-slot="{ active }"
+                            >
+                                <button
+                                    type="button"
+                                    class="flex items-center justify-between w-full gap-3 px-3 py-1.5 text-left"
+                                    :class="[
+                                        active
+                                            ? 'bg-gray-100 dark:bg-gray-700'
+                                            : '',
+                                        rootLabel === cand.label
+                                            ? 'text-primary-600 dark:text-primary-400 font-medium'
+                                            : '',
+                                    ]"
+                                    @click="selectRoot(cand.path)"
+                                >
+                                    <span class="font-mono truncate">{{
+                                        cand.label
+                                    }}</span>
+                                    <span class="text-gray-400 shrink-0">
+                                        {{ cand.length }}
+                                        {{
+                                            cand.length === 1 ? 'item' : 'items'
+                                        }}
+                                    </span>
+                                </button>
+                            </MenuItem>
+                        </MenuItems>
+                    </Menu>
+                    <span class="text-gray-400 dark:text-gray-500">
+                        · {{ gridData.length }}
+                        {{ gridData.length === 1 ? 'row' : 'rows' }} ×
+                        {{ gridHeaders.length }} cols
+                    </span>
                 </div>
 
                 <!-- Grid View -->
@@ -95,18 +254,52 @@
                     class="flex-1 overflow-auto"
                 >
                     <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="sticky top-0 bg-gray-50 dark:bg-gray-900/50">
+                        <thead
+                            class="sticky top-0 bg-gray-50 dark:bg-gray-900/50"
+                        >
                             <tr>
                                 <th
-                                    v-for="header in gridHeaders"
-                                    :key="header"
-                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                                    v-for="col in columns"
+                                    :key="col.id"
+                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-300"
+                                    :title="
+                                        'Sort by ' +
+                                        col.label +
+                                        (sortModel.length
+                                            ? ' · shift-click to add to sort'
+                                            : '')
+                                    "
+                                    @click="toggleSort(col, $event.shiftKey)"
                                 >
-                                    {{ header }}
+                                    <span
+                                        class="inline-flex items-center gap-1"
+                                    >
+                                        {{ col.label }}
+                                        <template v-if="sortStateFor(col.id)">
+                                            <Icon
+                                                :icon="
+                                                    sortStateFor(col.id)
+                                                        .direction === 'asc'
+                                                        ? 'tabler:sort-ascending'
+                                                        : 'tabler:sort-descending'
+                                                "
+                                                class="w-3.5 h-3.5 text-primary-500"
+                                            />
+                                            <span
+                                                v-if="sortModel.length > 1"
+                                                class="text-[10px] text-primary-500"
+                                                >{{
+                                                    sortStateFor(col.id).order
+                                                }}</span
+                                            >
+                                        </template>
+                                    </span>
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                        <tbody
+                            class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700"
+                        >
                             <tr
                                 v-for="(row, rowIndex) in filteredGridData"
                                 :key="rowIndex"
@@ -324,18 +517,34 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch, onUnmounted, render } from 'vue';
+import { ref, computed, onMounted, watch, onUnmounted } from 'vue';
 import { useLocalStorage } from '@vueuse/core';
 import { useToast } from '@/composables/useToast';
 import { useShareLink } from '@/composables/useShareLink';
-import { useJsonGrid } from '@/composables/useJsonGrid';
+import {
+    useJsonGrid,
+    toRows,
+    deriveColumns,
+    deepMatch,
+    getByPath,
+    setByPath,
+    pathToLabel,
+    findRootCandidates,
+    pickDefaultRoot,
+    sortIndices,
+    toCsv,
+    toMarkdown,
+    toNdjson,
+    toJson,
+} from '@/composables/useJsonGrid';
+import { locatePath, parseCellPath } from '@/utils/jsonLocate';
+import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue';
 import { Icon } from '@iconify/vue';
 import JSON5 from 'json5';
 import ace from 'ace-builds';
 import 'ace-builds/src-noconflict/theme-monokai';
 import 'ace-builds/src-noconflict/mode-json';
-import { debounce, isObject, isArray, includes, toString } from 'lodash-es';
-
+import { debounce, isArray } from 'lodash-es';
 
 const toast = useToast();
 const { generateShareLink, getSharedData } = useShareLink();
@@ -381,29 +590,73 @@ const parsedJson = computed(() => {
     }
 });
 
-const gridData = computed(() => {
-    if (!parsedJson.value) return [];
-    if (Array.isArray(parsedJson.value)) {
-        return parsedJson.value.map((item) =>
-            typeof item === 'object' ? item : { value: item }
-        );
-    }
-    if (typeof parsedJson.value === 'object') {
-        return [parsedJson.value];
-    }
-    return [];
+// Root path: which node inside the document the grid pivots onto. A nested
+// envelope like { data: { tracks: [...] } } is a single unusable row at the
+// document root, so we auto-detect the most meaningful array (pickDefaultRoot)
+// and let the user re-point via the root selector. Empty path = whole document.
+const rootPath = ref([]);
+// Guards the auto-pick: once the user chooses a root we stop overriding it,
+// until the document structure changes enough that the choice is invalid.
+const rootPinnedByUser = ref(false);
+
+// Arrays discoverable inside the current document, offered in the selector.
+// The document root itself is offered separately as "Whole document", so drop
+// the empty-path candidate a top-level array would otherwise contribute.
+const rootCandidates = computed(() => {
+    if (!parsedJson.value || typeof parsedJson.value !== 'object') return [];
+    return findRootCandidates(parsedJson.value).filter(
+        (c) => c.path.length > 0
+    );
 });
 
-const gridHeaders = computed(() => {
-    if (gridData.value.length === 0) return [];
-    const headers = new Set();
-    gridData.value.forEach((row) => {
-        if (typeof row === 'object' && row !== null) {
-            Object.keys(row).forEach((key) => headers.add(key));
-        }
-    });
-    return [...headers];
+const rootData = computed(() => {
+    if (!parsedJson.value) return null;
+    if (rootPath.value.length === 0) return parsedJson.value;
+    return getByPath(parsedJson.value, rootPath.value);
 });
+
+const rootLabel = computed(() => pathToLabel(rootPath.value));
+
+function selectRoot(path) {
+    rootPath.value = Array.isArray(path) ? path.slice() : [];
+    rootPinnedByUser.value = true;
+    expandedCells.value.clear();
+    searchQuery.value = '';
+    sortModel.value = []; // column identities change with the root
+}
+
+// Re-pick a default root whenever the parsed document changes shape. If the
+// user pinned a root that no longer resolves to a value, fall back to auto.
+watch(
+    parsedJson,
+    (parsed) => {
+        if (!parsed) {
+            rootPath.value = [];
+            rootPinnedByUser.value = false;
+            return;
+        }
+        const stillValid =
+            rootPath.value.length === 0 ||
+            getByPath(parsed, rootPath.value) !== undefined;
+        if (!rootPinnedByUser.value || !stillValid) {
+            rootPath.value = pickDefaultRoot(parsed);
+            rootPinnedByUser.value = false;
+        }
+    },
+    { immediate: true }
+);
+
+// Grid rows and columns come from the shared pure core (composables/
+// useJsonGrid) — the same functions the specs exercise — instead of being
+// re-derived inline. `columns` is the first-class model (types, paths, view
+// state); `gridHeaders` is the label projection the table template renders.
+const gridData = computed(() => toRows(rootData.value));
+
+const rootIsArray = computed(() => Array.isArray(rootData.value));
+
+const columns = computed(() => deriveColumns(gridData.value));
+
+const gridHeaders = computed(() => columns.value.map((col) => col.label));
 
 // Indices into gridData for the rows that pass the current search filter.
 // Grid rows render from filteredGridData, but edits must write to the
@@ -414,51 +667,109 @@ const filteredIndices = computed(() => {
     const query = searchQuery.value.toLowerCase();
     const indices = [];
     gridData.value.forEach((row, i) => {
-        if (row && deepSearch(row, query)) indices.push(i);
+        if (row && deepMatch(row, query)) indices.push(i);
     });
     return indices;
 });
 
+// Multi-column sort model: [{ id, path, direction }]. Applied on top of the
+// filter, so `visibleIndices` is the single source of truth for view→source
+// mapping. Edits and highlights map back through it, never through the raw
+// view position.
+const sortModel = ref([]);
+
+const visibleIndices = computed(() =>
+    sortIndices(filteredIndices.value, gridData.value, sortModel.value)
+);
+
 const filteredGridData = computed(() =>
-    filteredIndices.value.map((i) => gridData.value[i])
+    visibleIndices.value.map((i) => gridData.value[i])
 );
 
 function sourceIndexFor(rowIndex) {
-    return filteredIndices.value[rowIndex] ?? rowIndex;
+    return visibleIndices.value[rowIndex] ?? rowIndex;
 }
 
-// Add new helper function for deep searching
-function deepSearch(obj, query) {
-    // Base case: null or undefined
-    if (obj === null || obj === undefined) {
-        return false;
+// Cycle a column's sort: none → asc → desc → none. Plain click sorts by that
+// column alone; shift-click appends/toggles it within a multi-column sort.
+function toggleSort(column, additive = false) {
+    const existing = sortModel.value.find((s) => s.id === column.id);
+    let next;
+    if (!existing) {
+        next = { id: column.id, path: column.path, direction: 'asc' };
+    } else if (existing.direction === 'asc') {
+        next = { ...existing, direction: 'desc' };
+    } else {
+        next = null; // third click clears this column
     }
 
-    // For primitive types (string, number, boolean)
-    if (!isObject(obj)) {
-        const strValue = toString(obj).toLowerCase();
-        return includes(strValue, query);
+    if (additive) {
+        const rest = sortModel.value.filter((s) => s.id !== column.id);
+        sortModel.value = next ? [...rest, next] : rest;
+    } else {
+        sortModel.value = next ? [next] : [];
     }
+}
 
-    // For arrays: check if any element matches
-    if (isArray(obj)) {
-        return obj.some((item) => deepSearch(item, query));
+function sortStateFor(columnId) {
+    const index = sortModel.value.findIndex((s) => s.id === columnId);
+    if (index === -1) return null;
+    return { direction: sortModel.value[index].direction, order: index + 1 };
+}
+
+// WYSIWYG export: everything reflects the *current view* — the visible columns
+// in their order, and the filtered + sorted rows. All four serializers are the
+// shared, unit-tested pure functions.
+const exportFormats = [
+    { id: 'csv', label: 'CSV', mime: 'text/csv', ext: 'csv' },
+    {
+        id: 'markdown',
+        label: 'Markdown table',
+        mime: 'text/markdown',
+        ext: 'md',
+    },
+    {
+        id: 'ndjson',
+        label: 'NDJSON',
+        mime: 'application/x-ndjson',
+        ext: 'ndjson',
+    },
+    { id: 'json', label: 'JSON', mime: 'application/json', ext: 'json' },
+];
+
+function serializeView(format) {
+    const cols = columns.value;
+    const rows = filteredGridData.value;
+    switch (format) {
+        case 'csv':
+            return toCsv(cols, rows);
+        case 'markdown':
+            return toMarkdown(cols, rows);
+        case 'ndjson':
+            return toNdjson(cols, rows);
+        default:
+            return toJson(cols, rows);
     }
+}
 
-    // For objects: check keys and values
-    for (const key in obj) {
-        // Check if the key matches
-        if (includes(key.toLowerCase(), query)) {
-            return true;
-        }
+async function copyExport(format) {
+    const rows = filteredGridData.value.length;
+    await copyText(serializeView(format));
+    toast.success(
+        `Copied ${rows} ${rows === 1 ? 'row' : 'rows'} as ${format.toUpperCase()}`
+    );
+}
 
-        // Check if the value matches (recursively)
-        if (deepSearch(obj[key], query)) {
-            return true;
-        }
-    }
-
-    return false;
+function downloadExport(format) {
+    const meta = exportFormats.find((f) => f.id === format);
+    const blob = new Blob([serializeView(format)], { type: meta.mime });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `jsongrid-export.${meta.ext}`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success(`Downloaded ${meta.ext.toUpperCase()}`);
 }
 
 // Enhanced search function with feedback on matched items
@@ -553,8 +864,12 @@ const setupJsonEditor = () => {
         showPrintMargin: false,
         wrap: true,
         highlightActiveLine: true,
-        minLines: 10,
-        maxLines: Infinity,
+        // No `maxLines: Infinity`. That mode makes Ace grow to fit the whole
+        // document and render every line into the DOM — a 2.5k-line file
+        // produced ~2,600 line nodes and ~45k total DOM nodes, which is the
+        // real source of "heaviness" on large inputs. Leaving maxLines unset
+        // lets Ace virtualize to the (fixed-height) container: only the ~35
+        // visible lines render, cutting DOM nodes ~70×.
         scrollPastEnd: 0.5, // Allow scrolling past the end of document
         newLineMode: 'unix',
         navigateWithinSoftTabs: true,
@@ -710,6 +1025,17 @@ function loadSampleData() {
     toast.success('Sample data loaded');
 }
 
+// Build the absolute source path for an edit originating at a grid view row.
+// When the root is an array, the row is one of its elements (prefix its source
+// index); when the root is a single object, that row *is* the root object. The
+// whole thing is anchored under the current root path.
+function sourcePathFor(viewIndex, rest = []) {
+    const withinRoot = rootIsArray.value
+        ? [sourceIndexFor(viewIndex), ...rest]
+        : rest;
+    return [...rootPath.value, ...withinRoot];
+}
+
 // Update the JSON when a cell is edited in the grid
 function updateCellValue(rowIndex, header, event) {
     const newValue = event.target.innerText;
@@ -717,17 +1043,16 @@ function updateCellValue(rowIndex, header, event) {
 
     try {
         const parsedValue = parseCellInput(newValue);
-
-        // Update the grid data
         const updatedJson = JSON.parse(jsonText.value);
-        if (Array.isArray(updatedJson)) {
-            updatedJson[srcIndex][header] = parsedValue;
-        } else {
-            updatedJson[header] = parsedValue;
-        }
-
-        // Update the JSON text
-        jsonText.value = JSON.stringify(updatedJson, null, 2);
+        jsonText.value = JSON.stringify(
+            setByPath(
+                updatedJson,
+                sourcePathFor(rowIndex, [header]),
+                parsedValue
+            ),
+            null,
+            2
+        );
     } catch (e) {
         toast.error('Error updating JSON');
         // Reset to original value
@@ -746,89 +1071,53 @@ function parseCellInput(newValue) {
     return newValue;
 }
 
-// Add this new function to handle direct array item updates
+// Handle direct edits to a primitive array item rendered inside a cell.
 function updateArrayItem(rowIndex, arrayField, itemIndex, event) {
     const newValue = event.target.innerText;
     const srcIndex = sourceIndexFor(rowIndex);
     try {
         const parsedValue = parseCellInput(newValue);
-
-        // Update the grid data
         const updatedJson = JSON.parse(jsonText.value);
+        const path = sourcePathFor(rowIndex, [arrayField, itemIndex]);
 
-        // Make sure we're dealing with an array
-        if (
-            Array.isArray(updatedJson) &&
-            Array.isArray(updatedJson[srcIndex][arrayField])
-        ) {
-            // Update the specific array item
-            updatedJson[srcIndex][arrayField][itemIndex] = parsedValue;
-
-            // Update the JSON text
-            jsonText.value = JSON.stringify(updatedJson, null, 2);
-
-            // Provide feedback
+        // Only write if the target really is an array element.
+        if (Array.isArray(getByPath(updatedJson, path.slice(0, -1)))) {
+            jsonText.value = JSON.stringify(
+                setByPath(updatedJson, path, parsedValue),
+                null,
+                2
+            );
             toast.success(`Updated array item in "${arrayField}"`);
         }
     } catch (e) {
         toast.error('Failed to update array item');
-
         // Reset to original value on error
         const originalItem = gridData.value[srcIndex][arrayField][itemIndex];
         event.target.innerText = originalItem;
     }
 }
 
-// Add this new function to handle nested value updates
+// Handle edits emitted by the recursive NestedObjectView. The update path is a
+// cell path string ("2.metadata.settings[1]"); parse it structurally and anchor
+// it under the grid root — no more hand-rolled bracket walking.
 function updateNestedValue(update) {
     try {
-        // Parse the path to navigate the JSON structure. The path's first
-        // segment is the rendered (filtered) row index — map it back to the
-        // source array position.
-        const parts = update.path.split('.');
-        const rootIndex = sourceIndexFor(parseInt(parts[0]));
+        const segments = parseCellPath(update.path);
+        if (segments.length === 0) return;
 
-        // Start with the parsed JSON
+        const viewIndex = Number(segments[0]);
+        const rest = segments.slice(1);
         const updatedJson = JSON.parse(jsonText.value);
 
-        // Navigate to the correct object
-        let current = updatedJson[rootIndex];
-        let lastPart = parts[parts.length - 1];
-        let pathSoFar = '';
-
-        // Handle array access in the path
-        for (let i = 1; i < parts.length - 1; i++) {
-            const part = parts[i];
-
-            if (part.includes('[')) {
-                // Handle array notation like "items[0]"
-                const match = part.match(/(\w+)\[(\d+)\]/);
-                if (match) {
-                    const arrayName = match[1];
-                    const arrayIndex = parseInt(match[2]);
-                    current = current[arrayName][arrayIndex];
-                    pathSoFar += `.${arrayName}[${arrayIndex}]`;
-                }
-            } else {
-                current = current[part];
-                pathSoFar += `.${part}`;
-            }
-        }
-
-        // Handle the last part which might be an array index
-        if (lastPart.includes('[')) {
-            const match = lastPart.match(/(\w+)\[(\d+)\]/);
-            if (match) {
-                const arrayName = match[1];
-                const arrayIndex = parseInt(match[2]);
-                current[arrayName][arrayIndex] = update.value;
-            }
-        } else {
-            current[lastPart] = update.value;
-        }
-
-        // Update the JSON text
-        jsonText.value = JSON.stringify(updatedJson, null, 2);
+        jsonText.value = JSON.stringify(
+            setByPath(
+                updatedJson,
+                sourcePathFor(viewIndex, rest),
+                update.value
+            ),
+            null,
+            2
+        );
         toast.success('Value updated');
     } catch (e) {
         console.error('Error updating nested value:', e);
@@ -890,312 +1179,31 @@ onUnmounted(() => {
     }
 });
 
-// Replace the entire highlightJsonPath function with this improved version
+// Highlight the editor line that produced a clicked grid cell. The path is
+// resolved structurally via a source locator (utils/jsonLocate) instead of by
+// string-matching lines, so it stays correct with duplicate values, repeated
+// keys or minified JSON. The path's leading segment is the *view* row index —
+// map it back to the source position before locating.
 function highlightJsonPath(info) {
-    if (!jsonEditor.value) return;
+    if (!jsonEditor.value || !jsonText.value.trim()) return;
 
     try {
-        const jsonContent = jsonText.value;
-        if (!jsonContent.trim()) return;
+        const segments = parseCellPath(info.path);
+        if (segments.length === 0) return;
 
-        // Parse the path to find where in the JSON structure this element is
-        const parts = info.path.split('.');
-        if (parts[0] === 'root') parts.shift();
+        const srcIndex = sourceIndexFor(Number(segments[0]));
+        const rest = segments.slice(1);
+        // Path within the grid root, then anchored under the root path so it
+        // addresses the real source location even when the grid is pivoted
+        // onto a nested array.
+        const withinRoot = rootIsArray.value ? [srcIndex, ...rest] : rest;
+        const sourceSegments = [...rootPath.value, ...withinRoot];
 
-        // Convert path to a format that can be used with JSON pointer
-        const pathSegments = [];
-
-        for (const part of parts) {
-            if (part.includes('[')) {
-                // Handle array notation like "items[0]"
-                const match = part.match(/(\w+)\[(\d+)\]/);
-                if (match) {
-                    pathSegments.push(match[1]); // Array name
-                    pathSegments.push(match[2]); // Array index
-                }
-            } else {
-                pathSegments.push(part);
-            }
-        }
-
-        // Use Ace editor's document to get accurate positions
-        const session = jsonEditor.value.getSession();
-        const jsonDoc = session.getDocument();
-
-        // Find the exact line using AST analysis
-        const lineNumber = findLineForJsonPath(
-            jsonDoc.getAllLines(),
-            pathSegments,
-            info.value
-        );
-
-        if (lineNumber !== null) {
-            highlightEditorLine(lineNumber);
-        }
+        const loc = locatePath(jsonText.value, sourceSegments);
+        if (loc) highlightEditorLine(loc.line);
     } catch (e) {
         console.error('Error highlighting JSON path:', e);
     }
-}
-// This is a new function that uses a more reliable path-based approach
-function findLineForJsonPath(lines, pathSegments, targetValue) {
-    try {
-        // Special case for array items like tags[0] = "frontend"
-        const lastSegment = pathSegments[pathSegments.length - 1];
-        if (!isNaN(parseInt(lastSegment)) && pathSegments.length >= 2) {
-            // This is likely an array index
-            const arrayName = pathSegments[pathSegments.length - 2];
-            const arrayIndex = parseInt(lastSegment);
-
-            // First find the array field
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i].trim();
-
-                // Look for the array name
-                if (line.includes(`"${arrayName}"`) && line.includes('[')) {
-                    // Found the array start line, now find the specific item
-                    return findArrayItemLine(lines, i, arrayIndex, targetValue);
-                }
-            }
-        }
-
-        // Rest of the existing code for other cases
-        if (pathSegments.length <= 2 && !isNaN(parseInt(pathSegments[0]))) {
-            const rootIndex = parseInt(pathSegments[0]);
-
-            // Find the opening of the object at the specified index
-            let objectCount = -1; // Start at -1 to account for the root array
-            let inArray = false;
-
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i].trim();
-
-                // Start of array
-                if (line === '[' || line.startsWith('[')) {
-                    inArray = true;
-                    continue;
-                }
-
-                // Object opening
-                if (inArray && line === '{') {
-                    objectCount++;
-
-                    if (objectCount === rootIndex) {
-                        // Found the starting position of our target object
-                        if (pathSegments.length === 1) {
-                            // We're looking for the whole object
-                            return i;
-                        }
-                        // Otherwise, we need to find the specific field
-                        const fieldName = pathSegments[1];
-                        const fieldLine = findFieldInObjectLines(
-                            lines,
-                            i,
-                            fieldName,
-                            targetValue
-                        );
-                        return fieldLine !== null ? fieldLine : i;
-                    }
-                }
-            }
-        }
-
-        // More complex path or we couldn't find a simple match
-        return findLineByValueSearch(lines, pathSegments, targetValue);
-    } catch (error) {
-        console.error('Error in findLineForJsonPath:', error);
-        return null;
-    }
-}
-
-// New helper function to find a specific item in an array
-function findArrayItemLine(lines, arrayStartLine, targetIndex, targetValue) {
-    let currentIndex = -1;
-    let bracketDepth = 0;
-    let inArray = false;
-
-    // First look for the actual opening bracket
-    for (let i = arrayStartLine; i < lines.length; i++) {
-        const line = lines[i];
-
-        if (line.includes('[')) {
-            inArray = true;
-            bracketDepth++;
-        }
-
-        if (!inArray) continue;
-
-        // Count brackets to keep track of nesting
-        bracketDepth += (line.match(/\[/g) || []).length - 1; // -1 because we already counted the first one
-        bracketDepth -= (line.match(/\]/g) || []).length;
-
-        // Count items by looking for commas at the array level
-        if (bracketDepth === 1) {
-            // Look for values on this line
-            const lineValues = line.split(',').map((v) => v.trim());
-
-            for (const val of lineValues) {
-                // Skip empty parts and brackets
-                if (!val || val === '[' || val === ']') continue;
-
-                currentIndex++;
-
-                // Check if this is our target index
-                if (currentIndex === targetIndex) {
-                    // This line has our target value - now double check for exact match
-                    const valueStr = formatValueForComparison(targetValue);
-
-                    // Direct match on this line
-                    if (
-                        val.includes(valueStr) ||
-                        valueStr.includes(val.replace(/"/g, ''))
-                    ) {
-                        return i;
-                    }
-
-                    // If we can't find exact match but indexes match, use this line
-                    return i;
-                }
-            }
-        }
-
-        // If we've exited the array, stop searching
-        if (bracketDepth === 0) break;
-    }
-
-    // Fallback - lookup by value
-    if (typeof targetValue === 'string') {
-        const valueStr = `"${targetValue}"`;
-        for (let i = arrayStartLine; i < arrayStartLine + 20; i++) {
-            if (i >= lines.length) break;
-            if (lines[i].includes(valueStr)) {
-                return i;
-            }
-        }
-    }
-
-    return arrayStartLine; // Return array start as fallback
-}
-
-// Helper function to find a specific field within an object
-function findFieldInObjectLines(lines, startLine, fieldName, targetValue) {
-    let bracketDepth = 1; // Starting inside an object
-
-    for (let i = startLine + 1; i < lines.length && bracketDepth > 0; i++) {
-        const line = lines[i];
-
-        // Track bracket depth
-        bracketDepth += (line.match(/{/g) || []).length;
-        bracketDepth -= (line.match(/}/g) || []).length;
-
-        // Check if this line contains our field
-        if (line.includes(`"${fieldName}"`)) {
-            // For primitive values, check if the target value is on this line
-            const valueStr = formatValueForComparison(targetValue);
-            if (
-                line.includes(`:`) &&
-                (valueStr === null || line.includes(valueStr))
-            ) {
-                return i;
-            }
-
-            // For objects and arrays
-            if (line.includes(`{`) || line.includes(`[`)) {
-                return i;
-            }
-
-            // For multiline values, return this line
-            return i;
-        }
-    }
-
-    return null;
-}
-
-// Improve value comparison to handle string array items better
-function formatValueForComparison(value) {
-    if (value === undefined) return 'undefined';
-    if (value === null) return 'null';
-
-    switch (typeof value) {
-        case 'string':
-            // Handle string specifically to match JSON format
-            return `"${value}"`;
-        case 'boolean':
-        case 'number':
-            return String(value);
-        case 'object':
-            return null; // Complex objects will be handled differently
-        default:
-            return String(value);
-    }
-}
-
-// Fallback method: enhanced to better handle array values
-function findLineByValueSearch(lines, pathSegments, targetValue) {
-    const lastSegment = pathSegments[pathSegments.length - 1];
-    const isNumericIndex = !isNaN(parseInt(lastSegment));
-
-    // Special case for array items
-    if (isNumericIndex && pathSegments.length >= 2) {
-        const arrayName = pathSegments[pathSegments.length - 2];
-        const arrayIndex = parseInt(lastSegment);
-
-        // Search for array by name first
-        for (let i = 0; i < lines.length; i++) {
-            if (lines[i].includes(`"${arrayName}"`) && lines[i].includes('[')) {
-                // Found the array, now look for the value
-                if (typeof targetValue === 'string') {
-                    const valueStr = `"${targetValue}"`;
-
-                    // Look ahead a reasonable number of lines for this value
-                    for (let j = i; j < i + 15 && j < lines.length; j++) {
-                        if (lines[j].includes(valueStr)) {
-                            return j;
-                        }
-                    }
-                }
-                return i; // Return the array line if we can't find the exact item
-            }
-        }
-    }
-
-    // Regular field handling (existing code)
-    let fieldName = isNumericIndex
-        ? pathSegments[pathSegments.length - 2]
-        : lastSegment;
-
-    // Format the target value for comparison
-    const valueStr = formatValueForComparison(targetValue);
-    if (!fieldName || !valueStr) return null;
-
-    // Look for the combination of field name and value
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-
-        // Check for exact field + value match
-        if (line.includes(`"${fieldName}"`) && line.includes(valueStr)) {
-            return i;
-        }
-    }
-
-    // If we couldn't find an exact match, try to find just the field
-    for (let i = 0; i < lines.length; i++) {
-        if (lines[i].includes(`"${fieldName}"`)) {
-            return i;
-        }
-    }
-
-    // Last resort: look directly for the value
-    if (typeof targetValue === 'string' && targetValue.length > 0) {
-        const valueStr = `"${targetValue}"`;
-        for (let i = 0; i < lines.length; i++) {
-            if (lines[i].includes(valueStr)) {
-                return i;
-            }
-        }
-    }
-
-    return null;
 }
 
 // Enhanced version of highlightEditorLine with better visual feedback
@@ -1245,9 +1253,11 @@ function highlightEditorLine(lineNumber) {
 
 // Helper function to get the visual line offset (Ace editor might render lines differently)
 function getVisualLineOffset(documentLine) {
-    // Simple offset calculation - may need adjustment depending on editor configuration
-    const session = jsonEditor.value.getSession();
-    const firstVisibleRow = session.getFirstVisibleRow();
+    // getFirstVisibleRow lives on the editor, not the session — calling it on
+    // the session threw and aborted the highlight. The old string-matching
+    // locator usually returned null and never reached here, so the bug stayed
+    // hidden until the locator started resolving lines reliably.
+    const firstVisibleRow = jsonEditor.value.getFirstVisibleRow();
     return documentLine - firstVisibleRow;
 }
 </script>
@@ -1284,7 +1294,8 @@ function getVisualLineOffset(documentLine) {
 :deep(.ace_editor) {
     height: 100% !important;
     width: 100% !important;
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro',
+    font-family:
+        'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro',
         monospace;
 }
 
