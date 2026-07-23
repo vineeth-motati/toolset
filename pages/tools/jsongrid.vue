@@ -1299,9 +1299,9 @@ function getVisualLineOffset(documentLine) {
         monospace;
 }
 
-:deep(.ace_scroller) {
-    overflow: auto !important;
-}
+/* Do NOT force overflow on .ace_scroller. Ace renders its own virtual
+   scrollbar (.ace_scrollbar-v); making the scroller natively scrollable stacks
+   a second vertical scrollbar on top of it. Let Ace manage its own scrolling. */
 
 /* Add these styles for better nested tables display */
 :deep(.nested-view table) {
