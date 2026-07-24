@@ -68,7 +68,7 @@ export function contactRuns(doc: ResumeDoc, accent: string): any[] {
 
 type HeadingFn = (title: string) => any;
 
-function bulletList(items: string[], theme: ResumeTheme): any | null {
+function bulletList(items: string[]): any | null {
     const clean = items.filter((h) => h && h.trim());
     if (!clean.length) return null;
     return {
@@ -77,14 +77,19 @@ function bulletList(items: string[], theme: ResumeTheme): any | null {
     };
 }
 
-/** Build the ordered, visible, non-empty section bodies for a resume. */
+/**
+ * Build the ordered, visible, non-empty section bodies for a resume.
+ * `linkColor` colors inline links (e.g. project URLs); templates that must be
+ * colorless (ATS-plain) pass black.
+ */
 export function buildSections(
     doc: ResumeDoc,
     theme: ResumeTheme,
-    heading: HeadingFn
+    heading: HeadingFn,
+    linkColor: string = theme.accent
 ): any[] {
     const out: any[] = [];
-    const accent = theme.accent;
+    const accent = linkColor;
 
     const entryHeader = (left: string, right: string, sub?: string) => {
         const rows: any[] = [
@@ -108,7 +113,7 @@ export function buildSections(
                 const title = [w.position, w.name].filter(Boolean).join(' · ');
                 const block: any[] = entryHeader(title, dateRange(w.startDate, w.endDate), w.location);
                 if (w.summary) block.push({ text: w.summary, margin: [0, 2, 0, 0] });
-                const ul = bulletList(w.highlights, theme);
+                const ul = bulletList(w.highlights);
                 if (ul) block.push(ul);
                 return [{ stack: block, margin: [0, 0, 0, 6] }];
             }),
@@ -118,7 +123,7 @@ export function buildSections(
                 const deg = [e.studyType, e.area].filter(Boolean).join(', ');
                 const block: any[] = entryHeader(title, dateRange(e.startDate, e.endDate), deg);
                 if (e.score) block.push({ text: `Score: ${e.score}`, margin: [0, 1, 0, 0] });
-                const ul = bulletList(e.courses, theme);
+                const ul = bulletList(e.courses);
                 if (ul) block.push(ul);
                 return [{ stack: block, margin: [0, 0, 0, 6] }];
             }),
@@ -138,7 +143,7 @@ export function buildSections(
                 );
                 if (p.url) block[0].columns[1] = { text: p.url.replace(/^https?:\/\//, ''), link: p.url, color: accent, alignment: 'right', width: 'auto' };
                 if (p.description) block.push({ text: p.description, margin: [0, 2, 0, 0] });
-                const ul = bulletList(p.highlights, theme);
+                const ul = bulletList(p.highlights);
                 if (ul) block.push(ul);
                 return [{ stack: block, margin: [0, 0, 0, 6] }];
             }),

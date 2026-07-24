@@ -41,6 +41,7 @@ export function build(doc: ResumeDoc, theme: ResumeTheme): any {
     if (b.summary) {
         content.push({ text: b.summary, margin: [0, 8, 0, 0] });
     }
-    content.push(...buildSections(doc, theme, heading(theme)));
+    // Black links too — the ATS-plain template stays completely colorless.
+    content.push(...buildSections(doc, theme, heading(theme), '#000000'));
     return baseDoc(doc, theme, content);
 }

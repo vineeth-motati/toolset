@@ -146,9 +146,15 @@ export function validate(input: unknown): ResumeDoc {
         })
     );
 
-    const order = arr<any>(v.meta?.sectionsOrder).filter((k) =>
-        SECTION_ORDER.includes(k)
-    ) as SectionKey[];
+    // Dedupe, drop unknown keys, then append any standard sections the stored
+    // order was missing — so the result is always the full set, each once.
+    const order = [
+        ...new Set(
+            arr<any>(v.meta?.sectionsOrder).filter((k) =>
+                SECTION_ORDER.includes(k)
+            ) as SectionKey[]
+        ),
+    ];
     const sectionsOrder = order.length
         ? [...order, ...SECTION_ORDER.filter((k) => !order.includes(k))]
         : [...SECTION_ORDER];
