@@ -20,6 +20,27 @@
         }
     },
     {
+        "name": "Resume Builder",
+        "path": "/tools/resume",
+        "icon": "mdi:file-account-outline",
+        "description": "Build a professional, ATS-friendly resume and export it to PDF — free and private",
+        "category": "productivity",
+        "keywords": [
+            "resume",
+            "cv",
+            "builder",
+            "pdf",
+            "ats",
+            "cover letter"
+        ],
+        "layout": "fullscreen",
+        "popular": true,
+        "seo": {
+            "title": "Resume Builder — Free, Private, ATS-Friendly CV Maker",
+            "description": "Build a professional resume with live preview and one-click PDF export. All local, all free, no sign-up, nothing uploaded."
+        }
+    },
+    {
         "name": "Notes",
         "path": "/tools/notes",
         "icon": "mdi:note",
