@@ -66,6 +66,30 @@ export function contactRuns(doc: ResumeDoc, accent: string): any[] {
     return runs;
 }
 
+/**
+ * Which standard sections actually render, in order: respects the user's
+ * ordering, skips hidden ones, skips empty ones. Every renderer (pdfmake
+ * templates, plain text, DOCX) shares this so "what appears in the document"
+ * has exactly one definition.
+ */
+export function visibleSections(doc: ResumeDoc): SectionKey[] {
+    return doc.meta.sectionsOrder.filter(
+        (key) =>
+            doc.meta.sectionVisibility[key] !== false &&
+            (doc[key] as any[]).length > 0
+    );
+}
+
+/** Custom sections with at least one non-blank item. They always render last. */
+export function visibleCustomSections(doc: ResumeDoc) {
+    return doc.meta.customSections
+        .map((cs) => ({
+            ...cs,
+            items: cs.items.filter((it) => it.title || it.description),
+        }))
+        .filter((cs) => cs.items.length > 0);
+}
+
 type HeadingFn = (title: string) => any;
 
 function bulletList(items: string[]): any | null {
@@ -182,21 +206,7 @@ export function buildSections(
             })),
     };
 
-    const hasContent: Record<SectionKey, boolean> = {
-        work: doc.work.length > 0,
-        education: doc.education.length > 0,
-        skills: doc.skills.length > 0,
-        projects: doc.projects.length > 0,
-        certificates: doc.certificates.length > 0,
-        awards: doc.awards.length > 0,
-        languages: doc.languages.length > 0,
-        interests: doc.interests.length > 0,
-        references: doc.references.length > 0,
-    };
-
-    for (const key of doc.meta.sectionsOrder) {
-        if (doc.meta.sectionVisibility[key] === false) continue;
-        if (!hasContent[key]) continue;
+    for (const key of visibleSections(doc)) {
         const body = builders[key]();
         if (!body.length) continue;
         out.push(heading(SECTION_LABELS[key]));
@@ -204,9 +214,8 @@ export function buildSections(
     }
 
     // Custom sections always render last, in their stored order.
-    for (const cs of doc.meta.customSections) {
-        const items = cs.items.filter((it) => it.title || it.description);
-        if (!items.length) continue;
+    for (const cs of visibleCustomSections(doc)) {
+        const items = cs.items;
         out.push(heading(cs.title || 'Section'));
         for (const it of items) {
             const block: any[] = [];

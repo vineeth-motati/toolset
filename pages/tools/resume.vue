@@ -261,7 +261,12 @@ import { showShareModal } from '~/composables/useShareModal';
 import { isEmptyResume } from '~/utils/resume/schema';
 import { analyzeResume } from '~/utils/resume/score';
 import { toPlainText } from '~/utils/resume/plainText';
-import { downloadPdf, downloadJsonResume, downloadPlainText } from '~/utils/resume/export';
+import {
+    downloadPdf,
+    downloadDocx,
+    downloadJsonResume,
+    downloadPlainText,
+} from '~/utils/resume/export';
 import ResumeStartScreen from '~/components/resume/StartScreen.vue';
 import ResumeSectionNav from '~/components/resume/SectionNav.vue';
 import ResumeBasicsEditor from '~/components/resume/BasicsEditor.vue';
@@ -380,6 +385,13 @@ const exportFormats = [
         run: () => exportPdf(),
     },
     {
+        id: 'docx',
+        icon: 'mdi:file-word-box',
+        label: 'Word (.docx)',
+        hint: 'Editable, and what some employers still insist on',
+        run: () => exportDocx(),
+    },
+    {
         id: 'txt',
         icon: 'mdi:text-box-outline',
         label: 'Plain text',
@@ -402,6 +414,17 @@ async function exportPdf() {
         dismissStart();
     } catch (err) {
         toast.error(`PDF export failed: ${err?.message || err}`);
+    } finally {
+        exporting.value = false;
+    }
+}
+async function exportDocx() {
+    exporting.value = true;
+    try {
+        await downloadDocx(current.value);
+        dismissStart();
+    } catch (err) {
+        toast.error(`Word export failed: ${err?.message || err}`);
     } finally {
         exporting.value = false;
     }

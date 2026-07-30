@@ -24,9 +24,12 @@ vi.mock('pdfmake/build/vfs_fonts', () => ({ default: { fake: true } }));
 
 import {
     toBlob,
+    toDocxBlob,
     downloadPdf,
+    downloadDocx,
     downloadJsonResume,
     downloadPlainText,
+    DOCX_MIME,
 } from '@/utils/resume/export';
 import { defaultResume } from '@/utils/resume/schema';
 import { fullResume } from './fixtures';
@@ -81,6 +84,33 @@ describe('downloadPdf', () => {
         expect(a.download).toBe('Ada_Lovelace.pdf');
         expect(a.href).toMatch(/^blob:mock\//);
         expect(a.click).toHaveBeenCalledTimes(1);
+    });
+});
+
+describe('DOCX export', () => {
+    // fflate is a real dependency here (not mocked) — a valid zip is the whole
+    // point, so the test unzips what it produced.
+    it('produces a real zip carrying the OOXML parts', async () => {
+        const blob = await toDocxBlob(fullResume());
+        expect(blob.type).toBe(DOCX_MIME);
+
+        const bytes = new Uint8Array(await blob.arrayBuffer());
+        // Local file header magic: "PK\3\4".
+        expect([...bytes.slice(0, 4)]).toEqual([0x50, 0x4b, 0x03, 0x04]);
+
+        const { unzipSync, strFromU8 } = await import('fflate');
+        const entries = unzipSync(bytes);
+        expect(Object.keys(entries)).toContain('word/document.xml');
+        expect(Object.keys(entries)).toContain('[Content_Types].xml');
+        expect(strFromU8(entries['word/document.xml'])).toContain('Ada Lovelace');
+    });
+
+    it('triggers an anchor download with a .docx filename', async () => {
+        await downloadDocx(fullResume());
+        const a = anchors.at(-1);
+        expect(a.download).toBe('Ada_Lovelace.docx');
+        expect(a.click).toHaveBeenCalledTimes(1);
+        expect(blobs.at(-1).type).toBe(DOCX_MIME);
     });
 });
 

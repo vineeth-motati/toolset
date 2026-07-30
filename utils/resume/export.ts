@@ -8,7 +8,11 @@
  */
 import { buildDocDefinition } from './templates';
 import { toJsonResume } from './jsonResume';
+import { buildDocxParts } from './docx';
 import type { ResumeDoc } from './types';
+
+export const DOCX_MIME =
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 
 let pdfMakePromise: Promise<any> | null = null;
 
@@ -104,4 +108,23 @@ export function downloadJsonResume(doc: ResumeDoc): void {
 /** Download a plain-text copy (handy for pasting into ATS web forms). */
 export function downloadPlainText(doc: ResumeDoc, text: string): void {
     triggerDownload(new Blob([text], { type: 'text/plain' }), safeFileName(doc, 'txt'));
+}
+
+/**
+ * Zip the WordprocessingML parts into a .docx. fflate is lazy-imported to keep
+ * it out of the base bundle, matching the local-converters house rule.
+ */
+export async function toDocxBlob(doc: ResumeDoc): Promise<Blob> {
+    const { zipSync, strToU8 } = await import('fflate');
+    const parts = buildDocxParts(doc, doc.meta.theme);
+    const files: Record<string, Uint8Array> = {};
+    for (const [path, xml] of Object.entries(parts)) {
+        files[path] = strToU8(xml);
+    }
+    return new Blob([zipSync(files, { level: 6 })], { type: DOCX_MIME });
+}
+
+/** Build and download the resume as an editable Word document. */
+export async function downloadDocx(doc: ResumeDoc): Promise<void> {
+    triggerDownload(await toDocxBlob(doc), safeFileName(doc, 'docx'));
 }

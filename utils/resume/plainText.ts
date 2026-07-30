@@ -2,7 +2,13 @@
  * Render a resume as clean, ATS-friendly plain text (handy for pasting into
  * web application forms). Pure — no DOM.
  */
-import { dateRange, fmtDate, SECTION_LABELS } from './templates/shared';
+import {
+    dateRange,
+    fmtDate,
+    SECTION_LABELS,
+    visibleSections,
+    visibleCustomSections,
+} from './templates/shared';
 import type { ResumeDoc, SectionKey } from './types';
 
 const rule = (title: string) => `\n${title.toUpperCase()}\n${'-'.repeat(title.length)}`;
@@ -49,20 +55,15 @@ export function toPlainText(doc: ResumeDoc): string {
         references: () => doc.references.map((r) => `${r.name}${r.reference ? ' — ' + r.reference : ''}`),
     };
 
-    const hasContent = (k: SectionKey) => (doc[k] as any[]).length > 0;
-
-    for (const key of doc.meta.sectionsOrder) {
-        if (doc.meta.sectionVisibility[key] === false || !hasContent(key)) continue;
+    for (const key of visibleSections(doc)) {
         const body = render[key]().filter(Boolean);
         if (!body.length) continue;
         lines.push(rule(SECTION_LABELS[key]), ...body);
     }
 
-    for (const cs of doc.meta.customSections) {
-        const items = cs.items.filter((it) => it.title || it.description);
-        if (!items.length) continue;
+    for (const cs of visibleCustomSections(doc)) {
         lines.push(rule(cs.title || 'Section'));
-        for (const it of items) {
+        for (const it of cs.items) {
             if (it.title) lines.push(it.title);
             if (it.description) lines.push(it.description);
         }
