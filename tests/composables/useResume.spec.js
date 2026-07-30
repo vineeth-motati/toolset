@@ -13,6 +13,9 @@ beforeEach(async () => {
 });
 
 const flush = () => new Promise((r) => setTimeout(r, 20));
+// Edits are coalesced into one undo step by a 600ms debounce, so history
+// assertions have to wait for that window to close.
+const settle = () => new Promise((r) => setTimeout(r, 700));
 
 describe('seeding + singleton', () => {
     it('seeds exactly one default resume and selects it', () => {
@@ -141,6 +144,126 @@ describe('section + item mutations', () => {
         expect(r.current.value.meta.sectionVisibility.work).toBe(false);
         r.toggleSection('work');
         expect(r.current.value.meta.sectionVisibility.work).toBe(true);
+    });
+});
+
+describe('entry reordering + duplication', () => {
+    it('moveItem reorders within a section', () => {
+        const r = mod.useResume();
+        r.addItem('work');
+        r.addItem('work');
+        r.current.value.work[0].position = 'First';
+        r.current.value.work[1].position = 'Second';
+        r.moveItem('work', 1, 0);
+        expect(r.current.value.work.map((w) => w.position)).toEqual(['Second', 'First']);
+    });
+
+    it('moveItem ignores out-of-range and no-op moves', () => {
+        const r = mod.useResume();
+        r.addItem('work');
+        r.current.value.work[0].position = 'Only';
+        r.moveItem('work', 0, 0);
+        r.moveItem('work', 0, 5);
+        r.moveItem('work', -1, 0);
+        expect(r.current.value.work.map((w) => w.position)).toEqual(['Only']);
+    });
+
+    it('duplicateItem inserts an independent copy right after the source', () => {
+        const r = mod.useResume();
+        r.addItem('work');
+        r.current.value.work[0].position = 'Engineer';
+        r.duplicateItem('work', 0);
+        expect(r.current.value.work).toHaveLength(2);
+        expect(r.current.value.work[1].position).toBe('Engineer');
+        r.current.value.work[1].position = 'Changed';
+        expect(r.current.value.work[0].position).toBe('Engineer');
+    });
+
+    it('duplicateItem ignores an unknown index', () => {
+        const r = mod.useResume();
+        r.duplicateItem('work', 3);
+        expect(r.current.value.work).toHaveLength(0);
+    });
+});
+
+describe('rename + sample + visibility', () => {
+    it('renameResume renames by id and ignores unknown ids', () => {
+        const r = mod.useResume();
+        r.renameResume(r.currentId.value, 'Backend application');
+        expect(r.current.value.name).toBe('Backend application');
+        r.renameResume('nope', 'ignored');
+        expect(r.current.value.name).toBe('Backend application');
+    });
+
+    it('loadSample adds a populated resume and selects it', () => {
+        const r = mod.useResume();
+        r.loadSample('Example');
+        expect(r.current.value.name).toBe('Example');
+        expect(r.current.value.basics.name).toBeTruthy();
+        expect(r.current.value.work.length).toBeGreaterThan(0);
+    });
+
+    it('setSectionVisible sets an explicit value', () => {
+        const r = mod.useResume();
+        r.setSectionVisible('projects', false);
+        expect(r.current.value.meta.sectionVisibility.projects).toBe(false);
+        r.setSectionVisible('projects', true);
+        expect(r.current.value.meta.sectionVisibility.projects).toBe(true);
+    });
+
+    it('setSectionsOrder replaces the order', () => {
+        const r = mod.useResume();
+        const reversed = [...r.current.value.meta.sectionsOrder].reverse();
+        r.setSectionsOrder(reversed);
+        expect(r.current.value.meta.sectionsOrder).toEqual(reversed);
+    });
+});
+
+describe('undo / redo', () => {
+    it('starts with nothing to undo or redo', () => {
+        const r = mod.useResume();
+        expect(r.canUndo.value).toBe(false);
+        expect(r.canRedo.value).toBe(false);
+    });
+
+    it('undoes and redoes an edit once it has settled', async () => {
+        const r = mod.useResume();
+        r.current.value.basics.name = 'First';
+        await settle();
+        expect(r.canUndo.value).toBe(true);
+
+        r.undo();
+        await flush();
+        expect(r.current.value.basics.name).toBe('');
+        expect(r.canRedo.value).toBe(true);
+
+        r.redo();
+        await flush();
+        expect(r.current.value.basics.name).toBe('First');
+    });
+
+    it('drops the redo branch after a new edit', async () => {
+        const r = mod.useResume();
+        r.current.value.basics.name = 'A';
+        await settle();
+        r.undo();
+        await flush();
+        expect(r.canRedo.value).toBe(true);
+
+        r.current.value.basics.name = 'B';
+        await settle();
+        expect(r.canRedo.value).toBe(false);
+        expect(r.current.value.basics.name).toBe('B');
+    });
+
+    it('reports the save state while an edit settles', async () => {
+        const r = mod.useResume();
+        expect(r.saveState.value).toBe('saved');
+        r.current.value.basics.name = 'Typing';
+        await flush();
+        expect(r.saveState.value).toBe('saving');
+        await settle();
+        expect(r.saveState.value).toBe('saved');
     });
 });
 

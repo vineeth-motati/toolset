@@ -10,6 +10,10 @@ export const ACTION_VERBS: string[] = [
     'Drove', 'Scaled', 'Optimized', 'Streamlined', 'Implemented', 'Developed',
     'Created', 'Managed', 'Mentored', 'Coordinated', 'Negotiated', 'Analyzed',
     'Resolved', 'Refactored', 'Integrated', 'Championed', 'Spearheaded',
+    'Cut', 'Grew', 'Rebuilt', 'Accelerated', 'Consolidated', 'Established',
+    'Expanded', 'Generated', 'Halved', 'Introduced', 'Modernized', 'Partnered',
+    'Prototyped', 'Redesigned', 'Replaced', 'Secured', 'Simplified',
+    'Standardized', 'Unified', 'Eliminated', 'Doubled', 'Tripled', 'Rescued',
 ];
 
 /** Bullet templates grouped by loose role family; `{}` are fill-in hints. */

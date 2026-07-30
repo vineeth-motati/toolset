@@ -26,20 +26,94 @@ export const SECTION_ORDER: SectionKey[] = [
     'references',
 ];
 
-/** Human labels + icons for each standard section (drives the editor UI). */
+/**
+ * Human labels, icons and copy for each standard section (drives the editor UI).
+ * `core` sections are the ones a resume is expected to have — the nav rail keeps
+ * them pinned and shows the rest under "Add section".
+ */
 export const SECTION_META: Record<
     SectionKey,
-    { label: string; icon: string; itemNoun: string }
+    {
+        label: string;
+        icon: string;
+        itemNoun: string;
+        core: boolean;
+        blurb: string;
+        empty: string;
+    }
 > = {
-    work: { label: 'Work Experience', icon: 'mdi:briefcase-outline', itemNoun: 'position' },
-    education: { label: 'Education', icon: 'mdi:school-outline', itemNoun: 'school' },
-    skills: { label: 'Skills', icon: 'mdi:star-outline', itemNoun: 'skill group' },
-    projects: { label: 'Projects', icon: 'mdi:folder-outline', itemNoun: 'project' },
-    certificates: { label: 'Certificates', icon: 'mdi:certificate-outline', itemNoun: 'certificate' },
-    awards: { label: 'Awards', icon: 'mdi:trophy-outline', itemNoun: 'award' },
-    languages: { label: 'Languages', icon: 'mdi:translate', itemNoun: 'language' },
-    interests: { label: 'Interests', icon: 'mdi:heart-outline', itemNoun: 'interest' },
-    references: { label: 'References', icon: 'mdi:account-voice', itemNoun: 'reference' },
+    work: {
+        label: 'Work Experience',
+        icon: 'mdi:briefcase-outline',
+        itemNoun: 'role',
+        core: true,
+        blurb: 'Most recent first. Lead each bullet with a verb and a number.',
+        empty: 'Your work history is the section recruiters read first.',
+    },
+    education: {
+        label: 'Education',
+        icon: 'mdi:school-outline',
+        itemNoun: 'school',
+        core: true,
+        blurb: 'Degrees and formal study. Drop the dates once you have 10+ years of experience.',
+        empty: 'Add your degree, bootcamp or formal training.',
+    },
+    skills: {
+        label: 'Skills',
+        icon: 'mdi:star-outline',
+        itemNoun: 'skill group',
+        core: true,
+        blurb: 'Group related skills — this is the highest-signal block for keyword scanners.',
+        empty: 'Group your skills so a scanner can find them.',
+    },
+    projects: {
+        label: 'Projects',
+        icon: 'mdi:folder-outline',
+        itemNoun: 'project',
+        core: true,
+        blurb: 'Side projects and open source. Strongest when your work history is short.',
+        empty: 'Side projects carry real weight early in a career.',
+    },
+    certificates: {
+        label: 'Certificates',
+        icon: 'mdi:certificate-outline',
+        itemNoun: 'certificate',
+        core: false,
+        blurb: 'Credentials worth naming. Skip anything that took an afternoon.',
+        empty: 'Add credentials that a hiring manager would recognise.',
+    },
+    awards: {
+        label: 'Awards',
+        icon: 'mdi:trophy-outline',
+        itemNoun: 'award',
+        core: false,
+        blurb: 'Recognition from an employer, conference or institution.',
+        empty: 'Recognition that came from someone other than you.',
+    },
+    languages: {
+        label: 'Languages',
+        icon: 'mdi:translate',
+        itemNoun: 'language',
+        core: false,
+        blurb: 'Spoken languages and your working level in each.',
+        empty: 'Useful for international and customer-facing roles.',
+    },
+    interests: {
+        label: 'Interests',
+        icon: 'mdi:heart-outline',
+        itemNoun: 'interest',
+        core: false,
+        blurb: 'Optional. Keep it to two or three, and make them specific.',
+        empty: 'Optional — a couple of specific ones, or none at all.',
+    },
+    references: {
+        label: 'References',
+        icon: 'mdi:account-voice',
+        itemNoun: 'reference',
+        core: false,
+        blurb: '"Available on request" is the norm — include names only when asked.',
+        empty: 'Most resumes leave this out until an employer asks.',
+    },
 };
 
 // Only Roboto ships in pdfmake's default vfs. Additional families (serif,
@@ -47,6 +121,55 @@ export const SECTION_META: Record<
 export const FONT_OPTIONS = ['Roboto'] as const;
 export const PAGE_SIZES = ['A4', 'LETTER'] as const;
 export const DEFAULT_ACCENT = '#4f46e5'; // primary-600
+
+/**
+ * One-click typography presets. Tuning four sliders to fit a resume on one page
+ * is exactly the busywork paid builders automate — these bundle the sane
+ * combinations, ordered densest-last so "fit to one page" can walk the list.
+ */
+export const DENSITY_PRESETS: {
+    id: string;
+    label: string;
+    description: string;
+    theme: Pick<ResumeTheme, 'fontSize' | 'lineHeight' | 'sectionSpacing' | 'margins'>;
+}[] = [
+    {
+        id: 'roomy',
+        label: 'Roomy',
+        description: 'Generous whitespace — best for a short history',
+        theme: { fontSize: 11, lineHeight: 1.4, sectionSpacing: 16, margins: [52, 52, 52, 52] },
+    },
+    {
+        id: 'standard',
+        label: 'Standard',
+        description: 'The default balance of density and air',
+        theme: { fontSize: 10, lineHeight: 1.25, sectionSpacing: 12, margins: [40, 40, 40, 40] },
+    },
+    {
+        id: 'compact',
+        label: 'Compact',
+        description: 'Fits noticeably more per page',
+        theme: { fontSize: 9.5, lineHeight: 1.15, sectionSpacing: 9, margins: [34, 34, 34, 34] },
+    },
+    {
+        id: 'dense',
+        label: 'Dense',
+        description: 'Last resort before cutting content',
+        theme: { fontSize: 9, lineHeight: 1.08, sectionSpacing: 7, margins: [28, 28, 28, 28] },
+    },
+];
+
+/** Curated accent swatches — all tested for contrast on white at body weight. */
+export const ACCENT_PRESETS: { name: string; value: string }[] = [
+    { name: 'Indigo', value: '#4f46e5' },
+    { name: 'Slate', value: '#334155' },
+    { name: 'Navy', value: '#1e3a8a' },
+    { name: 'Teal', value: '#0f766e' },
+    { name: 'Forest', value: '#166534' },
+    { name: 'Burgundy', value: '#9f1239' },
+    { name: 'Bronze', value: '#9a3412' },
+    { name: 'Black', value: '#111827' },
+];
 
 export function defaultTheme(): ResumeTheme {
     return {

@@ -48,6 +48,26 @@ export async function toBlob(doc: ResumeDoc): Promise<Blob> {
     return pdf.getBlob();
 }
 
+/**
+ * How many pages the resume currently occupies. pdfmake exposes no page count,
+ * so the cheapest reliable answer is to open the produced bytes with pdf.js —
+ * already a dependency for the PDF converters. Used by "fit to one page".
+ */
+export async function countPages(doc: ResumeDoc): Promise<number> {
+    const blob = await toBlob(doc);
+    const bytes = new Uint8Array(await blob.arrayBuffer());
+    const pdfjsLib = await import('pdfjs-dist');
+    const workerSrc = (await import('pdfjs-dist/build/pdf.worker.min.mjs?url')).default;
+    pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
+    const task = pdfjsLib.getDocument({ data: bytes });
+    try {
+        const pdf = await task.promise;
+        return pdf.numPages;
+    } finally {
+        await task.destroy();
+    }
+}
+
 function safeFileName(doc: ResumeDoc, ext: string): string {
     const base =
         (doc.basics.name || doc.name || 'resume')
