@@ -110,8 +110,15 @@
                 </button>
                 <button type="button" :class="itemClass('tailor')" @click="select('tailor')">
                     <Icon icon="mdi:target" class="w-4 h-4 shrink-0" />
-                    <span class="flex-1 truncate">Tailor to a job</span>
-                    <BaseBadge v-if="hasJob" variant="primary">on</BaseBadge>
+                    <span class="min-w-0">
+                        <span class="block truncate">Tailor to a job</span>
+                        <span
+                            v-if="jobLabel"
+                            class="block text-[10px] font-normal text-gray-500 truncate dark:text-gray-400"
+                        >
+                            {{ jobLabel }}
+                        </span>
+                    </span>
                 </button>
                 <button type="button" :class="itemClass('manage')" @click="select('manage')">
                     <Icon icon="mdi:folder-multiple-outline" class="w-4 h-4 shrink-0" />
@@ -142,7 +149,8 @@ import ResumeProgressDot from '~/components/resume/ProgressDot.vue';
 const props = defineProps({
     active: { type: String, required: true },
     score: { type: Object, required: true },
-    hasJob: { type: Boolean, default: false },
+    /** Role/company being tailored to, shown under the nav item. */
+    jobLabel: { type: String, default: '' },
 });
 const emit = defineEmits(['update:active']);
 

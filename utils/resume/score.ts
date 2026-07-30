@@ -7,7 +7,7 @@
  */
 import type { ResumeDoc, SectionKey } from './types';
 import { lintBullet } from './lint';
-import { analyze as analyzeAts } from './ats';
+import { matchJob } from './jobMatch';
 import { templates } from './templates';
 
 export type IssueSeverity = 'error' | 'warning' | 'tip';
@@ -284,11 +284,17 @@ export function analyzeResume(
     }
     const jd = (context.jobDescription || '').trim();
     if (jd) {
-        const report = analyzeAts(doc, jd);
-        if (report.score < 50) {
-            add('ats', 'warning', 'jd-coverage', `Only ${report.score}% keyword coverage for this job`, `Work in the missing terms — starting with ${report.missing.slice(0, 3).join(', ')}.`, { section: 'skills' });
-        } else if (report.score < 70) {
-            add('ats', 'tip', 'jd-coverage-mid', `${report.score}% keyword coverage for this job`, `Adding ${report.missing.slice(0, 3).join(', ')} would push it higher.`, { section: 'skills' });
+        const match = matchJob(doc, jd);
+        const names = (list: { term: string }[]) => list.slice(0, 3).map((t) => t.term).join(', ');
+        // Called out separately: a missing must-have is a different problem from
+        // a merely thin match, and the ad said so explicitly.
+        if (match.criticalMissing.length) {
+            add('ats', 'warning', 'jd-must-have', `Missing ${match.criticalMissing.length} requirement${match.criticalMissing.length > 1 ? 's' : ''} this job calls for`, `The ad asks for ${names(match.criticalMissing)}. Work in whatever you genuinely have.`, { section: 'skills' });
+        }
+        if (match.score < 50) {
+            add('ats', 'warning', 'jd-coverage', `Only ${match.score}% match with this job`, `Close the gap — start with ${names(match.missing)}.`, { section: 'skills' });
+        } else if (match.score < 70) {
+            add('ats', 'tip', 'jd-coverage-mid', `${match.score}% match with this job`, `Adding ${names(match.missing)} would push it higher.`, { section: 'skills' });
         }
     }
 

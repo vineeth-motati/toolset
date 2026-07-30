@@ -103,6 +103,52 @@
             </ul>
         </div>
 
+        <!-- Phrase bank: the remedy belongs next to the criticism -->
+        <details class="rounded-lg border border-gray-200 group dark:border-gray-700">
+            <summary
+                class="flex gap-2 items-center px-3 py-2 text-sm font-medium text-gray-900 cursor-pointer select-none dark:text-gray-100"
+            >
+                <Icon
+                    icon="mdi:chevron-right"
+                    class="w-4 h-4 text-gray-400 transition-transform group-open:rotate-90"
+                />
+                Phrase bank
+                <span class="text-xs font-normal text-gray-500 dark:text-gray-400">
+                    — verbs and bullet patterns to fix the above
+                </span>
+            </summary>
+            <div class="px-3 pt-1 pb-3 space-y-3 border-t border-gray-100 dark:border-gray-700/60">
+                <div>
+                    <p class="mb-1.5 text-xs text-gray-500 dark:text-gray-400">
+                        Strong openers — click to copy.
+                    </p>
+                    <div class="flex flex-wrap gap-1">
+                        <button
+                            v-for="v in ACTION_VERBS"
+                            :key="v"
+                            type="button"
+                            class="px-2 py-0.5 text-xs text-gray-700 bg-gray-100 rounded transition-colors hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                            @click="copy(v)"
+                        >
+                            {{ v }}
+                        </button>
+                    </div>
+                </div>
+                <div v-for="(list, group) in PHRASE_LIBRARY" :key="group">
+                    <p class="text-xs font-medium text-gray-600 dark:text-gray-400">{{ group }}</p>
+                    <button
+                        v-for="(p, i) in list"
+                        :key="i"
+                        type="button"
+                        class="block py-0.5 w-full text-xs text-left text-gray-600 hover:text-primary-600 dark:text-gray-400"
+                        @click="copy(p)"
+                    >
+                        • {{ p }}
+                    </button>
+                </div>
+            </div>
+        </details>
+
         <p class="flex gap-1.5 items-start text-[11px] text-gray-400">
             <Icon icon="mdi:shield-lock-outline" class="mt-px w-3.5 h-3.5 shrink-0" />
             Every check above runs in this browser tab. Nothing is uploaded, scored remotely, or stored on a server.
@@ -118,7 +164,20 @@
  */
 import { ref, computed } from 'vue';
 import { Icon } from '@iconify/vue';
+import { useToast } from '~/composables/useToast';
+import { ACTION_VERBS, PHRASE_LIBRARY } from '~/utils/resume/content';
 import ResumeScoreRing from '~/components/resume/ScoreRing.vue';
+
+const toast = useToast();
+
+async function copy(text) {
+    try {
+        await navigator.clipboard.writeText(text);
+        toast.success('Copied');
+    } catch {
+        toast.error('Could not copy');
+    }
+}
 
 const props = defineProps({
     score: { type: Object, required: true },

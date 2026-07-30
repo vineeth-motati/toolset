@@ -1,147 +1,173 @@
 <template>
-    <div class="space-y-6">
-        <section>
-            <h2 class="mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">Tailor to a job</h2>
-            <p class="mb-3 text-xs text-gray-500 dark:text-gray-400">
-                Paste the posting. Keywords are extracted and matched against your resume in this tab —
-                the job description never leaves your browser.
+    <div class="space-y-5">
+        <div>
+            <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Tailor to a job</h2>
+            <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                Paste a posting and see what it asks for that your resume doesn't say yet.
+                Matched entirely in this tab — the job description is never uploaded.
             </p>
+        </div>
 
+        <!-- ------------------------------------------------ empty state -->
+        <div v-if="!hasJob" class="space-y-3">
             <BaseTextarea
-                :model-value="jobDescription"
-                :rows="jobDescription ? 5 : 8"
-                placeholder="Paste the full job description here — responsibilities, requirements, the lot."
-                @update:model-value="$emit('update:jobDescription', $event)"
+                :model-value="job.description"
+                :rows="7"
+                placeholder="Paste the full posting — responsibilities, requirements, the lot. The more you paste, the better the match."
+                @update:model-value="update('description', $event)"
             />
+            <ol class="space-y-1.5 text-xs text-gray-500 dark:text-gray-400">
+                <li v-for="(step, i) in HOW_IT_WORKS" :key="step" class="flex gap-2 items-start">
+                    <span
+                        class="flex justify-center items-center mt-px w-4 h-4 text-[10px] font-semibold rounded-full shrink-0 bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-300"
+                    >
+                        {{ i + 1 }}
+                    </span>
+                    {{ step }}
+                </li>
+            </ol>
+        </div>
 
-            <div v-if="jobDescription.trim()" class="flex gap-2 items-center mt-2">
-                <BaseButton size="sm" variant="ghost" icon="mdi:close" @click="$emit('update:jobDescription', '')">
-                    Clear
-                </BaseButton>
-                <span class="text-[11px] text-gray-400">
-                    Saved with this resume, so you can come back to it.
-                </span>
+        <!-- ---------------------------------------------------- matched -->
+        <template v-else>
+            <!-- Which job -->
+            <div class="grid gap-2 sm:grid-cols-2">
+                <BaseInput
+                    :model-value="job.title"
+                    label="Role"
+                    placeholder="Senior Frontend Engineer"
+                    @update:model-value="update('title', $event)"
+                />
+                <BaseInput
+                    :model-value="job.company"
+                    label="Company"
+                    placeholder="Northwind Software"
+                    @update:model-value="update('company', $event)"
+                />
             </div>
-        </section>
 
-        <!-- Match -->
-        <section v-if="jobDescription.trim()">
-            <div class="flex gap-4 items-center mb-3">
-                <ResumeScoreRing :value="report.score" :size="56" />
-                <div>
-                    <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                        {{ matchCopy }}
-                    </p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">
-                        {{ report.matched.length }} of
-                        {{ report.matched.length + report.missing.length }} keywords present
-                    </p>
+            <!-- Result -->
+            <div class="flex gap-4 items-center p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+                <ResumeScoreRing :value="match.score" :size="56" />
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ verdict.title }}</p>
+                    <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{{ verdict.blurb }}</p>
                 </div>
+                <BaseButton size="sm" variant="ghost" icon="mdi:refresh" @click="showEditor = !showEditor">
+                    {{ showEditor ? 'Hide' : 'Edit' }} posting
+                </BaseButton>
             </div>
 
-            <div v-if="report.missing.length" class="mb-3">
-                <div class="flex justify-between items-center mb-1.5">
-                    <p class="text-xs font-medium text-gray-600 dark:text-gray-400">
-                        Missing — click any you genuinely have
-                    </p>
+            <div v-if="showEditor" class="space-y-2">
+                <BaseTextarea
+                    :model-value="job.description"
+                    :rows="6"
+                    @update:model-value="update('description', $event)"
+                />
+                <BaseButton size="sm" variant="ghost" icon="mdi:delete-outline" @click="clearJob">
+                    Clear this posting
+                </BaseButton>
+            </div>
+
+            <!-- Gaps -->
+            <section v-if="match.missing.length">
+                <div class="flex flex-wrap gap-2 justify-between items-baseline mb-1">
+                    <h3 class="text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
+                        Not in your resume
+                    </h3>
                     <button
                         type="button"
                         class="text-[11px] font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400"
-                        @click="copy(report.missing.join(', '))"
+                        @click="copy(match.missing.map((t) => t.term).join(', '))"
                     >
                         Copy all
                     </button>
                 </div>
-                <div class="flex flex-wrap gap-1">
-                    <button
-                        v-for="kw in report.missing"
-                        :key="kw"
-                        type="button"
-                        class="px-2 py-0.5 text-xs rounded transition-colors text-amber-800 bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/40 dark:text-amber-300 dark:hover:bg-amber-900/60"
-                        :title="`Add “${kw}” to your skills`"
-                        @click="addKeyword(kw)"
-                    >
-                        + {{ kw }}
-                    </button>
-                </div>
-                <p class="mt-1.5 text-[11px] text-gray-400">
-                    Only add what you can defend in an interview. Keyword stuffing is obvious to the human who reads next.
+                <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">
+                    Add only what you can defend in an interview — the human who reads after the scanner
+                    can tell. <strong class="font-medium">Add to skills</strong> files it under a group;
+                    better still, work it into a bullet where you can show the result.
                 </p>
-            </div>
 
-            <div v-if="report.matched.length">
-                <p class="mb-1.5 text-xs font-medium text-gray-600 dark:text-gray-400">Already covered</p>
+                <ul class="space-y-1">
+                    <li
+                        v-for="term in match.missing"
+                        :key="term.key"
+                        class="flex gap-2 items-center py-1.5 px-2 rounded-lg group hover:bg-gray-50 dark:hover:bg-gray-800/60"
+                    >
+                        <span
+                            class="w-1.5 h-1.5 rounded-full shrink-0"
+                            :class="term.priority === 'must' ? 'bg-red-500' : 'bg-gray-300 dark:bg-gray-600'"
+                            :title="term.priority === 'must' ? 'The posting calls this out as required' : 'Mentioned, but not flagged as required'"
+                        />
+                        <span class="flex-1 text-sm text-gray-800 truncate dark:text-gray-200">{{ term.term }}</span>
+                        <BaseBadge v-if="term.priority === 'must'" variant="danger">required</BaseBadge>
+                        <span class="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
+                            <button
+                                type="button"
+                                class="px-1.5 py-0.5 text-[11px] font-medium rounded text-primary-700 bg-primary-50 hover:bg-primary-100 dark:bg-primary-900/30 dark:text-primary-300"
+                                @click="addKeyword(term.term)"
+                            >
+                                Add to skills
+                            </button>
+                            <BaseIconButton icon="mdi:content-copy" label="Copy term" @click="copy(term.term)" />
+                        </span>
+                    </li>
+                </ul>
+            </section>
+
+            <!-- Covered -->
+            <section v-if="match.matched.length">
+                <h3 class="mb-2 text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
+                    Already covered ({{ match.matched.length }})
+                </h3>
                 <div class="flex flex-wrap gap-1">
                     <span
-                        v-for="kw in report.matched"
-                        :key="kw"
-                        class="px-2 py-0.5 text-xs text-green-800 bg-green-100 rounded dark:bg-green-900/40 dark:text-green-300"
+                        v-for="term in match.matched"
+                        :key="term.key"
+                        class="inline-flex gap-1 items-center px-2 py-0.5 text-xs text-green-800 bg-green-100 rounded dark:bg-green-900/40 dark:text-green-300"
+                        :title="term.where ? `Found in ${term.where}` : undefined"
                     >
-                        {{ kw }}
+                        <Icon icon="mdi:check" class="w-3 h-3" />
+                        {{ term.term }}
+                        <span v-if="term.where" class="opacity-60">· {{ term.where }}</span>
                     </span>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Local AI -->
-        <section class="pt-5 border-t border-gray-200 dark:border-gray-700">
-            <div class="flex flex-wrap gap-2 justify-between items-center mb-1">
-                <h2 class="flex gap-2 items-center text-base font-semibold text-gray-900 dark:text-gray-100">
-                    AI assistant
-                    <BaseBadge variant="success">
-                        <Icon icon="mdi:shield-lock-outline" class="mr-0.5 w-3 h-3" /> runs locally
-                    </BaseBadge>
-                </h2>
-                <button
-                    type="button"
-                    class="inline-flex gap-1 items-center text-xs text-gray-500 hover:text-primary-600 dark:text-gray-400"
-                    :aria-expanded="showSettings"
-                    @click="showSettings = !showSettings"
-                >
-                    <Icon icon="mdi:cog-outline" class="w-4 h-4" />
-                    {{ showSettings ? 'Hide' : 'Connection' }}
-                </button>
-            </div>
-            <p class="mb-3 text-xs text-gray-500 dark:text-gray-400">
-                Optional. Point it at a model already running on your machine — Ollama, LM Studio, llama.cpp.
-                No account, no API bill, nothing uploaded.
+            <p v-if="!match.terms.length" class="text-sm text-gray-500 dark:text-gray-400">
+                Couldn't find much to match on — the posting may be too short. Paste the requirements section too.
             </p>
+        </template>
 
-            <div class="flex gap-2 items-center mb-3 text-xs">
-                <span class="w-2 h-2 rounded-full" :class="statusDot" />
-                <span class="text-gray-600 dark:text-gray-300">{{ statusText }}</span>
-                <span v-if="llm.statusMessage.value" class="text-amber-600 dark:text-amber-400">
-                    — {{ llm.statusMessage.value }}
-                </span>
-            </div>
-
-            <div
-                v-if="showSettings"
-                class="p-3 mb-3 space-y-3 rounded-lg border border-gray-200 dark:border-gray-700"
+        <!-- ------------------------------------------- optional local AI -->
+        <section class="pt-4 border-t border-gray-200 dark:border-gray-700">
+            <button
+                type="button"
+                class="flex gap-2 items-center w-full text-left group"
+                :aria-expanded="showAi"
+                @click="toggleAi"
             >
-                <BaseSelect
-                    label="Provider"
-                    :options="providerOptions"
-                    :model-value="llm.config.value.provider"
-                    @update:model-value="llm.setProvider"
+                <Icon
+                    icon="mdi:chevron-right"
+                    class="w-4 h-4 text-gray-400 transition-transform"
+                    :class="showAi ? 'rotate-90' : ''"
                 />
-                <BaseInput v-model="llm.config.value.baseUrl" label="Server URL" placeholder="http://localhost:11434" />
-                <BaseInput
-                    v-if="llm.config.value.provider === 'openai'"
-                    v-model="llm.config.value.apiKey"
-                    label="API key (optional)"
-                    type="password"
-                    placeholder="usually blank for a local server"
-                />
-                <div class="flex gap-2 items-end">
-                    <BaseSelect
-                        v-if="llm.models.value.length"
-                        v-model="llm.config.value.model"
-                        label="Model"
-                        class="flex-1"
-                        :options="llm.models.value"
-                    />
-                    <p v-else class="flex-1 text-xs text-gray-400">No models found yet — test the connection.</p>
+                <span class="flex-1">
+                    <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        Rewrite with a local AI model
+                    </span>
+                    <span class="block text-xs text-gray-500 dark:text-gray-400">
+                        Optional. Uses a model already running on your machine — no account, no API bill.
+                    </span>
+                </span>
+                <BaseBadge v-if="llm.status.value === 'connected'" variant="success">connected</BaseBadge>
+            </button>
+
+            <div v-if="showAi" class="pl-6 mt-3 space-y-3">
+                <div class="flex flex-wrap gap-2 items-center text-xs">
+                    <span class="w-2 h-2 rounded-full" :class="statusDot" />
+                    <span class="text-gray-600 dark:text-gray-300">{{ statusText }}</span>
                     <BaseButton
                         size="sm"
                         variant="secondary"
@@ -149,157 +175,199 @@
                         :loading="llm.status.value === 'connecting'"
                         @click="testConnection"
                     >
-                        Test
+                        {{ llm.status.value === 'connected' ? 'Recheck' : 'Connect' }}
                     </BaseButton>
+                    <button
+                        type="button"
+                        class="text-[11px] text-gray-500 underline hover:text-primary-600 dark:text-gray-400"
+                        @click="showSettings = !showSettings"
+                    >
+                        {{ showSettings ? 'Hide settings' : 'Settings' }}
+                    </button>
                 </div>
-                <p class="text-[11px] text-gray-400">
-                    Ollama needs CORS enabled:
-                    <code class="px-1 rounded bg-gray-100 dark:bg-gray-700">OLLAMA_ORIGINS=* ollama serve</code>
+                <p v-if="llm.statusMessage.value" class="text-xs text-amber-600 dark:text-amber-400">
+                    {{ llm.statusMessage.value }}
                 </p>
-            </div>
 
-            <div class="flex flex-wrap gap-2">
-                <BaseButton size="sm" icon="mdi:text-short" :disabled="!canRun" @click="runSummary">
-                    Draft a summary
-                </BaseButton>
-                <BaseButton
-                    size="sm"
-                    variant="secondary"
-                    icon="mdi:target-account"
-                    :disabled="!canRun || !jobDescription.trim()"
-                    @click="runTailor"
-                >
-                    Rewrite for this job
-                </BaseButton>
-                <BaseButton v-if="aiStreaming" size="sm" variant="danger" icon="mdi:stop" @click="stop">
-                    Stop
-                </BaseButton>
-            </div>
-            <p v-if="!canRun && !aiStreaming" class="mt-2 text-xs text-gray-400">
-                Connect a local model above to enable these.
-            </p>
-
-            <div v-if="aiOutput || aiStreaming" class="mt-3">
-                <div
-                    class="p-3 text-sm text-gray-800 whitespace-pre-wrap rounded-lg border border-gray-200 min-h-[3rem] dark:border-gray-700 dark:text-gray-200"
-                >
-                    {{ aiOutput }}<span v-if="aiStreaming" class="text-gray-400 animate-pulse">▍</span>
+                <div v-if="showSettings" class="p-3 space-y-3 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <BaseSelect
+                        label="Provider"
+                        :options="PROVIDERS"
+                        :model-value="llm.config.value.provider"
+                        @update:model-value="llm.setProvider"
+                    />
+                    <BaseInput v-model="llm.config.value.baseUrl" label="Server URL" placeholder="http://localhost:11434" />
+                    <BaseInput
+                        v-if="llm.config.value.provider === 'openai'"
+                        v-model="llm.config.value.apiKey"
+                        label="API key (optional)"
+                        type="password"
+                        placeholder="usually blank for a local server"
+                    />
+                    <BaseSelect
+                        v-if="llm.models.value.length"
+                        v-model="llm.config.value.model"
+                        label="Model"
+                        :options="llm.models.value"
+                    />
+                    <p class="text-[11px] text-gray-400">
+                        Ollama needs CORS enabled for browser access:
+                        <code class="px-1 rounded bg-gray-100 dark:bg-gray-700">OLLAMA_ORIGINS=* ollama serve</code>
+                    </p>
                 </div>
-                <div v-if="aiOutput && !aiStreaming" class="flex gap-2 mt-2">
-                    <BaseButton v-if="aiMode === 'summary'" size="sm" icon="mdi:check" @click="applySummary">
-                        Use as my summary
+
+                <div class="flex flex-wrap gap-2">
+                    <BaseButton size="sm" icon="mdi:text-short" :disabled="!canRun" @click="runSummary">
+                        Draft a summary
                     </BaseButton>
-                    <BaseButton size="sm" variant="secondary" icon="mdi:content-copy" @click="copy(aiOutput)">
-                        Copy
+                    <BaseButton
+                        size="sm"
+                        variant="secondary"
+                        icon="mdi:target-account"
+                        :disabled="!canRun || !hasJob"
+                        @click="runTailor"
+                    >
+                        Rewrite for this job
+                    </BaseButton>
+                    <BaseButton v-if="aiStreaming" size="sm" variant="danger" icon="mdi:stop" @click="stop">
+                        Stop
                     </BaseButton>
                 </div>
-            </div>
-        </section>
 
-        <!-- Writing help -->
-        <section class="pt-5 border-t border-gray-200 dark:border-gray-700">
-            <h2 class="mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">Writing help</h2>
-            <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">
-                No model needed. Click anything to copy it.
-            </p>
-            <div class="flex flex-wrap gap-1 mb-3">
-                <button
-                    v-for="v in ACTION_VERBS"
-                    :key="v"
-                    type="button"
-                    class="px-2 py-0.5 text-xs text-gray-700 bg-gray-100 rounded transition-colors hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
-                    @click="copy(v)"
-                >
-                    {{ v }}
-                </button>
+                <div v-if="aiOutput || aiStreaming">
+                    <div
+                        class="p-3 text-sm text-gray-800 whitespace-pre-wrap rounded-lg border border-gray-200 min-h-[3rem] dark:border-gray-700 dark:text-gray-200"
+                    >
+                        {{ aiOutput }}<span v-if="aiStreaming" class="text-gray-400 animate-pulse">▍</span>
+                    </div>
+                    <div v-if="aiOutput && !aiStreaming" class="flex gap-2 mt-2">
+                        <BaseButton v-if="aiMode === 'summary'" size="sm" icon="mdi:check" @click="applySummary">
+                            Use as my summary
+                        </BaseButton>
+                        <BaseButton size="sm" variant="secondary" icon="mdi:content-copy" @click="copy(aiOutput)">
+                            Copy
+                        </BaseButton>
+                    </div>
+                </div>
             </div>
-            <details
-                v-for="(list, group) in PHRASE_LIBRARY"
-                :key="group"
-                class="py-1.5 border-b border-gray-100 dark:border-gray-800"
-            >
-                <summary class="text-xs font-medium text-gray-600 cursor-pointer dark:text-gray-400">
-                    {{ group }}
-                </summary>
-                <button
-                    v-for="(p, i) in list"
-                    :key="i"
-                    type="button"
-                    class="block py-0.5 w-full text-xs text-left text-gray-600 hover:text-primary-600 dark:text-gray-400"
-                    @click="copy(p)"
-                >
-                    • {{ p }}
-                </button>
-            </details>
         </section>
     </div>
 </template>
 
 <script setup>
 /**
- * Job targeting. Two changes over the old panel worth calling out: missing
- * keywords are clickable (one tap files them under a "Tailored for this role"
- * skill group — Rezi's approve-the-addition flow), and the job description is
- * persisted per resume by the parent, so returning to an application restores
- * its context.
+ * Job targeting. Three changes over the first version, all of them about
+ * removing things that were not about this job:
+ *
+ *  - The action-verb list and phrase library moved to the Review panel, next to
+ *    the bullet criticism they answer. They were padding this panel and burying
+ *    the match.
+ *  - The local-model connection is collapsed and no longer probed on mount, so
+ *    an optional integration stops greeting everyone with a red failure.
+ *  - Gaps are a prioritised list, not a flat chip cloud: the posting's stated
+ *    requirements are separated from things it merely mentioned, and every row
+ *    carries an action.
  */
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import { Icon } from '@iconify/vue';
 import { useResume } from '~/composables/useResume';
 import { useLlm } from '~/composables/useLlm';
 import { useToast } from '~/composables/useToast';
-import { analyze } from '~/utils/resume/ats';
-import { ACTION_VERBS, PHRASE_LIBRARY } from '~/utils/resume/content';
+import { matchJob, detectJobHeadline } from '~/utils/resume/jobMatch';
 import { summaryMessages, tailorMessages } from '~/utils/resume/aiPrompts';
 import ResumeScoreRing from '~/components/resume/ScoreRing.vue';
 
 const props = defineProps({
-    jobDescription: { type: String, default: '' },
+    /** { description, title, company } for the resume being edited. */
+    job: { type: Object, required: true },
 });
-defineEmits(['update:jobDescription']);
+const emit = defineEmits(['update:job']);
 
 const resume = useResume();
 const doc = resume.current;
 const llm = useLlm();
 const toast = useToast();
 
-const providerOptions = [
+const PROVIDERS = [
     { label: 'Ollama', value: 'ollama' },
     { label: 'OpenAI-compatible (LM Studio, llama.cpp…)', value: 'openai' },
 ];
 
-const report = computed(() =>
-    props.jobDescription.trim()
-        ? analyze(doc.value, props.jobDescription)
-        : { score: 0, matched: [], missing: [], warnings: [] }
+const HOW_IT_WORKS = [
+    'Requirements are pulled out and ranked — the ones the posting calls for are marked.',
+    'Each is checked against your resume, section by section.',
+    'You get a list of gaps you can act on, and a match score that feeds the resume score.',
+];
+
+const showEditor = ref(false);
+const showAi = ref(false);
+const showSettings = ref(false);
+
+const hasJob = computed(() => !!props.job.description.trim());
+const match = computed(() =>
+    hasJob.value
+        ? matchJob(doc.value, props.job.description)
+        : { score: 0, terms: [], matched: [], missing: [], criticalMissing: [] }
 );
 
-const matchCopy = computed(() => {
-    const s = report.value.score;
-    if (s >= 75) return 'Strong match';
-    if (s >= 55) return 'Decent match — close the gaps below';
-    if (s >= 35) return 'Partial match';
-    return 'Weak match for this posting';
+const verdict = computed(() => {
+    const { score, criticalMissing } = match.value;
+    if (criticalMissing.length) {
+        return {
+            title: `${score}% — ${criticalMissing.length} stated requirement${criticalMissing.length > 1 ? 's' : ''} unaddressed`,
+            blurb: 'The red items below are ones the posting explicitly asks for.',
+        };
+    }
+    if (score >= 75) return { title: `${score}% — strong match`, blurb: 'Nothing major missing. Send it.' };
+    if (score >= 55) return { title: `${score}% — decent match`, blurb: 'Close the gaps below and it will read as a deliberate application.' };
+    if (score >= 35) return { title: `${score}% — partial match`, blurb: 'Worth tailoring before you apply.' };
+    return { title: `${score}% — weak match`, blurb: 'Either this posting is a stretch, or your resume undersells the overlap.' };
 });
 
-const TAILORED_GROUP = 'Tailored for this role';
+function update(field, value) {
+    const next = { ...props.job, [field]: value };
+    // Pasting a posting fills Role/Company from its headline — but only when
+    // they are still blank, so a correction is never overwritten.
+    if (field === 'description') {
+        const guess = detectJobHeadline(value);
+        if (!next.title.trim() && guess.title) next.title = guess.title;
+        if (!next.company.trim() && guess.company) next.company = guess.company;
+    }
+    emit('update:job', next);
+}
 
-/** File a missing keyword under a dedicated group, created on first use. */
-function addKeyword(kw) {
+function clearJob() {
+    emit('update:job', { description: '', title: '', company: '' });
+    showEditor.value = false;
+}
+
+const TAILORED_GROUP = 'Additional skills';
+
+/** File a term under a skills group, created on first use. */
+function addKeyword(term) {
     let group = doc.value.skills.find((s) => s.name === TAILORED_GROUP);
     if (!group) {
         group = { name: TAILORED_GROUP, level: '', keywords: [] };
         doc.value.skills.push(group);
     }
-    if (!group.keywords.some((k) => k.toLowerCase() === kw.toLowerCase())) {
-        group.keywords.push(kw);
+    if (group.keywords.some((k) => k.toLowerCase() === term.toLowerCase())) {
+        toast.error(`“${term}” is already in your skills.`);
+        return;
     }
+    group.keywords.push(term);
     resume.touch();
-    toast.success(`Added “${kw}” to your skills`);
+    toast.success(`Added “${term}” to ${TAILORED_GROUP}`);
 }
 
-// --- LLM ---
-const showSettings = ref(false);
+// --- optional local model ---
+// Deliberately not probed on mount: this is an opt-in extra, and a red
+// "connection failed" on open made the whole panel look broken to the majority
+// of people who do not run a local LLM.
+function toggleAi() {
+    showAi.value = !showAi.value;
+    if (showAi.value && llm.status.value === 'idle') llm.refreshModels();
+}
+
 const statusDot = computed(
     () =>
         ({
@@ -313,9 +381,9 @@ const statusText = computed(
     () =>
         ({
             idle: 'Not connected',
-            connecting: 'Connecting…',
+            connecting: 'Looking for a local model…',
             connected: `Connected · ${llm.config.value.model}`,
-            error: 'Connection failed',
+            error: 'No local model found',
         })[llm.status.value]
 );
 
@@ -331,6 +399,7 @@ const canRun = computed(
 async function testConnection() {
     const ok = await llm.refreshModels();
     if (ok) toast.success('Connected to your local model.');
+    else showSettings.value = true;
 }
 
 async function runAi(mode, messages) {
@@ -351,13 +420,15 @@ async function runAi(mode, messages) {
 }
 
 const runSummary = () => runAi('summary', summaryMessages(doc.value));
-function runTailor() {
-    if (!props.jobDescription.trim()) {
-        toast.error('Paste a job description first.');
-        return;
-    }
-    runAi('tailor', tailorMessages(doc.value, props.jobDescription, report.value.missing));
-}
+const runTailor = () =>
+    runAi(
+        'tailor',
+        tailorMessages(
+            doc.value,
+            props.job.description,
+            match.value.missing.map((t) => t.term)
+        )
+    );
 const stop = () => aiAbort?.abort();
 
 function applySummary() {
@@ -374,7 +445,4 @@ async function copy(text) {
         toast.error('Could not copy');
     }
 }
-
-// Probe once so the status line reflects reality without the user asking.
-onMounted(() => llm.refreshModels());
 </script>

@@ -102,7 +102,7 @@
             >
                 <!-- Rail -->
                 <aside class="hidden w-56 border-r border-gray-200 shrink-0 lg:block dark:border-gray-700">
-                    <ResumeSectionNav v-model:active="active" :score="score" :has-job="!!jobDescription.trim()" />
+                    <ResumeSectionNav v-model:active="active" :score="score" :job-label="jobLabel" />
                 </aside>
 
                 <!-- Editor -->
@@ -147,10 +147,7 @@
                         />
                         <ResumeDesignPanel v-else-if="active === 'design'" />
                         <ResumeReviewPanel v-else-if="active === 'review'" :score="score" @jump="jump" />
-                        <ResumeTailorPanel
-                            v-else-if="active === 'tailor'"
-                            v-model:job-description="jobDescription"
-                        />
+                        <ResumeTailorPanel v-else-if="active === 'tailor'" v-model:job="job" />
                         <ResumeManager v-else-if="active === 'manage'" />
                     </div>
 
@@ -221,7 +218,7 @@
                             <ResumeSectionNav
                                 :active="active"
                                 :score="score"
-                                :has-job="!!jobDescription.trim()"
+                                :job-label="jobLabel"
                                 @update:active="onDrawerNav"
                             />
                         </DialogPanel>
@@ -336,15 +333,26 @@ const docName = computed({
 
 const pageCount = ref(0);
 
-// One job description per resume, so switching between tailored versions keeps
-// each one's target posting.
+// One target posting per resume, so switching between tailored versions keeps
+// each one's context. Stored outside the resume doc — it is application
+// metadata, not part of the JSON Resume export.
+const EMPTY_JOB = { description: '', title: '', company: '' };
 const jobStore = useLocalStorage('resume-builder-jobs', {});
-const jobDescription = computed({
-    get: () => jobStore.value[current.value.id] ?? '',
+
+/** Earlier builds stored a bare description string under this key. */
+function normalizeJob(stored) {
+    if (typeof stored === 'string') return { ...EMPTY_JOB, description: stored };
+    return { ...EMPTY_JOB, ...(stored ?? {}) };
+}
+
+const job = computed({
+    get: () => normalizeJob(jobStore.value[current.value.id]),
     set: (v) => {
-        if (v) jobStore.value = { ...jobStore.value, [current.value.id]: v };
-        else {
-            const { [current.value.id]: _drop, ...rest } = jobStore.value;
+        const id = current.value.id;
+        if (v.description.trim() || v.title.trim() || v.company.trim()) {
+            jobStore.value = { ...jobStore.value, [id]: v };
+        } else {
+            const { [id]: _drop, ...rest } = jobStore.value;
             jobStore.value = rest;
         }
     },
@@ -353,9 +361,17 @@ const jobDescription = computed({
 const score = computed(() =>
     analyzeResume(current.value, {
         pageCount: pageCount.value || undefined,
-        jobDescription: jobDescription.value,
+        jobDescription: job.value.description,
     })
 );
+
+/** "Senior Engineer at Northwind" for the rail, when the user named the job. */
+const jobLabel = computed(() => {
+    const { title, company, description } = job.value;
+    if (title && company) return `${title} at ${company}`;
+    if (title || company) return title || company;
+    return description.trim() ? 'Posting saved' : '';
+});
 
 // ----------------------------------------------------------------- first run
 const startDismissed = useLocalStorage('resume-builder-started', false);
