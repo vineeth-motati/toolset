@@ -3,17 +3,21 @@
         <div class="relative">
             <div class="overflow-x-auto scrollbar-hidden">
                 <div
-                    class="flex min-w-max border-b border-gray-200 dark:border-gray-700"
+                    class="inline-flex gap-1 p-1 min-w-max bg-gray-100 rounded-xl dark:bg-gray-800/80"
+                    role="tablist"
                 >
                     <button
                         v-for="(tab, index) in tabs"
                         :key="index"
+                        type="button"
+                        role="tab"
+                        :aria-selected="activeTab === index"
                         @click="selectTab(index)"
                         :class="[
-                            'py-2 px-4 text-sm font-medium focus:outline-none',
+                            'h-8 px-3.5 rounded-lg text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500',
                             activeTab === index
-                                ? 'border-b-2 border-primary-500 text-primary-600 dark:text-primary-400'
-                                : 'text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400',
+                                ? 'bg-white text-gray-900 shadow-xs ring-1 ring-gray-200/80 dark:bg-gray-700 dark:text-white dark:ring-gray-600/60'
+                                : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white',
                         ]"
                     >
                         {{ getAnimationLabel(tab) }}

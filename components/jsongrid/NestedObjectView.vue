@@ -6,16 +6,16 @@
                 <tr
                     v-for="(val, key) in value"
                     :key="key"
-                    class="border-t border-gray-100 dark:border-gray-700"
+                    class="border-t border-gray-200/80 dark:border-gray-700/70"
                 >
-                    <td class="px-2 py-1 font-medium">{{ key }}</td>
+                    <td class="px-2 py-1 font-medium text-gray-700 dark:text-gray-300">{{ key }}</td>
                     <td class="px-2 py-1">
                         <!-- Nested Object or Array -->
                         <template v-if="isNestedObject(val)">
                             <div class="flex items-center">
                                 <button
                                     @click="toggleExpand(key)"
-                                    class="p-1 mr-1 text-primary-600 rounded hover:bg-primary-100 dark:text-primary-400 dark:hover:bg-primary-900/40"
+                                    class="p-1 mr-1 text-primary-600 rounded-lg hover:bg-primary-50 dark:text-primary-400 dark:hover:bg-primary-500/10"
                                 >
                                     <Icon
                                         :icon="
@@ -26,7 +26,7 @@
                                         class="w-4 h-4"
                                     />
                                 </button>
-                                <span class="font-mono text-gray-500">
+                                <span class="font-mono text-gray-500 dark:text-gray-400">
                                     {{
                                         isArray(val) ? `[${val.length}]` : '{}'
                                     }}
@@ -36,7 +36,7 @@
                             <!-- Nested content when expanded -->
                             <div
                                 v-if="expandedKeys.has(key)"
-                                class="pt-2 pl-2 mt-2 border-t border-l border-gray-200 dark:border-gray-700"
+                                class="pt-2 pl-2 mt-2 border-t border-l border-gray-200/80 dark:border-gray-700/70"
                             >
                                 <!-- For Arrays - New table-like display -->
                                 <div v-if="isArray(val)" class="nested-grid">
@@ -47,10 +47,10 @@
                                             <tr
                                                 v-for="(item, index) in val"
                                                 :key="`${key}-${index}`"
-                                                class="border-t border-gray-100 dark:border-gray-700"
+                                                class="border-t border-gray-200/80 dark:border-gray-700/70"
                                             >
                                                 <td
-                                                    class="w-8 px-2 py-1.5 text-gray-500 font-mono bg-gray-50 text-center dark:bg-gray-900/50 dark:text-gray-400"
+                                                    class="w-8 px-2 py-1.5 text-xs text-gray-500 font-mono bg-gray-50 text-center dark:bg-gray-900/40 dark:text-gray-400"
                                                 >
                                                     {{ index + 1 }}
                                                 </td>
@@ -70,7 +70,7 @@
                                                                         `${key}-${index}`
                                                                     )
                                                                 "
-                                                                class="p-1 mr-1 text-primary-600 rounded hover:bg-primary-100 dark:text-primary-400 dark:hover:bg-primary-900/40"
+                                                                class="p-1 mr-1 text-primary-600 rounded-lg hover:bg-primary-50 dark:text-primary-400 dark:hover:bg-primary-500/10"
                                                             >
                                                                 <Icon
                                                                     :icon="
@@ -84,7 +84,7 @@
                                                                 />
                                                             </button>
                                                             <span
-                                                                class="font-mono text-gray-500"
+                                                                class="font-mono text-gray-500 dark:text-gray-400"
                                                             >
                                                                 {{
                                                                     isArray(
@@ -101,7 +101,7 @@
                                                                     `${key}-${index}`
                                                                 )
                                                             "
-                                                            class="pt-2 pl-2 mt-2 border-t border-l border-gray-200 dark:border-gray-700"
+                                                            class="pt-2 pl-2 mt-2 border-t border-l border-gray-200/80 dark:border-gray-700/70"
                                                         >
                                                             <NestedObjectView
                                                                 :value="item"
@@ -148,7 +148,7 @@
                                 <!-- For Objects - Enhanced mini-grid display -->
                                 <div v-else class="nested-grid">
                                     <table
-                                        class="w-full text-sm bg-white border-collapse dark:bg-gray-800"
+                                        class="w-full text-sm border-collapse"
                                     >
                                         <tbody>
                                             <tr
@@ -156,7 +156,7 @@
                                                     nestedVal, nestedKey
                                                 ) in val"
                                                 :key="`${key}-${nestedKey}`"
-                                                class="border-t border-gray-100 dark:border-gray-700"
+                                                class="border-t border-gray-200/80 dark:border-gray-700/70"
                                             >
                                                 <td
                                                     class="px-2 py-1 font-medium text-gray-700 dark:text-gray-300"
@@ -181,7 +181,7 @@
                                                                         `${key}-${nestedKey}`
                                                                     )
                                                                 "
-                                                                class="p-1 mr-1 text-primary-600 rounded hover:bg-primary-100 dark:text-primary-400 dark:hover:bg-primary-900/40"
+                                                                class="p-1 mr-1 text-primary-600 rounded-lg hover:bg-primary-50 dark:text-primary-400 dark:hover:bg-primary-500/10"
                                                             >
                                                                 <Icon
                                                                     :icon="
@@ -195,7 +195,7 @@
                                                                 />
                                                             </button>
                                                             <span
-                                                                class="font-mono text-gray-500"
+                                                                class="font-mono text-gray-500 dark:text-gray-400"
                                                             >
                                                                 {{
                                                                     isArray(
@@ -212,7 +212,7 @@
                                                                     `${key}-${nestedKey}`
                                                                 )
                                                             "
-                                                            class="pt-2 pl-2 mt-2 border-t border-l border-gray-200 dark:border-gray-700"
+                                                            class="pt-2 pl-2 mt-2 border-t border-l border-gray-200/80 dark:border-gray-700/70"
                                                         >
                                                             <NestedObjectView
                                                                 :value="

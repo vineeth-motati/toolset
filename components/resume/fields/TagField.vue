@@ -3,19 +3,19 @@
         <label
             v-if="label"
             :for="id"
-            class="block text-xs font-medium text-gray-600 dark:text-gray-400"
+            class="block text-[13px] font-medium text-gray-700 dark:text-gray-300"
         >
             {{ label }}
         </label>
 
         <div
-            class="flex flex-wrap gap-1.5 items-center px-2 py-1.5 min-h-[2.375rem] bg-white rounded-lg border border-gray-300 transition-colors focus-within:border-primary-400 focus-within:ring-1 focus-within:ring-primary-400 dark:bg-gray-800 dark:border-gray-700"
+            class="flex flex-wrap gap-1.5 items-center px-2 py-1.5 min-h-[2.375rem] bg-white rounded-lg border border-gray-300 transition-colors focus-within:border-primary-400 focus-within:ring-2 focus-within:ring-primary-400/30 dark:bg-gray-900/40 dark:border-gray-700"
             @click="focusInput"
         >
             <span
                 v-for="(tag, i) in model"
                 :key="`${tag}-${i}`"
-                class="inline-flex gap-1 items-center py-0.5 pr-1 pl-2 max-w-full text-xs font-medium rounded text-primary-700 bg-primary-50 dark:bg-primary-900/30 dark:text-primary-300"
+                class="inline-flex gap-1 items-center py-0.5 pr-1 pl-2 max-w-full text-xs font-medium rounded-md text-primary-700 bg-primary-50 dark:bg-primary-500/10 dark:text-primary-300"
             >
                 <span class="truncate">{{ tag }}</span>
                 <button
@@ -24,7 +24,7 @@
                     :aria-label="`Remove ${tag}`"
                     @click.stop="removeAt(i)"
                 >
-                    <Icon icon="mdi:close" class="w-3 h-3" />
+                    <Icon icon="lucide:x" class="w-3 h-3" />
                 </button>
             </span>
 
@@ -44,7 +44,7 @@
             />
         </div>
 
-        <p v-if="hint" class="text-[11px] text-gray-400">{{ hint }}</p>
+        <p v-if="hint" class="text-xs text-gray-500 dark:text-gray-400">{{ hint }}</p>
     </div>
 </template>
 

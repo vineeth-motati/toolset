@@ -7,17 +7,10 @@
         "
         :icon="currentConverter?.sourceIcon"
     >
-        <template #leading>
-            <BaseIconButton
-                icon="tabler:arrow-left"
-                label="Back to converters"
-                @click="goBack"
-            />
-        </template>
         <template v-if="currentConverter" #actions>
             <BaseButton
                 v-if="isLocalConverter"
-                icon="mdi:share-variant"
+                icon="lucide:share-2"
                 size="sm"
                 @click="shareConversion"
             >
@@ -25,7 +18,7 @@
             </BaseButton>
             <BaseButton
                 variant="secondary"
-                icon="tabler:settings"
+                icon="lucide:settings"
                 size="sm"
                 @click="navigateToSettings"
             >
@@ -36,7 +29,7 @@
         <div v-if="currentConverter">
             <div
                 v-if="!isLocalConverter"
-                class="p-3 mb-4 text-sm rounded-lg border border-amber-200 bg-amber-50 text-amber-800 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-300"
+                class="mb-4 rounded-xl border px-4 py-3 text-sm border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200"
             >
                 <Icon
                     icon="mdi:cloud-upload-outline"
@@ -53,17 +46,17 @@
             </div>
             <p
                 v-else
-                class="flex gap-1 items-center mb-4 text-xs text-emerald-600 dark:text-emerald-400"
+                class="flex gap-1.5 items-center mb-4 text-xs text-emerald-700 dark:text-emerald-400"
             >
                 <Icon icon="mdi:shield-check" class="w-4 h-4" />
                 Runs 100% in your browser — this file never leaves your device.
             </p>
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
                 <!-- Left sidebar with related converters -->
-                <div class="col-span-1">
+                <div class="order-last col-span-1 lg:order-none">
                     <BaseCard padding="none">
-                        <div class="p-4 border-b dark:border-gray-700">
-                            <h2 class="font-medium text-gray-900 dark:text-gray-100">More Converters</h2>
+                        <div class="p-4 border-b border-gray-200/80 dark:border-gray-700/70">
+                            <h2 class="text-sm font-semibold text-gray-900 dark:text-white">More Converters</h2>
                         </div>
                         <div class="p-2 max-h-[65vh] overflow-auto">
                             <div v-if="relatedConverters.length > 0">
@@ -75,10 +68,10 @@
                                     <button
                                         @click="navigateToConverter(converter)"
                                         :class="[
-                                            'w-full px-4 py-2 text-left rounded-md hover:bg-primary-50 dark:hover:bg-gray-700',
+                                            'w-full px-3 py-2 text-left rounded-lg transition',
                                             converter.path === $route.path
-                                                ? 'text-primary-700 bg-primary-50 dark:bg-gray-700 dark:text-primary-400'
-                                                : 'text-gray-700 dark:text-gray-300',
+                                                ? 'bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-300'
+                                                : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700/40',
                                         ]"
                                     >
                                         <Icon
@@ -100,7 +93,7 @@
                 </div>
 
                 <!-- Right content area with converter -->
-                <div class="col-span-1 lg:col-span-3">
+                <div class="col-span-1 min-w-0 lg:col-span-3">
                     <BaseConverter
                         ref="converterRef"
                         :title="currentConverter.title"
@@ -166,7 +159,7 @@
         </div>
 
         <div v-else class="flex flex-col justify-center items-center py-24">
-            <p class="text-xl text-gray-500 dark:text-gray-400">
+            <p class="text-base font-semibold text-gray-900 dark:text-white">
                 Converter not found
             </p>
             <p class="text-gray-500 dark:text-gray-400">

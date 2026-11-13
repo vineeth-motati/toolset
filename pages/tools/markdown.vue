@@ -23,8 +23,8 @@
         </template>
 
         <div class="mx-auto max-w-6xl">
-            <BaseCard padding="none">
-                <div class="p-2 border-b dark:border-gray-700">
+            <BaseCard padding="none" class="overflow-hidden">
+                <div class="p-3 border-b border-gray-200/80 dark:border-gray-700/70">
                     <BaseInput
                         v-model="currentNote.title"
                         type="text"
@@ -34,12 +34,12 @@
 
                 <MarkdownToolbar @action="insertMarkdown" />
 
-                <div class="grid grid-cols-2 divide-x h-[600px] dark:divide-gray-700">
-                    <div class="relative">
+                <div class="grid grid-cols-1 divide-y h-[760px] md:grid-cols-2 md:divide-x md:divide-y-0 md:h-[600px] divide-gray-200/80 dark:divide-gray-700/70">
+                    <div class="relative min-h-0">
                         <textarea
                             ref="editor"
                             v-model="currentNote.content"
-                            class="p-4 w-full h-full text-gray-900 bg-white border-none resize-none focus:ring-0 dark:bg-gray-800 dark:text-gray-100"
+                            class="p-4 w-full h-full font-mono text-[13px] leading-6 text-gray-900 bg-white border-none resize-none focus:ring-0 dark:bg-gray-800 dark:text-gray-100"
                             placeholder="Write your markdown here..."
                         ></textarea>
                     </div>
@@ -48,21 +48,21 @@
             </BaseCard>
 
             <BaseCard class="mt-6">
-                <h2 class="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
+                <h2 class="mb-4 text-sm font-semibold text-gray-900 dark:text-white">
                     Saved Notes
                 </h2>
                 <div class="space-y-2">
                     <div
                         v-for="note in notes"
                         :key="note.id"
-                        class="flex justify-between items-center p-3 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
+                        class="flex justify-between items-center p-3 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/40"
                         @click="loadNote(note)"
                     >
                         <div>
-                            <h3 class="font-medium text-gray-900 dark:text-gray-100">
+                            <h3 class="text-sm font-medium text-gray-900 dark:text-white">
                                 {{ note.title || 'Untitled' }}
                             </h3>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                            <p class="text-xs text-gray-500 dark:text-gray-400">
                                 {{ formatDate(note.updatedAt) }}
                             </p>
                         </div>

@@ -14,7 +14,7 @@
             </BaseButton>
         </template>
 
-        <div class="mx-auto max-w-4xl">
+        <div class="mx-auto max-w-6xl">
             <draggable
                 v-model="notes"
                 class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
@@ -22,12 +22,12 @@
                 :animation="150"
             >
                 <template #item="{ element: note }">
-                    <BaseCard>
+                    <BaseCard class="cursor-grab">
                         <BaseInput
                             v-model="note.title"
                             placeholder="Note title"
                         />
-                        <div class="flex gap-2 my-2">
+                        <div class="flex gap-2 my-3">
                             <BaseButton
                                 :variant="note.isPreview ? 'primary' : 'secondary'"
                                 size="sm"
@@ -38,7 +38,7 @@
                         </div>
                         <div
                             v-if="note.isPreview"
-                            class="overflow-y-auto px-2 py-1 max-w-none h-32 prose prose-sm dark:prose-invert"
+                            class="overflow-y-auto px-3 py-2 max-w-none h-32 rounded-xl border prose prose-sm prose-gray border-gray-200/80 dark:prose-invert dark:border-gray-700/70"
                             v-html="renderMarkdown(note.content)"
                         ></div>
                         <BaseTextarea
@@ -47,8 +47,8 @@
                             :rows="4"
                             placeholder="Note content (Markdown supported)"
                         />
-                        <div class="flex justify-between items-center mt-2">
-                            <span class="text-sm text-gray-500 dark:text-gray-400">
+                        <div class="flex justify-between items-center pt-3 mt-3 border-t border-gray-200/80 dark:border-gray-700/70">
+                            <span class="text-xs text-gray-500 dark:text-gray-400">
                                 {{ new Date(note.date).toLocaleDateString() }}
                             </span>
                             <BaseIconButton

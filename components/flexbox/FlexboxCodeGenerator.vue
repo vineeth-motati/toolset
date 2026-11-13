@@ -1,18 +1,24 @@
 <template>
     <div class="flex flex-col h-full">
         <div
-            class="sticky top-0 z-10 flex items-center justify-between mb-2 bg-white dark:bg-gray-800"
+            class="flex overflow-hidden flex-col h-full bg-gray-900 rounded-xl border border-gray-800"
         >
-            <div class="flex justify-between w-full gap-2 py-1">
-                <div class="flex overflow-hidden rounded">
+            <div
+                class="flex sticky top-0 z-10 justify-between items-center px-3 py-2 bg-gray-900 border-b border-gray-800"
+            >
+                <div
+                    class="inline-flex gap-1 p-1 rounded-lg bg-gray-800/80"
+                    role="tablist"
+                >
                     <button
                         v-for="codeType in codeTypes"
                         :key="codeType"
+                        type="button"
                         :class="[
-                            'px-3 py-1 text-sm',
+                            'h-6 px-2.5 rounded-md font-mono text-xs font-medium transition',
                             activeCodeType === codeType
-                                ? 'bg-primary-600 text-white'
-                                : 'bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600',
+                                ? 'bg-gray-700 text-white'
+                                : 'text-gray-400 hover:text-white',
                         ]"
                         @click="activeCodeType = codeType"
                     >
@@ -20,17 +26,17 @@
                     </button>
                 </div>
                 <BaseIconButton
-                    :icon="copied ? 'mdi:check' : 'mdi:content-copy'"
+                    :icon="copied ? 'lucide:check' : 'lucide:copy'"
                     :label="copied ? 'Copied!' : 'Copy to clipboard'"
                     @click="copyCode"
                 />
             </div>
-        </div>
 
-        <div class="flex-1 overflow-auto">
-            <pre
-                class="h-full p-3 text-sm text-gray-100 bg-gray-900 rounded-md"
-            ><code v-html="highlightedCode"></code></pre>
+            <div class="overflow-auto flex-1">
+                <pre
+                    class="p-4 font-mono text-[13px] leading-6 text-gray-100"
+                ><code v-html="highlightedCode"></code></pre>
+            </div>
         </div>
     </div>
 </template>

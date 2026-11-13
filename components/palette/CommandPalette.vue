@@ -11,7 +11,7 @@
                 leave-to="opacity-0"
             >
                 <div
-                    class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm"
+                    class="fixed inset-0 bg-gray-950/40 backdrop-blur-[2px]"
                     aria-hidden="true"
                 />
             </TransitionChild>
@@ -29,21 +29,21 @@
                     leave-to="opacity-0 scale-95"
                 >
                     <DialogPanel
-                        class="overflow-hidden w-full max-w-lg bg-white rounded-xl border border-gray-200 shadow-2xl dark:bg-gray-800 dark:border-gray-700"
+                        class="overflow-hidden w-full max-w-xl bg-white rounded-2xl border border-gray-200/80 shadow-pop ring-1 ring-black/5 dark:bg-gray-800 dark:border-gray-700 dark:ring-white/5"
                     >
                         <Combobox @update:model-value="onSelect">
                             <div class="relative">
                                 <Icon
-                                    icon="heroicons:magnifying-glass"
-                                    class="absolute left-4 top-1/2 w-5 h-5 text-gray-400 -translate-y-1/2"
+                                    icon="lucide:search"
+                                    class="absolute left-5 top-1/2 w-5 h-5 text-gray-400 -translate-y-1/2"
                                 />
                                 <ComboboxInput
-                                    class="py-3.5 pr-12 pl-11 w-full text-sm text-gray-900 bg-transparent border-b border-gray-200 focus:outline-none placeholder:text-gray-400 dark:text-gray-100 dark:border-gray-700"
+                                    class="pr-14 pl-12 w-full h-14 text-[15px] text-gray-900 bg-transparent border-b border-gray-100 focus:outline-none placeholder:text-gray-400 dark:text-gray-100 dark:border-gray-700"
                                     placeholder="Search tools…"
                                     @change="query = $event.target.value"
                                 />
                                 <kbd
-                                    class="absolute right-4 top-1/2 px-1.5 py-0.5 text-xs text-gray-400 rounded border border-gray-200 -translate-y-1/2 dark:border-gray-600 dark:text-gray-500"
+                                    class="absolute right-4 top-1/2 -translate-y-1/2 kbd"
                                 >
                                     esc
                                 </kbd>
@@ -51,11 +51,11 @@
 
                             <ComboboxOptions
                                 static
-                                class="overflow-y-auto p-2 max-h-72"
+                                class="overflow-y-auto p-2 max-h-[min(60vh,420px)]"
                             >
                                 <p
                                     v-if="!query.trim() && shownTools.length"
-                                    class="px-3 py-1.5 text-xs font-semibold tracking-wide text-gray-400 uppercase dark:text-gray-500"
+                                    class="px-3 pt-2 pb-1.5 eyebrow !text-[11px]"
                                 >
                                     {{
                                         recentTools.length
@@ -72,21 +72,14 @@
                                 >
                                     <li
                                         :class="[
-                                            'flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer',
+                                            'flex items-center gap-3 px-3 py-2 rounded-xl cursor-pointer',
                                             active
-                                                ? 'bg-primary-50 dark:bg-gray-700'
+                                                ? 'bg-gray-100 dark:bg-gray-700/70'
                                                 : '',
                                         ]"
                                     >
-                                        <span
-                                            class="flex justify-center items-center w-8 h-8 rounded-md shrink-0 bg-primary-100 dark:bg-primary-900/40"
-                                        >
-                                            <Icon
-                                                :icon="tool.icon"
-                                                class="w-4 h-4 text-primary-600 dark:text-primary-400"
-                                            />
-                                        </span>
-                                        <span class="min-w-0">
+                                        <ToolIcon :tool="tool" size="sm" />
+                                        <span class="flex-1 min-w-0">
                                             <span
                                                 class="flex gap-2 items-center"
                                             >
@@ -97,7 +90,7 @@
                                                 </span>
                                                 <span
                                                     v-if="tool.apiOnly"
-                                                    class="shrink-0 rounded px-1 py-0.5 text-[10px] font-semibold uppercase tracking-wide bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400"
+                                                    class="api-tag"
                                                 >
                                                     API
                                                 </span>
@@ -108,6 +101,11 @@
                                                 {{ tool.description }}
                                             </span>
                                         </span>
+                                        <Icon
+                                            v-if="active"
+                                            icon="lucide:corner-down-left"
+                                            class="w-4 h-4 text-gray-400 shrink-0"
+                                        />
                                     </li>
                                 </ComboboxOption>
                                 <p
@@ -138,6 +136,7 @@ import {
     TransitionChild,
 } from '@headlessui/vue';
 import { Icon } from '@iconify/vue';
+import ToolIcon from '@/components/tool/ToolIcon.vue';
 import { useMagicKeys, whenever } from '@vueuse/core';
 import { useTools } from '@/composables/useTools';
 import { useToolUsage } from '@/composables/useToolUsage';

@@ -1,8 +1,8 @@
 <template>
     <div
-        class="flex justify-between items-center p-2 space-x-4 bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+        class="flex flex-wrap justify-between items-center gap-2 px-3 py-2 border-b border-gray-200/80 bg-gray-50/60 dark:border-gray-700/70 dark:bg-gray-900/30"
     >
-        <div class="flex items-center space-x-4">
+        <div class="flex flex-wrap items-center gap-2">
             <!-- Sheet Management -->
             <div class="flex items-center space-x-1">
                 <button
@@ -10,26 +10,27 @@
                     :key="sheet.id"
                     @click="$emit('switch-sheet', sheet.id)"
                     :class="[
-                        'px-4 py-2  rounded text-sm',
+                        'px-3 py-1.5 rounded-lg text-sm font-medium',
                         activeSheet?.id === sheet.id
-                            ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/50 dark:text-primary-300'
-                            : 'hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700',
+                            ? 'bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-300'
+                            : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700/40',
                     ]"
                 >
                     {{ sheet.name }}
                 </button>
                 <BaseIconButton
-                    icon="mdi:plus"
+                    icon="lucide:plus"
                     label="Add sheet"
                     @click="$emit('add-sheet')"
                 />
             </div>
 
+            <div class="w-px h-5 bg-gray-200 dark:bg-gray-700"></div>
             <!-- Formatting Tools -->
             <div class="flex items-center space-x-2">
                 <select
                     v-model="fontSize"
-                    class="px-4 py-2 text-sm bg-white rounded border border-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
+                    class="field !w-auto !py-1.5 text-sm"
                     @change="updateFormat({ fontSize })"
                     aria-label="Font size"
                 >
@@ -39,16 +40,16 @@
                 </select>
 
                 <div
-                    class="flex rounded border border-gray-300 dark:border-gray-600"
+                    class="flex gap-0.5 items-center"
                 >
                     <button
                         v-for="align in alignments"
                         :key="align.value"
                         @click="updateFormat({ align: align.value })"
                         :class="[
-                            'p-2 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700',
+                            'p-2 rounded-lg text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700/40',
                             {
-                                'bg-primary-50 dark:bg-primary-900/50':
+                                '!bg-primary-50 !text-primary-700 dark:!bg-primary-500/10 dark:!text-primary-300':
                                     currentFormat?.align === align.value,
                             },
                         ]"
@@ -59,16 +60,16 @@
                 </div>
 
                 <div
-                    class="flex rounded border border-gray-300 dark:border-gray-600"
+                    class="flex gap-0.5 items-center"
                 >
                     <button
                         v-for="style in styles"
                         :key="style.value"
                         @click="toggleStyle(style.value)"
                         :class="[
-                            'p-2 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700',
+                            'p-2 rounded-lg text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700/40',
                             {
-                                'bg-primary-50 dark:bg-primary-900/50':
+                                '!bg-primary-50 !text-primary-700 dark:!bg-primary-500/10 dark:!text-primary-300':
                                     currentFormat?.[style.value],
                             },
                         ]"
@@ -79,6 +80,7 @@
                 </div>
             </div>
 
+            <div class="w-px h-5 bg-gray-200 dark:bg-gray-700"></div>
             <!-- Import/Export -->
             <div class="flex items-center space-x-2">
                 <input
@@ -89,30 +91,30 @@
                     @change="handleFileImport"
                 />
                 <BaseButton
-                    variant="secondary"
+                    variant="ghost"
                     size="sm"
-                    icon="mdi:upload"
+                    icon="lucide:upload"
                     @click="$refs.fileInput.click()"
                 >
                     Import
                 </BaseButton>
                 <Menu as="div" class="relative">
                     <MenuButton
-                        class="inline-flex gap-1.5 items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-white rounded-lg border border-gray-300 transition-colors duration-150 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-700"
+                        class="inline-flex gap-1.5 items-center px-3 py-1.5 text-xs font-medium text-gray-700 rounded-lg transition-colors duration-150 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700/40"
                     >
-                        <Icon icon="mdi:download" class="w-4 h-4" />
+                        <Icon icon="lucide:download" class="w-4 h-4" />
                         Export
                     </MenuButton>
                     <MenuItems
-                        class="absolute right-0 z-50 mt-1 w-40 bg-white rounded border shadow-lg dark:bg-gray-800 dark:border-gray-700"
+                        class="absolute right-0 z-50 p-1 mt-1 w-40 bg-white rounded-xl border shadow-pop border-gray-200/80 dark:bg-gray-800 dark:border-gray-700/70"
                     >
                         <MenuItem v-slot="{ active }">
                             <button
                                 @click="$emit('export-file', 'csv')"
                                 :class="[
-                                    'w-full text-left px-4 py-2 text-sm dark:text-gray-200',
+                                    'w-full text-left px-3 py-1.5 rounded-lg text-sm text-gray-700 dark:text-gray-200',
                                     active
-                                        ? 'bg-gray-100 dark:bg-gray-700'
+                                        ? 'bg-gray-100 dark:bg-gray-700/60'
                                         : '',
                                 ]"
                             >
@@ -123,9 +125,9 @@
                             <button
                                 @click="$emit('export-file', 'xlsx')"
                                 :class="[
-                                    'w-full text-left px-4 py-2 text-sm dark:text-gray-200',
+                                    'w-full text-left px-3 py-1.5 rounded-lg text-sm text-gray-700 dark:text-gray-200',
                                     active
-                                        ? 'bg-gray-100 dark:bg-gray-700'
+                                        ? 'bg-gray-100 dark:bg-gray-700/60'
                                         : '',
                                 ]"
                             >
@@ -138,7 +140,7 @@
         </div>
         <div>
             <BaseButton
-                icon="mdi:share-variant"
+                icon="lucide:share-2"
                 size="sm"
                 @click="$emit('share-sheet')"
             >

@@ -20,142 +20,166 @@
         </template>
 
         <div class="mx-auto max-w-6xl">
-            <!-- Main Layout -->
-            <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
-                <!-- Request Section -->
+            <div class="flex flex-col gap-4">
                 <BaseCard>
-                    <h2 class="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
-                        Request
-                    </h2>
-
-                    <BaseInput
-                        v-model="api.endpoint"
-                        label="Endpoint URL"
-                        placeholder="Enter API URL (e.g., https://api.example.com)"
-                    />
-
-                    <div class="grid grid-cols-2 gap-4 mt-4">
-                        <BaseSelect
-                            v-model="api.method"
-                            :options="methodOptions"
-                            label="HTTP Method"
-                        />
-                        <BaseSelect
-                            v-model="api.contentType"
-                            :options="contentTypeOptions"
-                            label="Content Type"
-                        />
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
+                        <div class="sm:w-32 shrink-0">
+                            <BaseSelect
+                                v-model="api.method"
+                                :options="methodOptions"
+                                label="HTTP Method"
+                            />
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <BaseInput
+                                v-model="api.endpoint"
+                                label="Endpoint URL"
+                                placeholder="Enter API URL (e.g., https://api.example.com)"
+                                class="font-mono !text-[13px]"
+                            />
+                        </div>
+                        <BaseButton
+                            :loading="api.loading"
+                            :disabled="api.loading || !api.endpoint"
+                            @click="sendRequest"
+                        >
+                            {{ api.loading ? 'Sending...' : 'Send Request' }}
+                        </BaseButton>
                     </div>
-
-                    <!-- Authorization Section -->
-                    <BaseSelect
-                        v-model="api.auth.type"
-                        :options="authTypeOptions"
-                        label="Authorization"
-                        class="mt-4"
-                    />
-
-                    <BaseInput
-                        v-if="api.auth.type === 'Bearer'"
-                        v-model="api.auth.token"
-                        placeholder="Enter Bearer Token"
-                        class="mt-4"
-                    />
-                    <div
-                        v-if="api.auth.type === 'Basic'"
-                        class="grid grid-cols-2 gap-4 mt-4"
-                    >
-                        <BaseInput
-                            v-model="api.auth.username"
-                            placeholder="Username"
-                        />
-                        <BaseInput
-                            v-model="api.auth.password"
-                            type="password"
-                            placeholder="Password"
-                        />
-                    </div>
-                    <BaseInput
-                        v-if="api.auth.type === 'Custom'"
-                        v-model="api.auth.customHeader"
-                        placeholder='Enter Custom Header (e.g., "X-API-Key: key")'
-                        class="mt-4"
-                    />
-
-                    <BaseTextarea
-                        v-model="api.headers"
-                        label="Headers (JSON format)"
-                        placeholder='e.g., {"Authorization": "Bearer token"}'
-                        class="mt-4 font-mono"
-                        :rows="4"
-                    />
-
-                    <BaseTextarea
-                        v-if="['POST', 'PUT', 'PATCH'].includes(api.method)"
-                        v-model="api.body"
-                        label="Body (JSON format)"
-                        placeholder='e.g., {"key": "value"}'
-                        class="mt-4 font-mono"
-                        :rows="5"
-                    />
-
-                    <BaseButton
-                        class="mt-4"
-                        :loading="api.loading"
-                        :disabled="api.loading || !api.endpoint"
-                        @click="sendRequest"
-                    >
-                        {{ api.loading ? 'Sending...' : 'Send Request' }}
-                    </BaseButton>
                 </BaseCard>
 
-                <!-- Response Section -->
-                <BaseCard>
-                    <h2 class="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
-                        Response
-                    </h2>
-                    <div v-if="api.response" key="response">
-                        <div class="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                            <span class="font-bold">Status:</span>
-                            {{ api.response.status }}
-                        </div>
-                        <div class="mb-4">
-                            <h3 class="mb-1 font-medium text-gray-900 dark:text-gray-100">Headers:</h3>
-                            <pre
-                                class="overflow-x-auto p-3 font-mono text-sm bg-gray-100 rounded-lg dark:bg-gray-900 dark:text-gray-200"
-                                >{{
-                                    JSON.stringify(api.response.headers, null, 2)
-                                }}</pre
-                            >
-                        </div>
-                        <div v-if="api.response.isHtml">
-                            <h3 class="mb-1 font-medium text-gray-900 dark:text-gray-100">HTML Content:</h3>
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <!-- Request Section -->
+                    <BaseCard>
+                        <h2 class="mb-4 text-sm font-semibold text-gray-900 dark:text-white">
+                            Request
+                        </h2>
+
+                        <div class="space-y-4">
+                            <BaseSelect
+                                v-model="api.contentType"
+                                :options="contentTypeOptions"
+                                label="Content Type"
+                            />
+
+                            <BaseSelect
+                                v-model="api.auth.type"
+                                :options="authTypeOptions"
+                                label="Authorization"
+                            />
+
+                            <BaseInput
+                                v-if="api.auth.type === 'Bearer'"
+                                v-model="api.auth.token"
+                                placeholder="Enter Bearer Token"
+                            />
                             <div
-                                class="overflow-auto p-3 bg-gray-100 rounded-lg dark:bg-gray-900 dark:text-gray-200"
-                                v-html="sanitizedHtmlResponse"
-                            ></div>
-                        </div>
-                        <div v-else>
-                            <h3 class="mb-1 font-medium text-gray-900 dark:text-gray-100">Body:</h3>
-                            <pre
-                                class="overflow-auto p-3 max-h-96 font-mono text-sm bg-gray-100 rounded-lg dark:bg-gray-900 dark:text-gray-200"
-                                >{{
-                                    JSON.stringify(api.response.data, null, 2)
-                                }}</pre
+                                v-if="api.auth.type === 'Basic'"
+                                class="grid grid-cols-1 gap-4 sm:grid-cols-2"
                             >
+                                <BaseInput
+                                    v-model="api.auth.username"
+                                    placeholder="Username"
+                                />
+                                <BaseInput
+                                    v-model="api.auth.password"
+                                    type="password"
+                                    placeholder="Password"
+                                />
+                            </div>
+                            <BaseInput
+                                v-if="api.auth.type === 'Custom'"
+                                v-model="api.auth.customHeader"
+                                placeholder='Enter Custom Header (e.g., "X-API-Key: key")'
+                            />
                         </div>
-                    </div>
-                    <div v-else-if="api.error" key="error" class="text-red-600 dark:text-red-400">
-                        {{ api.error }}
-                    </div>
-                    <BaseEmptyState
-                        v-else
-                        key="empty"
-                        icon="mdi:api"
-                        :title="api.loading ? 'Sending request...' : 'No response'"
-                        description="Send a request to see the response here."
-                    />
-                </BaseCard>
+
+                        <div class="pt-4 mt-4 border-t border-gray-200/80 dark:border-gray-700/70">
+                            <BaseTextarea
+                                v-model="api.headers"
+                                label="Headers (JSON format)"
+                                placeholder='e.g., {"Authorization": "Bearer token"}'
+                                class="font-mono text-[13px]"
+                                :rows="4"
+                            />
+                        </div>
+
+                        <div
+                            v-if="['POST', 'PUT', 'PATCH'].includes(api.method)"
+                            class="pt-4 mt-4 border-t border-gray-200/80 dark:border-gray-700/70"
+                        >
+                            <BaseTextarea
+                                v-model="api.body"
+                                label="Body (JSON format)"
+                                placeholder='e.g., {"key": "value"}'
+                                class="font-mono text-[13px]"
+                                :rows="5"
+                            />
+                        </div>
+                    </BaseCard>
+
+                    <!-- Response Section -->
+                    <BaseCard>
+                        <div class="flex items-center justify-between gap-3 mb-4">
+                            <h2 class="text-sm font-semibold text-gray-900 dark:text-white">
+                                Response
+                            </h2>
+                            <BaseBadge
+                                v-if="api.response"
+                                :variant="
+                                    api.response.status >= 500
+                                        ? 'danger'
+                                        : api.response.status >= 400
+                                          ? 'warning'
+                                          : 'success'
+                                "
+                            >
+                                {{ api.response.status }}
+                            </BaseBadge>
+                        </div>
+                        <div v-if="api.response" key="response">
+                            <div class="mb-4">
+                                <h3 class="mb-1.5 eyebrow">Headers</h3>
+                                <pre
+                                    class="overflow-x-auto p-3 font-mono text-[13px] leading-6 surface-muted dark:text-gray-200"
+                                    >{{
+                                        JSON.stringify(api.response.headers, null, 2)
+                                    }}</pre
+                                >
+                            </div>
+                            <div v-if="api.response.isHtml">
+                                <h3 class="mb-1.5 eyebrow">HTML Content</h3>
+                                <div
+                                    class="overflow-auto p-3 surface-muted dark:text-gray-200"
+                                    v-html="sanitizedHtmlResponse"
+                                ></div>
+                            </div>
+                            <div v-else>
+                                <h3 class="mb-1.5 eyebrow">Body</h3>
+                                <pre
+                                    class="overflow-auto p-3 max-h-96 font-mono text-[13px] leading-6 surface-muted dark:text-gray-200"
+                                    >{{
+                                        JSON.stringify(api.response.data, null, 2)
+                                    }}</pre
+                                >
+                            </div>
+                        </div>
+                        <div
+                            v-else-if="api.error"
+                            key="error"
+                            class="px-4 py-3 text-sm text-red-800 bg-red-50 rounded-xl border border-red-200 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-200"
+                        >
+                            {{ api.error }}
+                        </div>
+                        <BaseEmptyState
+                            v-else
+                            key="empty"
+                            icon="mdi:api"
+                            :title="api.loading ? 'Sending request...' : 'No response'"
+                            description="Send a request to see the response here."
+                        />
+                    </BaseCard>
+                </div>
             </div>
         </div>
 

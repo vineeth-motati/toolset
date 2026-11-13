@@ -2,7 +2,7 @@
     <ToolLayout>
         <template #actions>
             <BaseButton
-                icon="mdi:share-variant"
+                icon="lucide:share-2"
                 size="sm"
                 @click="shareConversion"
             >
@@ -11,7 +11,7 @@
         </template>
 
         <div class="mx-auto max-w-4xl">
-            <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <!-- Input Section -->
                 <BaseCard>
                     <BaseInput
@@ -52,25 +52,25 @@
                 <!-- Result Section -->
                 <BaseCard>
                     <h2
-                        class="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100"
+                        class="mb-4 text-sm font-semibold text-gray-900 dark:text-white"
                     >
                         Result
                     </h2>
                     <div
-                        class="mb-4 text-3xl font-bold text-primary-600 dark:text-primary-400"
+                        class="mb-4 font-mono text-3xl font-semibold text-primary-600 dark:text-primary-400"
                     >
                         {{ result }}{{ toUnit }}
                     </div>
-                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                    <div class="font-mono text-sm text-gray-500 dark:text-gray-400">
                         {{ value }}{{ fromUnit }} = {{ result }}{{ toUnit }}
                     </div>
                 </BaseCard>
             </div>
 
             <!-- Common Conversions -->
-            <BaseCard class="mt-8">
+            <BaseCard class="mt-6">
                 <h2
-                    class="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100"
+                    class="mb-4 text-sm font-semibold text-gray-900 dark:text-white"
                 >
                     Common Conversions
                 </h2>
@@ -78,13 +78,13 @@
                     <div
                         v-for="conversion in commonConversions"
                         :key="conversion.from + conversion.to"
-                        class="p-4 rounded-lg border cursor-pointer hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-700"
+                        class="p-4 transition cursor-pointer surface-muted hover:border-primary-300 dark:hover:border-primary-500/60"
                         @click="applyConversion(conversion)"
                     >
-                        <div class="font-medium text-gray-900 dark:text-gray-100">
+                        <div class="text-sm font-medium text-gray-900 dark:text-white">
                             {{ conversion.label }}
                         </div>
-                        <div class="text-sm text-gray-600 dark:text-gray-400">
+                        <div class="font-mono text-xs text-gray-500 dark:text-gray-400">
                             {{ conversion.from }} → {{ conversion.to }}
                         </div>
                     </div>

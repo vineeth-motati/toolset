@@ -17,7 +17,7 @@ const props = defineProps({
 
 const cls = computed(() =>
     props.value >= 80
-        ? 'bg-green-500'
+        ? 'bg-emerald-500'
         : props.value > 0
           ? 'bg-amber-400'
           : 'bg-gray-300 dark:bg-gray-600'

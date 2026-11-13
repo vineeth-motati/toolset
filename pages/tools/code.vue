@@ -14,14 +14,14 @@
             </BaseButton>
         </template>
 
-        <div class="h-[80vh] flex">
+        <div class="flex flex-col gap-6 lg:flex-row lg:gap-0 lg:h-[80vh]">
             <!-- Left Panel: Code Editors -->
-            <div class="flex flex-col pr-4 w-1/2 border-r dark:border-gray-700">
+            <div class="flex flex-col w-full lg:pr-4 lg:w-1/2 lg:border-r border-gray-200/80 dark:border-gray-700/70">
                 <!-- Editors -->
                 <div class="flex flex-col flex-1 gap-4">
-                    <div class="overflow-hidden relative flex-1 rounded-md border dark:border-gray-700">
+                    <div class="overflow-hidden relative flex-1 min-h-[320px] rounded-xl border border-gray-200/80 dark:border-gray-700/70">
                         <div
-                            class="z-10 px-4 py-2 text-sm font-medium bg-gray-100 border-b border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
+                            class="z-10 flex items-center h-10 px-3 text-[13px] font-medium text-gray-700 border-b border-gray-200/80 bg-gray-50/60 dark:border-gray-700/70 dark:bg-gray-900/30 dark:text-gray-300"
                         >
                             HTML
                         </div>
@@ -32,9 +32,9 @@
                         </div>
                     </div>
 
-                    <div class="overflow-hidden relative flex-1 rounded-md border dark:border-gray-700">
+                    <div class="overflow-hidden relative flex-1 min-h-[320px] rounded-xl border border-gray-200/80 dark:border-gray-700/70">
                         <div
-                            class="z-10 px-4 py-2 text-sm font-medium bg-gray-100 border-b border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
+                            class="z-10 flex items-center h-10 px-3 text-[13px] font-medium text-gray-700 border-b border-gray-200/80 bg-gray-50/60 dark:border-gray-700/70 dark:bg-gray-900/30 dark:text-gray-300"
                         >
                             CSS
                         </div>
@@ -45,9 +45,9 @@
                         </div>
                     </div>
 
-                    <div class="overflow-hidden relative flex-1 rounded-md border dark:border-gray-700">
+                    <div class="overflow-hidden relative flex-1 min-h-[320px] rounded-xl border border-gray-200/80 dark:border-gray-700/70">
                         <div
-                            class="z-10 px-4 py-2 text-sm font-medium bg-gray-100 border-b border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
+                            class="z-10 flex items-center h-10 px-3 text-[13px] font-medium text-gray-700 border-b border-gray-200/80 bg-gray-50/60 dark:border-gray-700/70 dark:bg-gray-900/30 dark:text-gray-300"
                         >
                             JavaScript
                         </div>
@@ -61,15 +61,15 @@
             </div>
 
             <!-- Right Panel: Preview -->
-            <div class="flex flex-col pl-4 w-1/2 h-[80vh]">
-                <div class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <div class="flex flex-col w-full lg:pl-4 lg:w-1/2 h-[60vh] lg:h-[80vh]">
+                <div class="mb-2 eyebrow">
                     Preview
                 </div>
                 <!-- allow-same-origin must NOT be combined with allow-scripts:
                      the framed user code could lift its own sandbox. -->
                 <iframe
                     ref="previewFrame"
-                    class="w-full h-full bg-white rounded-md border dark:border-gray-700"
+                    class="w-full h-full bg-white rounded-xl border border-gray-200/80 dark:border-gray-700/70"
                     sandbox="allow-scripts allow-modals allow-forms allow-popups"
                 ></iframe>
             </div>

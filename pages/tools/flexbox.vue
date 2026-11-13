@@ -1,12 +1,12 @@
 <template>
     <ToolLayout size="full" class="flex flex-col p-4 h-full">
         <template #actions>
-            <BaseButton icon="mdi:share" size="sm" @click="shareFlexbox">
+            <BaseButton icon="lucide:share-2" size="sm" @click="shareFlexbox">
                 Share
             </BaseButton>
             <BaseButton
                 variant="secondary"
-                icon="mdi:code-tags"
+                icon="lucide:code"
                 size="sm"
                 @click="showCode = true"
             >
@@ -18,39 +18,47 @@
         <div class="flex flex-1 gap-4 overflow-hidden">
             <!-- Tabbed Controls Panel -->
             <div
-                class="flex flex-col w-1/3 min-w-[300px] bg-white rounded-lg shadow dark:bg-gray-800 dark:text-gray-200"
+                class="flex overflow-hidden flex-col w-1/3 min-w-[300px] surface"
             >
-                <div class="flex border-b dark:border-gray-700">
-                    <button
-                        v-for="(tab, index) in tabs"
-                        :key="index"
-                        @click="activeTab = tab.id"
-                        :class="[
-                            'px-4 py-2 text-sm font-medium',
-                            activeTab === tab.id
-                                ? 'text-primary-600 border-b-2 border-primary-600 dark:text-primary-400 dark:border-primary-400'
-                                : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200',
-                        ]"
+                <div
+                    class="px-3 py-2 border-b border-gray-200/80 bg-gray-50/60 dark:border-gray-700/70 dark:bg-gray-900/30"
+                >
+                    <div
+                        class="flex gap-1 p-1 bg-gray-100 rounded-xl dark:bg-gray-800/80"
+                        role="tablist"
                     >
-                        {{ tab.name }}
-                    </button>
+                        <button
+                            v-for="(tab, index) in tabs"
+                            :key="index"
+                            type="button"
+                            role="tab"
+                            :aria-selected="activeTab === tab.id"
+                            @click="activeTab = tab.id"
+                            :class="[
+                                'flex-1 h-8 px-3.5 rounded-lg text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500',
+                                activeTab === tab.id
+                                    ? 'bg-white text-gray-900 shadow-xs ring-1 ring-gray-200/80 dark:bg-gray-700 dark:text-white dark:ring-gray-600/60'
+                                    : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white',
+                            ]"
+                        >
+                            {{ tab.name }}
+                        </button>
+                    </div>
                 </div>
 
                 <div class="flex-1 p-4 overflow-auto">
                     <!-- Container Controls -->
                     <div v-show="activeTab === 'container'" class="space-y-4">
-                        <h2 class="text-lg font-semibold">
-                            Container Properties
-                        </h2>
+                        <div class="eyebrow">Container</div>
 
                         <!-- Display property -->
                         <div class="mb-4">
-                            <label class="block mb-2 font-medium"
+                            <label class="block mb-1.5 text-[13px] font-medium text-gray-700 dark:text-gray-300"
                                 >Display</label
                             >
                             <select
                                 v-model="flexbox.containerStyles.display"
-                                class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:border-gray-600"
+                                class="py-0 h-8 field"
                                 @change="
                                     updateContainerStyles({
                                         display:
@@ -65,19 +73,21 @@
 
                         <!-- Direction buttons in a more compact layout -->
                         <div class="mb-4">
-                            <label class="block mb-2 font-medium"
+                            <label class="block mb-1.5 text-[13px] font-medium text-gray-700 dark:text-gray-300"
                                 >Flex Direction</label
                             >
-                            <div class="grid grid-cols-2 gap-2">
+                            <div
+                                class="grid grid-cols-2 gap-1 p-1 bg-gray-100 rounded-lg dark:bg-gray-800/80"
+                            >
                                 <label
                                     v-for="direction in directionOptions"
                                     :key="direction"
                                     :class="[
-                                        'p-2 border rounded flex items-center cursor-pointer align-middle justify-center',
+                                        'h-8 px-2 rounded-md flex items-center cursor-pointer justify-center text-[13px] font-medium transition',
                                         flexbox.containerStyles
                                             .flexDirection === direction
-                                            ? 'bg-primary-100 border-primary-500 dark:bg-primary-900/50 dark:border-primary-400'
-                                            : 'border-gray-300 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700',
+                                            ? 'bg-white text-gray-900 shadow-xs ring-1 ring-gray-200/80 dark:bg-gray-700 dark:text-white dark:ring-gray-600/60'
+                                            : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white',
                                     ]"
                                 >
                                     <input
@@ -96,7 +106,7 @@
                                     />
                                     <Icon
                                         :icon="directionIcons[direction]"
-                                        class="mr-1"
+                                        class="mr-1 shrink-0"
                                     />
                                     {{ direction }}
                                 </label>
@@ -105,22 +115,22 @@
 
                         <!-- Flex-wrap with more compact layout -->
                         <div class="mb-4">
-                            <label class="block mb-2 font-medium"
+                            <label class="block mb-1.5 text-[13px] font-medium text-gray-700 dark:text-gray-300"
                                 >Flex Wrap</label
                             >
                             <div
-                                class="grid grid-cols-3 gap-2"
+                                class="grid grid-cols-3 gap-1 p-1 bg-gray-100 rounded-lg dark:bg-gray-800/80"
                                 :key="flexbox.containerStyles.flexWrap"
                             >
                                 <label
                                     v-for="wrap in wrapOptions"
                                     :key="wrap"
                                     :class="[
-                                        'p-2 border rounded text-sm cursor-pointer text-center content-center',
+                                        'h-8 px-2 rounded-md flex items-center cursor-pointer justify-center text-[13px] font-medium transition',
                                         flexbox.containerStyles.flexWrap ===
                                         wrap
-                                            ? 'bg-primary-100 border-primary-500 dark:bg-primary-900/50 dark:border-primary-400'
-                                            : 'border-gray-300 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700',
+                                            ? 'bg-white text-gray-900 shadow-xs ring-1 ring-gray-200/80 dark:bg-gray-700 dark:text-white dark:ring-gray-600/60'
+                                            : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white',
                                     ]"
                                 >
                                     <input
@@ -145,14 +155,14 @@
                         <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
                             <!-- Justify Content -->
                             <div>
-                                <label class="block mb-2 font-medium"
-                                    >Justify Content</label
+                                <label class="block mb-1.5 text-[13px] font-medium text-gray-700 dark:text-gray-300"
+                                >Justify Content</label
                                 >
                                 <select
                                     v-model="
                                         flexbox.containerStyles.justifyContent
                                     "
-                                    class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:border-gray-600"
+                                    class="py-0 h-8 field"
                                     @change="
                                         updateContainerStyles({
                                             justifyContent:
@@ -180,12 +190,12 @@
 
                             <!-- Align Items -->
                             <div>
-                                <label class="block mb-2 font-medium"
-                                    >Align Items</label
+                                <label class="block mb-1.5 text-[13px] font-medium text-gray-700 dark:text-gray-300"
+                                >Align Items</label
                                 >
                                 <select
                                     v-model="flexbox.containerStyles.alignItems"
-                                    class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:border-gray-600"
+                                    class="py-0 h-8 field"
                                     @change="
                                         updateContainerStyles({
                                             alignItems:
@@ -206,14 +216,14 @@
 
                             <!-- Align Content -->
                             <div>
-                                <label class="block mb-2 font-medium"
-                                    >Align Content</label
+                                <label class="block mb-1.5 text-[13px] font-medium text-gray-700 dark:text-gray-300"
+                                >Align Content</label
                                 >
                                 <select
                                     v-model="
                                         flexbox.containerStyles.alignContent
                                     "
-                                    class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:border-gray-600"
+                                    class="py-0 h-8 field"
                                     @change="
                                         updateContainerStyles({
                                             alignContent:
@@ -255,25 +265,27 @@
                     <div v-show="activeTab === 'item'" class="space-y-4">
                         <div v-if="selectedItem">
                             <div class="flex items-center justify-between mb-4">
-                                <h2 class="text-lg font-semibold">
+                                <h2
+                                    class="text-sm font-semibold text-gray-900 dark:text-white"
+                                >
                                     {{ selectedItem.content }} Properties
                                 </h2>
                                 <BaseIconButton
-                                    icon="mdi:close"
+                                    icon="lucide:x"
                                     label="Deselect item"
                                     @click="deselectItem"
                                 />
                             </div>
 
                             <div class="mb-4">
-                                <label class="block mb-2 font-medium"
-                                    >Content</label
+                                <label class="block mb-1.5 text-[13px] font-medium text-gray-700 dark:text-gray-300"
+                                >Content</label
                                 >
                                 <div class="flex gap-2">
                                     <input
                                         v-model="selectedItem.content"
                                         type="text"
-                                        class="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:border-gray-600"
+                                        class="flex-1 py-0 h-8 field"
                                         @change="updateSelectedItem"
                                     />
                                 </div>
@@ -282,8 +294,8 @@
                             <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
                                 <!-- Flex Grow -->
                                 <div>
-                                    <label class="block mb-2 font-medium"
-                                        >flex-grow</label
+                                    <label class="block mb-1.5 text-[13px] font-medium text-gray-700 dark:text-gray-300"
+                                >flex-grow</label
                                     >
                                     <div class="flex items-center">
                                         <input
@@ -294,10 +306,12 @@
                                             min="0"
                                             max="5"
                                             step="1"
-                                            class="flex-grow mr-2"
+                                            class="flex-grow mr-2 accent-primary-600"
                                             @input="updateSelectedItem"
                                         />
-                                        <span class="w-8 text-right">{{
+                                        <span
+                                            class="w-8 text-[13px] tabular-nums text-right text-gray-700 dark:text-gray-300"
+                                            >{{
                                             selectedItem.styles.flexGrow
                                         }}</span>
                                     </div>
@@ -305,8 +319,8 @@
 
                                 <!-- Flex Shrink -->
                                 <div>
-                                    <label class="block mb-2 font-medium"
-                                        >flex-shrink</label
+                                    <label class="block mb-1.5 text-[13px] font-medium text-gray-700 dark:text-gray-300"
+                                >flex-shrink</label
                                     >
                                     <div class="flex items-center">
                                         <input
@@ -317,10 +331,12 @@
                                             min="0"
                                             max="5"
                                             step="1"
-                                            class="flex-grow mr-2"
+                                            class="flex-grow mr-2 accent-primary-600"
                                             @input="updateSelectedItem"
                                         />
-                                        <span class="w-8 text-right">{{
+                                        <span
+                                            class="w-8 text-[13px] tabular-nums text-right text-gray-700 dark:text-gray-300"
+                                            >{{
                                             selectedItem.styles.flexShrink
                                         }}</span>
                                     </div>
@@ -328,12 +344,12 @@
 
                                 <!-- Flex Basis -->
                                 <div>
-                                    <label class="block mb-2 font-medium"
-                                        >flex-basis</label
+                                    <label class="block mb-1.5 text-[13px] font-medium text-gray-700 dark:text-gray-300"
+                                >flex-basis</label
                                     >
                                     <select
                                         v-model="selectedItem.styles.flexBasis"
-                                        class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:border-gray-600"
+                                        class="py-0 h-8 field"
                                         @change="updateSelectedItem"
                                     >
                                         <option value="auto">auto</option>
@@ -347,12 +363,12 @@
 
                                 <!-- Align Self -->
                                 <div>
-                                    <label class="block mb-2 font-medium"
-                                        >align-self</label
+                                    <label class="block mb-1.5 text-[13px] font-medium text-gray-700 dark:text-gray-300"
+                                >align-self</label
                                     >
                                     <select
                                         v-model="selectedItem.styles.alignSelf"
-                                        class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:border-gray-600"
+                                        class="py-0 h-8 field"
                                         @change="updateSelectedItem"
                                     >
                                         <option value="auto">auto</option>
@@ -372,8 +388,8 @@
 
                                 <!-- Order -->
                                 <div>
-                                    <label class="block mb-2 font-medium"
-                                        >order</label
+                                    <label class="block mb-1.5 text-[13px] font-medium text-gray-700 dark:text-gray-300"
+                                >order</label
                                     >
                                     <div class="flex items-center">
                                         <input
@@ -384,10 +400,12 @@
                                             min="-5"
                                             max="5"
                                             step="1"
-                                            class="flex-grow mr-2"
+                                            class="flex-grow mr-2 accent-primary-600"
                                             @input="updateSelectedItem"
                                         />
-                                        <span class="w-8 text-right">{{
+                                        <span
+                                            class="w-8 text-[13px] tabular-nums text-right text-gray-700 dark:text-gray-300"
+                                            >{{
                                             selectedItem.styles.order
                                         }}</span>
                                     </div>
@@ -395,8 +413,8 @@
 
                                 <!-- Background Color -->
                                 <div>
-                                    <label class="block mb-2 font-medium"
-                                        >Background Color</label
+                                    <label class="block mb-1.5 text-[13px] font-medium text-gray-700 dark:text-gray-300"
+                                >Background Color</label
                                     >
                                     <div class="flex items-center gap-2">
                                         <input
@@ -405,19 +423,22 @@
                                                     .backgroundColor
                                             "
                                             type="color"
-                                            class="w-10 h-10 border border-gray-300 rounded"
+                                            class="w-10 h-8 bg-white rounded-lg border cursor-pointer border-gray-200/80 dark:border-gray-700/70 dark:bg-gray-900/60"
                                             @input="updateSelectedItem"
                                         />
-                                        <span>{{
-                                            selectedItem.styles.backgroundColor
-                                        }}</span>
+                                        <span
+                                            class="font-mono text-[13px] text-gray-500 dark:text-gray-400"
+                                            >{{
+                                                selectedItem.styles.backgroundColor
+                                            }}</span
+                                        >
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Add width and height controls here -->
                             <div class="mt-4">
-                                <h3 class="mb-2 font-medium">Dimensions</h3>
+                                <div class="mb-2 eyebrow">Dimensions</div>
                                 <div class="grid grid-cols-2 gap-4">
                                     <!-- Width -->
                                     <div>
@@ -445,10 +466,13 @@
                                 </div>
                             </div>
                         </div>
-                        <div v-else class="py-8 text-center text-gray-500">
+                        <div
+                            v-else
+                            class="py-8 text-center text-gray-500 dark:text-gray-400"
+                        >
                             <Icon
                                 icon="mdi:cursor-default-click-outline"
-                                class="w-12 h-12 mx-auto"
+                                class="mx-auto w-10 h-10 text-gray-400 dark:text-gray-500"
                             />
                             <p class="mt-2">
                                 Select an item to edit its properties
@@ -462,17 +486,19 @@
             <div class="flex flex-col flex-1 min-w-0">
                 <!-- Preview Area -->
                 <div
-                    class="flex-1 mb-4 overflow-hidden bg-white rounded-lg shadow dark:bg-gray-800 dark:text-gray-200"
+                    class="flex-1 mb-4 overflow-hidden surface"
                 >
-                    <div class="flex flex-col h-full p-4">
-                        <div class="flex items-center justify-between mb-2">
-                            <h2 class="text-lg font-semibold">Preview</h2>
-                            <div class="flex gap-2">
+                    <div class="flex flex-col h-full">
+                        <div
+                            class="flex flex-wrap gap-1.5 justify-between items-center px-3 py-2 border-b border-gray-200/80 bg-gray-50/60 dark:border-gray-700/70 dark:bg-gray-900/30"
+                        >
+                            <div class="eyebrow">Preview</div>
+                            <div class="flex flex-wrap gap-1.5">
                                 <BaseButton
                                     v-if="selectedItem"
                                     variant="secondary"
                                     size="sm"
-                                    icon="mdi:content-duplicate"
+                                    icon="lucide:copy"
                                     @click="duplicateSelectedItem"
                                 >
                                     Duplicate
@@ -481,14 +507,14 @@
                                     v-if="selectedItem"
                                     variant="danger"
                                     size="sm"
-                                    icon="mdi:delete"
+                                    icon="lucide:trash-2"
                                     @click="deleteSelectedItem"
                                 >
                                     Delete
                                 </BaseButton>
                                 <BaseButton
                                     size="sm"
-                                    icon="mdi:plus"
+                                    icon="lucide:plus"
                                     @click="addFlexItem"
                                 >
                                     Add Item
@@ -496,7 +522,7 @@
                                 <BaseButton
                                     variant="secondary"
                                     size="sm"
-                                    icon="mdi:refresh"
+                                    icon="lucide:refresh-cw"
                                     @click="resetFlexbox"
                                 >
                                     Reset
@@ -505,7 +531,7 @@
                         </div>
 
                         <div
-                            class="relative flex-1 overflow-auto bg-gray-100 rounded-lg border border-gray-300 dark:bg-gray-900/50 dark:border-gray-600"
+                            class="overflow-auto relative flex-1 bg-gray-50 bg-grid-ink dark:bg-gray-900/50"
                         >
                             <TransitionGroup
                                 name="flexbox-item"

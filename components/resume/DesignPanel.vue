@@ -2,7 +2,7 @@
     <div class="space-y-6">
         <!-- Templates -->
         <section>
-            <h2 class="mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">Template</h2>
+            <h2 class="mb-1 text-sm font-semibold text-gray-900 dark:text-white">Template</h2>
             <p class="mb-3 text-xs text-gray-500 dark:text-gray-400">
                 All three are single-column and parser-safe. Content is stored separately from design —
                 switching template never touches what you wrote.
@@ -12,15 +12,15 @@
                     v-for="tpl in templates"
                     :key="tpl.id"
                     type="button"
-                    class="overflow-hidden text-left rounded-lg border-2 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400"
+                    class="overflow-hidden text-left rounded-xl border-2 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400"
                     :class="doc.meta.template === tpl.id
-                        ? 'border-primary-500 shadow-sm'
-                        : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'"
+                        ? 'border-primary-500 shadow-card'
+                        : 'border-gray-200/80 hover:border-gray-300 dark:border-gray-700/70 dark:hover:border-gray-600'"
                     :aria-pressed="doc.meta.template === tpl.id"
                     @click="resume.setTemplate(tpl.id)"
                 >
                     <!-- Wireframe thumbnail: cheap, and it survives theme changes -->
-                    <div class="p-2.5 bg-white border-b border-gray-100 dark:bg-gray-900 dark:border-gray-800">
+                    <div class="p-2.5 bg-white border-b border-gray-200/80 dark:bg-gray-900 dark:border-gray-700/70">
                         <div class="space-y-1" :class="tpl.id === 'classic' ? 'items-center flex flex-col' : ''">
                             <div
                                 class="h-1.5 rounded-full"
@@ -37,10 +37,10 @@
                     </div>
                     <div class="p-2.5">
                         <div class="flex gap-1.5 items-center">
-                            <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ tpl.name }}</span>
+                            <span class="text-sm font-medium text-gray-900 dark:text-white">{{ tpl.name }}</span>
                             <Icon
                                 v-if="doc.meta.template === tpl.id"
-                                icon="mdi:check-circle"
+                                icon="lucide:circle-check"
                                 class="w-4 h-4 text-primary-600"
                             />
                         </div>
@@ -55,11 +55,11 @@
         <!-- Density -->
         <section>
             <div class="flex flex-wrap gap-2 justify-between items-center mb-2">
-                <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Density</h2>
+                <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Density</h2>
                 <BaseButton
                     size="sm"
                     variant="secondary"
-                    icon="mdi:arrow-collapse-vertical"
+                    icon="lucide:shrink"
                     :loading="fitting"
                     @click="fitToOnePage"
                 >
@@ -71,26 +71,26 @@
                     v-for="p in DENSITY_PRESETS"
                     :key="p.id"
                     type="button"
-                    class="p-2.5 text-left rounded-lg border transition-colors"
+                    class="p-3 text-left rounded-xl border transition-colors"
                     :class="activeDensity === p.id
-                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-                        : 'border-gray-200 hover:border-gray-300 dark:border-gray-700'"
+                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-500/10'
+                        : 'border-gray-200/80 hover:border-gray-300 dark:border-gray-700/70'"
                     @click="applyDensity(p)"
                 >
-                    <span class="block text-sm font-medium text-gray-900 dark:text-gray-100">{{ p.label }}</span>
+                    <span class="block text-sm font-medium text-gray-900 dark:text-white">{{ p.label }}</span>
                     <span class="block mt-0.5 text-[11px] leading-snug text-gray-500 dark:text-gray-400">
                         {{ p.description }}
                     </span>
                 </button>
             </div>
-            <p v-if="fitMessage" class="mt-2 text-xs" :class="fitOk ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'">
+            <p v-if="fitMessage" class="mt-2 text-xs" :class="fitOk ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'">
                 {{ fitMessage }}
             </p>
         </section>
 
         <!-- Accent -->
         <section>
-            <h2 class="mb-2 text-base font-semibold text-gray-900 dark:text-gray-100">Accent colour</h2>
+            <h2 class="mb-2 text-sm font-semibold text-gray-900 dark:text-white">Accent colour</h2>
             <div class="flex flex-wrap gap-2 items-center">
                 <button
                     v-for="c in ACCENT_PRESETS"
@@ -104,9 +104,9 @@
                     @click="setAccent(c.value)"
                 />
                 <label
-                    class="inline-flex gap-1.5 items-center px-2 py-1 ml-1 text-xs text-gray-600 rounded-lg border border-gray-300 cursor-pointer dark:border-gray-700 dark:text-gray-300"
+                    class="inline-flex gap-1.5 items-center px-2.5 py-1 ml-1 text-xs text-gray-600 rounded-lg border border-gray-200/80 cursor-pointer dark:border-gray-700/70 dark:text-gray-300"
                 >
-                    <Icon icon="mdi:eyedropper-variant" class="w-3.5 h-3.5" />
+                    <Icon icon="lucide:palette" class="w-3.5 h-3.5" />
                     Custom
                     <input
                         :value="theme.accent"
@@ -117,18 +117,18 @@
                     />
                 </label>
             </div>
-            <p v-if="doc.meta.template === 'atsPlain'" class="mt-1.5 text-[11px] text-gray-400">
+            <p v-if="doc.meta.template === 'atsPlain'" class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                 The ATS Plain template renders in black regardless — that is the point of it.
             </p>
         </section>
 
         <!-- Page setup -->
         <section>
-            <h2 class="mb-2 text-base font-semibold text-gray-900 dark:text-gray-100">Page</h2>
+            <h2 class="mb-2 text-sm font-semibold text-gray-900 dark:text-white">Page</h2>
             <div class="grid gap-4 sm:grid-cols-2">
                 <BaseSelect v-model="theme.pageSize" label="Paper size" :options="pageSizeOptions" />
                 <div>
-                    <label class="flex justify-between mb-1 text-xs font-medium text-gray-600 dark:text-gray-400">
+                    <label class="flex justify-between mb-1 text-[13px] font-medium text-gray-700 dark:text-gray-300">
                         Margins <span class="tabular-nums text-gray-400">{{ theme.margins[0] }}pt</span>
                     </label>
                     <input
@@ -146,7 +146,7 @@
 
             <div class="grid gap-4 mt-4 sm:grid-cols-3">
                 <div v-for="s in sliders" :key="s.key">
-                    <label class="flex justify-between mb-1 text-xs font-medium text-gray-600 dark:text-gray-400">
+                    <label class="flex justify-between mb-1 text-[13px] font-medium text-gray-700 dark:text-gray-300">
                         {{ s.label }}
                         <span class="tabular-nums text-gray-400">{{ theme[s.key] }}{{ s.unit }}</span>
                     </label>
@@ -165,7 +165,7 @@
 
         <!-- Photo -->
         <section>
-            <h2 class="mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">Photo</h2>
+            <h2 class="mb-1 text-sm font-semibold text-gray-900 dark:text-white">Photo</h2>
             <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">
                 Rendered by the Modern template only. Downscaled to 320px and stored in this browser.
                 <strong class="font-medium">US and UK employers generally prefer no photo</strong> — many
@@ -182,13 +182,13 @@
                     v-else
                     class="flex justify-center items-center w-14 h-14 text-gray-300 rounded-full bg-gray-100 dark:bg-gray-800 dark:text-gray-600"
                 >
-                    <Icon icon="mdi:account" class="w-7 h-7" />
+                    <Icon icon="lucide:image" class="w-7 h-7" />
                 </div>
                 <div class="flex gap-2">
                     <label
-                        class="inline-flex gap-1 items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-white rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-700"
+                        class="inline-flex gap-1 items-center px-3 h-8 text-xs font-medium text-gray-700 bg-white rounded-lg border border-gray-200/80 shadow-xs cursor-pointer hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700/70 dark:hover:bg-gray-700/40"
                     >
-                        <Icon icon="mdi:upload" class="w-4 h-4" />
+                        <Icon icon="lucide:upload" class="w-4 h-4" />
                         {{ doc.basics.photo ? 'Replace' : 'Upload' }}
                         <input type="file" accept="image/*" class="hidden" @change="onPhoto" />
                     </label>

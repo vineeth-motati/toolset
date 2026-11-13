@@ -1,7 +1,7 @@
 <template>
     <div
         :data-item-id="item.id"
-        class="flex items-center justify-center p-4 text-center flex-item"
+        class="flex items-center justify-center p-4 text-sm font-medium text-center flex-item"
         :class="{ 'selected-flex-item': isSelected }"
         :style="itemStyles"
         @click.stop="$emit('click', item)"
@@ -50,7 +50,7 @@ const itemStyles = computed(() => ({
 
 .selected-flex-item {
     /* Add selected styles if needed */
-    outline: 2px solid #4f46e5;
+    outline: 2px solid #2447e6;
     outline-offset: 2px;
 }
 </style>

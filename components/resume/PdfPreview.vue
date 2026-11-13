@@ -1,19 +1,19 @@
 <template>
-    <div class="flex flex-col h-full bg-gray-100 dark:bg-gray-950">
+    <div class="flex flex-col h-full bg-gray-100 dark:bg-gray-950/60">
         <!-- Toolbar -->
         <div
-            class="flex gap-2 justify-between items-center px-3 py-1.5 bg-white border-b border-gray-200 shrink-0 dark:bg-gray-900 dark:border-gray-800"
+            class="flex gap-2 justify-between items-center px-3 h-11 border-b border-gray-200/80 shrink-0 bg-gray-50/60 dark:bg-gray-900/30 dark:border-gray-700/70"
         >
             <div class="flex gap-2 items-center min-w-0">
                 <span
                     class="inline-flex gap-1.5 items-center text-xs font-medium text-gray-700 dark:text-gray-300"
                 >
-                    <Icon icon="mdi:file-document-outline" class="w-4 h-4 text-gray-400" />
+                    <Icon icon="lucide:file-text" class="w-4 h-4 text-gray-400" />
                     <span class="hidden sm:inline">Preview</span>
                 </span>
                 <span
                     v-if="pageCount"
-                    class="px-1.5 py-0.5 text-[11px] font-medium tabular-nums rounded text-gray-600 bg-gray-100 dark:bg-gray-800 dark:text-gray-400"
+                    class="px-1.5 py-0.5 text-[11px] font-medium tabular-nums rounded-md text-gray-600 bg-gray-100 dark:bg-gray-800 dark:text-gray-400"
                 >
                     {{ pageCount }} {{ pageCount === 1 ? 'page' : 'pages' }}
                 </span>
@@ -27,29 +27,29 @@
                         v-if="rendering"
                         class="inline-flex gap-1 items-center text-[11px] text-gray-400"
                     >
-                        <Icon icon="mdi:loading" class="w-3 h-3 animate-spin" />
+                        <Icon icon="lucide:loader-circle" class="w-3 h-3 animate-spin" />
                         <span class="hidden sm:inline">Updating</span>
                     </span>
                 </Transition>
             </div>
 
-            <div class="flex gap-0.5 items-center">
+            <div class="flex gap-0.5 items-center p-0.5 bg-white rounded-full border border-gray-200/80 shadow-xs dark:bg-gray-800 dark:border-gray-700/70">
                 <BaseIconButton
-                    icon="mdi:minus"
+                    icon="lucide:minus"
                     label="Zoom out"
                     :disabled="zoomIndex <= 0"
                     @click="stepZoom(-1)"
                 />
                 <button
                     type="button"
-                    class="px-1.5 py-1 min-w-[3.25rem] text-[11px] font-medium tabular-nums text-gray-600 rounded transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                    class="px-1.5 py-1 min-w-[3.25rem] text-[11px] font-medium tabular-nums text-gray-600 rounded-lg transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700/40"
                     :title="fitMode ? 'Fit to width — click for 100%' : 'Click to fit width'"
                     @click="toggleFit"
                 >
                     {{ fitMode ? 'Fit' : `${Math.round(zoom * 100)}%` }}
                 </button>
                 <BaseIconButton
-                    icon="mdi:plus"
+                    icon="lucide:plus"
                     label="Zoom in"
                     :disabled="zoomIndex >= ZOOM_STEPS.length - 1"
                     @click="stepZoom(1)"
@@ -73,7 +73,7 @@
                 v-if="!pageCount && !error"
                 class="flex flex-col gap-3 items-center pt-10 text-gray-400"
             >
-                <Icon icon="mdi:loading" class="w-6 h-6 animate-spin" />
+                <Icon icon="lucide:loader-circle" class="w-6 h-6 animate-spin" />
                 <p class="text-xs">Rendering your resume…</p>
             </div>
         </div>
@@ -81,10 +81,10 @@
         <!-- Render failure -->
         <div
             v-if="error"
-            class="px-4 py-3 text-xs border-t border-red-200 bg-red-50 text-red-700 dark:bg-red-900/20 dark:border-red-900/40 dark:text-red-300"
+            class="px-4 py-3 text-xs border-t border-red-200 bg-red-50 text-red-700 dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-200"
         >
             <p class="flex gap-1.5 items-start">
-                <Icon icon="mdi:alert-circle-outline" class="mt-px w-4 h-4 shrink-0" />
+                <Icon icon="lucide:circle-alert" class="mt-px w-4 h-4 shrink-0" />
                 <span>{{ error }}</span>
             </p>
         </div>
@@ -179,7 +179,7 @@ async function paint(bytes) {
             canvas.style.width = `${Math.floor(viewport.width)}px`;
             canvas.style.height = `${Math.floor(viewport.height)}px`;
             canvas.className =
-                'bg-white shadow-md ring-1 ring-black/5 dark:ring-white/10 rounded-sm';
+                'bg-white shadow-lift ring-1 ring-black/5 dark:ring-white/10 rounded-sm';
             canvas.setAttribute('role', 'img');
             canvas.setAttribute('aria-label', `Resume page ${n} of ${pdf.numPages}`);
 

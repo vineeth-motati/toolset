@@ -4,16 +4,29 @@
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
                 <!-- Controls -->
                 <BaseCard class="lg:col-span-1 h-fit">
-                    <BaseFormField label="Upload Image">
+                    <label
+                        class="flex flex-col items-center gap-2 px-4 py-6 text-center rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50/50 cursor-pointer transition hover:border-primary-400 hover:bg-primary-50/40 focus-within:border-primary-400 dark:border-gray-700 dark:bg-gray-900/30 dark:hover:border-primary-500/60"
+                    >
+                        <span
+                            class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-primary-50 text-primary-600 dark:bg-primary-500/10 dark:text-primary-300"
+                        >
+                            <Icon icon="lucide:upload" class="w-5 h-5" />
+                        </span>
+                        <span class="text-sm font-medium text-gray-900 dark:text-white">
+                            Upload Image
+                        </span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">
+                            Click to choose an image
+                        </span>
                         <input
                             type="file"
                             @change="handleImageUpload"
                             accept="image/*"
-                            class="block w-full text-sm text-gray-700 file:mr-4 file:rounded-lg file:border-0 file:bg-primary-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-primary-700 hover:file:bg-primary-100 dark:text-gray-300 dark:file:bg-primary-900/40 dark:file:text-primary-300"
+                            class="sr-only"
                         />
-                    </BaseFormField>
+                    </label>
 
-                    <div class="mt-4 space-y-4">
+                    <div class="mt-5 space-y-4">
                         <BaseSelect
                             v-model="settings.format"
                             :options="formatOptions"
@@ -54,8 +67,8 @@
                             <BaseIconButton
                                 :icon="
                                     settings.lockAspect
-                                        ? 'mdi:link-variant'
-                                        : 'mdi:link-variant-off'
+                                        ? 'lucide:link'
+                                        : 'lucide:unlink'
                                 "
                                 :label="
                                     settings.lockAspect
@@ -84,12 +97,12 @@
                         <BaseFormField label="Rotate & flip">
                             <div class="flex gap-2">
                                 <BaseIconButton
-                                    icon="mdi:rotate-left"
+                                    icon="lucide:rotate-ccw"
                                     label="Rotate 90° left"
                                     @click="rotate(-90)"
                                 />
                                 <BaseIconButton
-                                    icon="mdi:rotate-right"
+                                    icon="lucide:refresh-cw"
                                     label="Rotate 90° right"
                                     @click="rotate(90)"
                                 />
@@ -111,7 +124,7 @@
                         <BaseButton
                             v-if="sourceFile"
                             variant="secondary"
-                            icon="mdi:restore"
+                            icon="lucide:rotate-ccw"
                             @click="resetSettings"
                         >
                             Reset
@@ -127,15 +140,17 @@
                     >
                         <div>
                             <h3
-                                class="mb-2 font-medium text-gray-900 dark:text-gray-100"
+                                class="mb-2 text-sm font-semibold text-gray-900 dark:text-white"
                             >
                                 Original
                             </h3>
-                            <img
-                                :src="originalUrl"
-                                alt="Original image"
-                                class="w-full h-auto rounded-lg border border-gray-200 dark:border-gray-700"
-                            />
+                            <div class="p-2 surface-muted">
+                                <img
+                                    :src="originalUrl"
+                                    alt="Original image"
+                                    class="w-full h-auto rounded-lg"
+                                />
+                            </div>
                             <p
                                 class="mt-2 text-sm text-gray-600 dark:text-gray-400"
                             >
@@ -144,22 +159,24 @@
                         </div>
                         <div>
                             <h3
-                                class="mb-2 font-medium text-gray-900 dark:text-gray-100"
+                                class="mb-2 text-sm font-semibold text-gray-900 dark:text-white"
                             >
                                 Result
                             </h3>
                             <div
                                 v-if="processing"
-                                class="flex h-40 items-center justify-center text-sm text-gray-500 dark:text-gray-400"
+                                class="flex h-40 items-center justify-center text-sm text-gray-500 surface-muted dark:text-gray-400"
                             >
                                 Processing…
                             </div>
                             <template v-else-if="resultUrl">
-                                <img
-                                    :src="resultUrl"
-                                    alt="Processed image"
-                                    class="w-full h-auto rounded-lg border border-gray-200 dark:border-gray-700"
-                                />
+                                <div class="p-2 surface-muted">
+                                    <img
+                                        :src="resultUrl"
+                                        alt="Processed image"
+                                        class="w-full h-auto rounded-lg"
+                                    />
+                                </div>
                                 <p
                                     class="mt-2 text-sm text-gray-600 dark:text-gray-400"
                                 >
@@ -173,13 +190,13 @@
                     </div>
                     <BaseEmptyState
                         v-else
-                        icon="mdi:image"
+                        icon="lucide:image"
                         title="No image yet"
                         description="Upload an image to resize, convert, rotate, or compress it."
                     />
 
                     <div v-if="resultUrl && !processing" class="mt-6">
-                        <BaseButton icon="mdi:download" @click="downloadImage">
+                        <BaseButton icon="lucide:download" @click="downloadImage">
                             Download {{ downloadName }}
                         </BaseButton>
                     </div>
@@ -190,6 +207,7 @@
 </template>
 
 <script setup>
+import { Icon } from '@iconify/vue';
 import { useLocalStorage, watchDebounced } from '@vueuse/core';
 import { canvasToBlob } from '@/utils/converters/imageConverters';
 

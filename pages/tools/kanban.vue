@@ -10,31 +10,34 @@
             <div
                 v-for="(column, index) in board"
                 :key="index"
-                class="p-4 w-72 bg-gray-100 rounded-lg shrink-0 dark:bg-gray-800"
+                class="flex flex-col p-3 w-72 max-h-full rounded-2xl surface-muted shrink-0"
             >
-                <h3 class="mb-4 font-semibold text-gray-900 dark:text-gray-100">{{ column.title }}</h3>
+                <div class="flex items-center gap-2 px-1 mb-3">
+                    <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ column.title }}</h3>
+                    <BaseBadge variant="neutral">{{ column.items.length }}</BaseBadge>
+                </div>
                 <draggable
                     v-model="column.items"
                     item-key="id"
                     group="tasks"
                     :animation="150"
-                    class="min-h-[200px]"
+                    class="overflow-y-auto flex-1 min-h-[200px]"
                 >
                     <template #item="{ element }">
                         <div
-                            class="p-3 mb-2 bg-white rounded shadow cursor-move dark:bg-gray-700"
+                            class="p-3 mb-2 bg-white rounded-xl border shadow-xs transition cursor-grab border-gray-200/80 hover:shadow-lift active:cursor-grabbing dark:bg-gray-800 dark:border-gray-700/70"
                         >
-                            <span class="text-gray-900 dark:text-gray-100">{{ element.text }}</span>
+                            <span class="text-sm text-gray-900 dark:text-gray-100">{{ element.text }}</span>
                             <div class="flex justify-end mt-2">
                                 <button
                                     @click.stop="editTask(index, element)"
-                                    class="mr-2 text-primary-600 dark:text-primary-400"
+                                    class="mr-3 text-xs font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400"
                                 >
                                     Edit
                                 </button>
                                 <button
                                     @click.stop="deleteTask(index, element)"
-                                    class="text-red-600 dark:text-red-400"
+                                    class="text-xs font-medium text-red-600 hover:text-red-700 dark:text-red-400"
                                 >
                                     Delete
                                 </button>
@@ -44,9 +47,10 @@
                 </draggable>
                 <button
                     @click="openNewTaskModal(index)"
-                    class="px-3 py-2 mt-2 w-full text-gray-600 rounded hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
+                    class="flex gap-1.5 justify-center items-center px-3 py-2 mt-2 w-full text-sm font-medium text-gray-500 rounded-lg border border-dashed border-gray-300 transition hover:bg-white hover:text-gray-900 hover:border-gray-400 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
                 >
-                    + Add Task
+                    <Icon icon="lucide:plus" class="w-4 h-4" />
+                    Add task
                 </button>
             </div>
         </div>
@@ -67,6 +71,7 @@
 </template>
 
 <script setup>
+import { Icon } from '@iconify/vue';
 import draggable from 'vuedraggable';
 import Modal from '@/components/ui/Modal.vue';
 import { useLocalStorage } from '@vueuse/core';

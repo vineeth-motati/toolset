@@ -10,9 +10,9 @@
                 />
             </div>
             <div class="flex gap-1.5 items-center">
-                <BaseButton size="sm" icon="mdi:plus" @click="addItem">Add entry</BaseButton>
+                <BaseButton size="sm" icon="lucide:plus" @click="addItem">Add entry</BaseButton>
                 <BaseIconButton
-                    icon="mdi:trash-can-outline"
+                    icon="lucide:trash-2"
                     label="Delete this section"
                     variant="danger"
                     @click="$emit('remove', section.id)"
@@ -22,12 +22,12 @@
 
         <BaseEmptyState
             v-if="!section.items.length"
-            icon="mdi:shape-outline"
+            icon="lucide:layout-grid"
             title="No entries yet"
             description="Use custom sections for anything the standard ones don't cover — publications, patents, speaking, volunteering."
         >
             <template #action>
-                <BaseButton icon="mdi:plus" @click="addItem">Add entry</BaseButton>
+                <BaseButton icon="lucide:plus" @click="addItem">Add entry</BaseButton>
             </template>
         </BaseEmptyState>
 
@@ -50,7 +50,7 @@
                     @remove="remove(index)"
                 >
                     <BaseInput v-model="item.title" label="Title" placeholder="Scaling Design Systems (QCon 2024)" />
-                    <BaseTextarea v-model="item.description" label="Detail" class="mt-3" :rows="2" />
+                    <div class="mt-3"><BaseTextarea v-model="item.description" label="Detail" :rows="2" /></div>
                 </ResumeEntryCard>
             </template>
         </draggable>

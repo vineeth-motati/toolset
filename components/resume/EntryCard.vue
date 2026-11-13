@@ -1,31 +1,31 @@
 <template>
     <div
-        class="overflow-hidden bg-white rounded-lg border transition-colors dark:bg-gray-800/40"
-        :class="open ? 'border-primary-300 dark:border-primary-800' : 'border-gray-200 dark:border-gray-700'"
+        class="overflow-hidden bg-white rounded-xl border transition-colors dark:bg-gray-900/30"
+        :class="open ? 'border-primary-300 dark:border-primary-500/40' : 'border-gray-200/80 dark:border-gray-700/70'"
     >
         <div class="flex gap-1 items-center px-2 py-1.5">
             <span
                 class="entry-handle p-1 text-gray-300 cursor-grab hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400"
                 aria-hidden="true"
             >
-                <Icon icon="mdi:drag-vertical" class="w-4 h-4" />
+                <Icon icon="lucide:grip-vertical" class="w-4 h-4" />
             </span>
 
             <button
                 type="button"
-                class="flex flex-1 gap-2 items-center py-1 min-w-0 text-left rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400"
+                class="flex flex-1 gap-2 items-center py-1 min-w-0 text-left rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400"
                 :aria-expanded="open"
                 @click="$emit('update:open', !open)"
             >
                 <Icon
-                    icon="mdi:chevron-right"
+                    icon="lucide:chevron-right"
                     class="w-4 h-4 text-gray-400 transition-transform shrink-0"
                     :class="open ? 'rotate-90' : ''"
                 />
                 <span class="min-w-0">
                     <span
                         class="block text-sm font-medium truncate"
-                        :class="title ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400 italic'"
+                        :class="title ? 'text-gray-900 dark:text-white' : 'text-gray-400 italic'"
                     >
                         {{ title || placeholder }}
                     </span>
@@ -42,12 +42,12 @@
 
             <div class="flex gap-0.5 items-center shrink-0">
                 <BaseIconButton
-                    icon="mdi:content-duplicate"
+                    icon="lucide:copy"
                     label="Duplicate entry"
                     @click="$emit('duplicate')"
                 />
                 <BaseIconButton
-                    icon="mdi:trash-can-outline"
+                    icon="lucide:trash-2"
                     label="Delete entry"
                     variant="danger"
                     @click="$emit('remove')"
@@ -55,7 +55,7 @@
             </div>
         </div>
 
-        <div v-if="open" class="px-3 pt-1 pb-3 border-t border-gray-100 dark:border-gray-700/60">
+        <div v-if="open" class="px-3 pt-1 pb-3 border-t border-gray-200/80 dark:border-gray-700/70">
             <slot />
         </div>
     </div>

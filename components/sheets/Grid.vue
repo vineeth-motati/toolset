@@ -9,11 +9,11 @@
             <!-- Column Headers -->
             <thead>
                 <tr>
-                    <th class="sticky top-0 left-0 z-20 w-10 bg-gray-100 dark:bg-gray-900"></th>
+                    <th class="sticky top-0 left-0 z-20 w-10 bg-gray-50 border border-gray-200/80 dark:bg-gray-900/60 dark:border-gray-700/70"></th>
                     <th
                         v-for="(_, index) in columnCount"
                         :key="index"
-                        class="sticky top-0 z-10 bg-gray-100 px-2 py-1 border min-w-[100px] dark:bg-gray-900 dark:border-gray-700 dark:text-gray-300"
+                        class="sticky top-0 z-10 px-2 py-1 text-xs font-medium text-gray-500 bg-gray-50 border border-gray-200/80 min-w-[100px] dark:bg-gray-900/60 dark:border-gray-700/70 dark:text-gray-400"
                     >
                         {{ getColumnLabel(index) }}
                     </th>
@@ -25,7 +25,7 @@
                 <tr v-for="(row, rowIndex) in data" :key="rowIndex">
                     <!-- Row Headers -->
                     <td
-                        class="sticky left-0 z-10 px-2 py-1 w-10 text-center bg-gray-100 border dark:bg-gray-900 dark:border-gray-700 dark:text-gray-300"
+                        class="sticky left-0 z-10 px-2 py-1 w-10 text-xs font-medium text-center text-gray-500 bg-gray-50 border border-gray-200/80 dark:bg-gray-900/60 dark:border-gray-700/70 dark:text-gray-400"
                     >
                         {{ rowIndex + 1 }}
                     </td>

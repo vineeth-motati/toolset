@@ -1,16 +1,17 @@
 <template>
-    <div class="flex items-center p-2 space-x-2 bg-white border-y dark:bg-gray-800 dark:border-gray-700">
-        <div class="flex items-center space-x-2 min-w-[100px]">
-            <span class="text-sm font-medium">
+    <div class="flex items-center gap-2 px-3 py-2 border-y border-gray-200/80 bg-gray-50/60 dark:border-gray-700/70 dark:bg-gray-900/30">
+        <div class="flex items-center min-w-[64px]">
+            <span class="text-[13px] font-medium text-gray-700 dark:text-gray-300">
                 {{ getCellReference(activeCell) }}
             </span>
         </div>
+        <span class="px-1.5 py-0.5 font-mono text-xs italic font-semibold text-gray-500 bg-white rounded-md border border-gray-200/80 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700/70">fx</span>
         <div class="flex-1">
             <input
                 :value="modelValue"
                 @input="$emit('update:modelValue', $event.target.value)"
                 @keydown.enter="$emit('formula-submit', $event.target.value)"
-                class="px-2 py-1 w-full rounded border dark:bg-gray-900 dark:border-gray-600 dark:text-gray-100"
+                class="w-full field !py-1 font-mono text-[13px]"
                 placeholder="Enter value or formula (start with =)"
             />
         </div>

@@ -1,12 +1,12 @@
 <template>
     <ToolLayout size="full" class="flex flex-col p-4 h-full">
         <template #actions>
-            <BaseButton icon="tabler:share" size="sm" @click="shareDraw">
+            <BaseButton icon="lucide:share-2" size="sm" @click="shareDraw">
                 Share
             </BaseButton>
         </template>
 
-        <div class="overflow-hidden flex-1 bg-white rounded-lg shadow dark:bg-gray-800">
+        <div class="overflow-hidden flex-1 bg-white rounded-2xl border border-gray-200/80 shadow-card dark:bg-gray-800 dark:border-gray-700/70">
             <TldrawWrapper
                 v-if="isMounted"
                 :snapshotData="sharedDrawState"

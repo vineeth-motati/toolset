@@ -1,330 +1,276 @@
 <template>
     <header
-        class="sticky top-0 z-50 border-b border-gray-100 shadow-sm bg-white/90 backdrop-blur-md dark:bg-gray-900/90 dark:border-gray-800"
+        class="sticky top-0 z-50 border-b backdrop-blur-xl transition-colors border-gray-200/70 bg-white/80 supports-[backdrop-filter]:bg-white/70 dark:border-gray-800/80 dark:bg-gray-900/80 dark:supports-[backdrop-filter]:bg-gray-900/65"
     >
-        <div class="container relative px-4 mx-auto">
-            <div class="flex items-center justify-between h-16">
-                <!-- Logo and site title -->
-                <NuxtLink to="/" class="z-10 flex items-center space-x-3 group">
-                    <div
-                        class="flex items-center justify-center w-10 h-10 text-white transition-transform duration-300 transform rounded-lg shadow-md bg-gradient-to-r from-indigo-600 to-purple-600 group-hover:scale-105"
-                    >
-                        <Icon icon="carbon:tool-kit" class="w-6 h-6" />
-                    </div>
-                    <span
-                        class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400"
-                        >Tools-Set</span
-                    >
-                </NuxtLink>
-
-                <!-- Search Bar — hidden on the homepage, which has its own hero search -->
-                <div
-                    v-if="!isHome"
-                    class="absolute z-0 hidden w-full max-w-md transform -translate-x-1/2 -translate-y-1/2 lg:block left-1/2 top-1/2"
+        <div
+            class="flex gap-4 items-center mx-auto h-16"
+            :class="isFullBleed ? 'px-4' : 'px-4 max-w-7xl sm:px-6'"
+        >
+            <NuxtLink
+                to="/"
+                class="flex gap-2.5 items-center -m-1 p-1 rounded-lg shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                aria-label="Tools-Set home"
+            >
+                <AppLogo />
+                <span
+                    class="text-[17px] font-semibold tracking-tight text-gray-900 dark:text-white"
                 >
-                    <div class="relative">
-                        <input
-                            v-model="searchQuery"
-                            type="text"
-                            placeholder="Search tools..."
-                            class="w-full py-2 pl-10 pr-14 text-sm border border-gray-200 rounded-full bg-gray-50 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
-                            @focus="isSearchFocused = true"
-                            @blur="onSearchBlur"
-                        />
-                        <Icon
-                            icon="heroicons:magnifying-glass"
-                            class="absolute left-3 top-2.5 w-4 h-4 text-gray-400"
-                        />
-                        <!-- ⌘K hint — opens the command palette -->
-                        <button
-                            class="flex absolute right-2 top-1/2 items-center px-1.5 py-0.5 text-xs text-gray-400 rounded border border-gray-200 -translate-y-1/2 hover:text-gray-600 dark:border-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
-                            aria-label="Open command palette"
-                            @click="openPalette"
-                        >
-                            ⌘K
-                        </button>
+                    Tools-Set
+                </span>
+            </NuxtLink>
 
-                        <!-- Search Results -->
-                        <div
-                            v-if="
-                                isSearchFocused &&
-                                searchQuery &&
-                                filteredTools.length
-                            "
-                            class="search-dropdown absolute left-0 right-0 z-50 mt-1 overflow-hidden overflow-y-auto bg-white border rounded-lg shadow-lg top-full max-h-72 dark:bg-gray-800 dark:border-gray-700"
+            <nav class="hidden gap-1 items-center ml-4 lg:flex" aria-label="Main">
+                <Popover v-slot="{ open, close }">
+                    <PopoverButton
+                        :class="[
+                            navLinkBase,
+                            open || isToolRoute
+                                ? 'text-gray-900 dark:text-white'
+                                : '',
+                        ]"
+                    >
+                        Tools
+                        <Icon
+                            icon="lucide:chevron-down"
+                            class="w-3.5 h-3.5 transition-transform"
+                            :class="open ? 'rotate-180' : ''"
+                        />
+                    </PopoverButton>
+                    <transition
+                        enter-active-class="transition duration-150 ease-out"
+                        enter-from-class="opacity-0 translate-y-1"
+                        enter-to-class="opacity-100 translate-y-0"
+                        leave-active-class="transition duration-100 ease-in"
+                        leave-from-class="opacity-100 translate-y-0"
+                        leave-to-class="opacity-0 translate-y-1"
+                    >
+                        <PopoverPanel
+                            class="fixed inset-x-0 top-[4.25rem] mx-auto w-[min(64rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-pop dark:border-gray-700/80 dark:bg-gray-800"
                         >
-                            <div
-                                v-for="tool in filteredTools"
-                                :key="tool.path"
-                                class="search-result"
-                            >
-                                <NuxtLink
-                                    :to="tool.path"
-                                    class="flex items-start px-4 py-3 border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 dark:border-gray-700 last:border-0"
-                                    @click="searchQuery = ''"
+                            <div class="grid grid-cols-5 gap-x-2 p-3">
+                                <div
+                                    v-for="category in categoryList"
+                                    :key="category.key"
+                                    class="p-2"
                                 >
                                     <div
-                                        class="flex items-center justify-center flex-shrink-0 w-8 h-8 mr-3 bg-indigo-100 rounded-md dark:bg-indigo-900/50"
+                                        class="flex gap-2 items-center px-2 mb-2"
                                     >
-                                        <Icon
-                                            :icon="tool.icon"
-                                            class="w-4 h-4 text-indigo-600 dark:text-indigo-400"
+                                        <span
+                                            class="w-1.5 h-1.5 rounded-full"
+                                            :style="{
+                                                background: CATEGORY_META[category.key]?.color,
+                                            }"
                                         />
+                                        <span class="eyebrow">{{
+                                            CATEGORY_META[category.key]?.short ||
+                                            category.label
+                                        }}</span>
                                     </div>
-                                    <div class="min-w-0">
-                                        <div class="flex gap-2 items-center">
-                                            <span
-                                                class="font-medium text-gray-900 truncate dark:text-white"
-                                            >
-                                                {{ tool.name }}
-                                            </span>
-                                            <span
-                                                v-if="tool.apiOnly"
-                                                class="shrink-0 rounded px-1 py-0.5 text-[10px] font-semibold uppercase tracking-wide bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400"
-                                            >
-                                                API
-                                            </span>
-                                        </div>
-                                        <div
-                                            class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1"
+                                    <ul class="space-y-0.5">
+                                        <li
+                                            v-for="tool in category.items"
+                                            :key="tool.path"
                                         >
-                                            {{ tool.description }}
-                                        </div>
-                                    </div>
+                                            <NuxtLink
+                                                :to="tool.path"
+                                                class="flex gap-2.5 items-center px-2 py-1.5 text-sm font-medium text-gray-700 rounded-lg transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700/60 dark:hover:text-white"
+                                                @click="close()"
+                                            >
+                                                <ToolIcon
+                                                    :tool="tool"
+                                                    size="xs"
+                                                />
+                                                <span class="truncate">{{
+                                                    tool.name
+                                                }}</span>
+                                            </NuxtLink>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div
+                                class="flex justify-between items-center px-5 py-3 text-sm bg-gray-50 border-t border-gray-200/70 dark:border-gray-700/70 dark:bg-gray-900/40"
+                            >
+                                <span class="text-gray-500 dark:text-gray-400">
+                                    {{ toolCount }} tools ·
+                                    {{ converterCount }} converters · all
+                                    in your browser
+                                </span>
+                                <NuxtLink
+                                    to="/#all-tools"
+                                    class="inline-flex gap-1 items-center font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+                                    @click="close()"
+                                >
+                                    Browse everything
+                                    <Icon
+                                        icon="lucide:arrow-right"
+                                        class="w-4 h-4"
+                                    />
                                 </NuxtLink>
                             </div>
+                        </PopoverPanel>
+                    </transition>
+                </Popover>
+                <NuxtLink
+                    to="/tools/convert"
+                    :class="[
+                        navLinkBase,
+                        route.path.startsWith('/tools/convert')
+                            ? 'text-gray-900 dark:text-white'
+                            : '',
+                    ]"
+                >
+                    Converters
+                </NuxtLink>
+                <NuxtLink
+                    to="/tools/resume"
+                    :class="[
+                        navLinkBase,
+                        route.path === '/tools/resume'
+                            ? 'text-gray-900 dark:text-white'
+                            : '',
+                    ]"
+                >
+                    Resume Builder
+                </NuxtLink>
+            </nav>
+
+            <div class="flex flex-1 gap-1.5 justify-end items-center">
+                <button
+                    type="button"
+                    class="hidden gap-2 items-center pr-1.5 pl-3 w-60 h-9 text-sm text-gray-500 bg-gray-100/80 rounded-lg ring-1 ring-inset ring-gray-200/80 transition md:flex hover:bg-gray-100 hover:text-gray-700 hover:ring-gray-300 dark:bg-gray-800/80 dark:text-gray-400 dark:ring-gray-700/80 dark:hover:text-gray-200 dark:hover:ring-gray-600"
+                    @click="openPalette"
+                >
+                    <Icon icon="lucide:search" class="w-4 h-4" />
+                    <span class="flex-1 text-left">Search tools…</span>
+                    <span class="kbd">{{ modKey }}K</span>
+                </button>
+                <BaseIconButton
+                    class="md:hidden"
+                    icon="lucide:search"
+                    label="Search tools"
+                    @click="openPalette"
+                />
+                <ClientOnly>
+                    <BaseIconButton
+                        :icon="isDark ? 'lucide:sun' : 'lucide:moon'"
+                        :label="isDark ? 'Switch to light theme' : 'Switch to dark theme'"
+                        @click="toggleTheme"
+                    />
+                    <template #fallback>
+                        <span class="inline-block w-9 h-9"></span>
+                    </template>
+                </ClientOnly>
+                <a
+                    href="https://github.com/vineeth-motati/toolset"
+                    target="_blank"
+                    rel="noopener"
+                    class="hidden justify-center items-center w-9 h-9 text-gray-500 rounded-lg transition-colors sm:inline-flex hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
+                    aria-label="Source on GitHub"
+                    title="Source on GitHub"
+                >
+                    <Icon icon="mdi:github" class="w-5 h-5" />
+                </a>
+                <BaseIconButton
+                    class="lg:hidden"
+                    :icon="mobileMenuOpen ? 'lucide:x' : 'lucide:menu'"
+                    label="Toggle menu"
+                    :aria-expanded="mobileMenuOpen"
+                    @click="mobileMenuOpen = !mobileMenuOpen"
+                />
+            </div>
+        </div>
+
+        <transition
+            enter-active-class="transition duration-150 ease-out"
+            enter-from-class="opacity-0 -translate-y-1"
+            leave-active-class="transition duration-100 ease-in"
+            leave-to-class="opacity-0 -translate-y-1"
+        >
+            <div
+                v-if="mobileMenuOpen"
+                class="absolute inset-x-0 top-full bg-white border-b border-gray-200 shadow-lift lg:hidden dark:bg-gray-900 dark:border-gray-800"
+            >
+                <nav
+                    class="overflow-auto px-4 pt-3 pb-6 mx-auto max-w-7xl max-h-[75vh] sm:px-6"
+                    aria-label="Mobile"
+                >
+                    <div
+                        v-for="category in categoryList"
+                        :key="category.key"
+                        class="py-3 border-b border-gray-100 last:border-0 dark:border-gray-800"
+                    >
+                        <div class="flex gap-2 items-center px-2 mb-2">
+                            <span
+                                class="w-1.5 h-1.5 rounded-full"
+                                :style="{
+                                    background: CATEGORY_META[category.key]?.color,
+                                }"
+                            />
+                            <span class="eyebrow">{{ category.label }}</span>
+                        </div>
+                        <div class="grid grid-cols-1 gap-1 sm:grid-cols-2">
+                            <NuxtLink
+                                v-for="tool in category.items"
+                                :key="tool.path"
+                                :to="tool.path"
+                                class="flex gap-3 items-center px-2 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                                @click="mobileMenuOpen = false"
+                            >
+                                <ToolIcon :tool="tool" size="sm" />
+                                {{ tool.name }}
+                            </NuxtLink>
                         </div>
                     </div>
-                </div>
-
-                <!-- Right section: theme toggle and search/menu buttons -->
-                <div class="z-10 flex items-center space-x-3">
-                    <!-- Theme toggle (ClientOnly: icon depends on localStorage) -->
-                    <ClientOnly>
-                        <BaseIconButton
-                            :icon="isDark ? 'heroicons:sun' : 'heroicons:moon'"
-                            label="Toggle theme"
-                            @click="toggleTheme"
-                        />
-                        <template #fallback>
-                            <span class="inline-block p-2 w-9 h-9"></span>
-                        </template>
-                    </ClientOnly>
-
-                    <!-- GitHub link -->
-                    <a
-                        :href="'https://github.com/vineeth-motati/toolset'"
-                        target="_blank"
-                        class="p-2 text-gray-600 transition-colors duration-200 rounded-full hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-                        aria-label="GitHub"
-                    >
-                        <Icon
-                            icon="mdi:github"
-                            class="w-5 h-5 transition-transform duration-500"
-                        />
-                    </a>
-
-                    <!-- Mobile search button - now shown on all screens below lg -->
-                    <BaseIconButton
-                        v-if="!isHome"
-                        class="lg:hidden"
-                        icon="heroicons:magnifying-glass"
-                        label="Toggle search"
-                        @click="isMobileSearchOpen = !isMobileSearchOpen"
-                    />
-
-                    <!-- Mobile menu button -->
-                    <BaseIconButton
-                        class="lg:hidden"
-                        :icon="
-                            mobileMenuOpen
-                                ? 'heroicons:x-mark'
-                                : 'heroicons:bars-3'
-                        "
-                        label="Toggle menu"
-                        @click="mobileMenuOpen = !mobileMenuOpen"
-                    />
-                </div>
+                </nav>
             </div>
-        </div>
-
-        <!-- Mobile search - now shown on all screens below lg -->
-        <div
-            v-if="isMobileSearchOpen && !isHome"
-            class="p-3 border-t border-gray-100 lg:hidden dark:border-gray-800 animate-slideDown"
-        >
-            <div class="relative">
-                <input
-                    v-model="searchQuery"
-                    type="text"
-                    placeholder="Search tools..."
-                    class="w-full py-2 pl-10 pr-4 text-sm border border-gray-200 rounded-full bg-gray-50 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
-                    @focus="isSearchFocused = true"
-                    @blur="onSearchBlur"
-                />
-                <Icon
-                    icon="heroicons:magnifying-glass"
-                    class="absolute left-3 top-2.5 w-4 h-4 text-gray-400"
-                />
-
-                <!-- Mobile search results -->
-                <div
-                    v-if="
-                        isSearchFocused && searchQuery && filteredTools.length
-                    "
-                    class="search-dropdown absolute left-0 right-0 z-50 mt-1 overflow-hidden overflow-y-auto bg-white border rounded-lg shadow-lg top-full max-h-60 dark:bg-gray-800 dark:border-gray-700"
-                >
-                    <div
-                        v-for="tool in filteredTools"
-                        :key="tool.path"
-                        class="search-result"
-                    >
-                        <NuxtLink
-                            :to="tool.path"
-                            class="flex items-start px-4 py-3 border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 dark:border-gray-700 last:border-0"
-                            @click="
-                                searchQuery = '';
-                                isMobileSearchOpen = false;
-                            "
-                        >
-                            <div
-                                class="flex items-center justify-center flex-shrink-0 w-8 h-8 mr-3 bg-indigo-100 rounded-md dark:bg-indigo-900/50"
-                            >
-                                <Icon
-                                    :icon="tool.icon"
-                                    class="w-4 h-4 text-indigo-600 dark:text-indigo-400"
-                                />
-                            </div>
-                            <div class="min-w-0">
-                                <div class="flex gap-2 items-center">
-                                    <span
-                                        class="font-medium text-gray-900 truncate dark:text-white"
-                                    >
-                                        {{ tool.name }}
-                                    </span>
-                                    <span
-                                        v-if="tool.apiOnly"
-                                        class="shrink-0 rounded px-1 py-0.5 text-[10px] font-semibold uppercase tracking-wide bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400"
-                                    >
-                                        API
-                                    </span>
-                                </div>
-                                <div
-                                    class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1"
-                                >
-                                    {{ tool.description }}
-                                </div>
-                            </div>
-                        </NuxtLink>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mobile menu with animation - updated to use lg breakpoint -->
-        <div
-            v-if="mobileMenuOpen"
-            class="absolute w-full bg-white border-b border-gray-200 shadow-lg lg:hidden dark:bg-gray-900 dark:border-gray-800 animate-slideDown"
-        >
-            <nav class="container px-6 pt-2 pb-4 max-h-[80vh] overflow-auto">
-                <!-- Full categorized tool list, driven by tools.json -->
-                <div
-                    v-for="category in categoryList"
-                    :key="category.key"
-                    class="mt-2 mb-4"
-                >
-                    <div
-                        class="mb-2 text-sm font-medium text-gray-500 dark:text-gray-400"
-                    >
-                        {{ category.label }}
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <NuxtLink
-                            v-for="tool in category.items"
-                            :key="tool.path"
-                            :to="tool.path"
-                            class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-                            @click="mobileMenuOpen = false"
-                        >
-                            <Icon
-                                :icon="tool.icon"
-                                class="w-4 h-4 mr-2 text-indigo-500 dark:text-indigo-400"
-                            />
-                            {{ tool.name }}
-                        </NuxtLink>
-                    </div>
-                </div>
-            </nav>
-        </div>
+        </transition>
     </header>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { Icon } from '@iconify/vue';
+import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue';
+import AppLogo from '@/components/ui/AppLogo.vue';
+import ToolIcon from '@/components/tool/ToolIcon.vue';
 import { useTheme } from '@/composables/useTheme';
-import { useTools } from '@/composables/useTools';
+import { useTools, CATEGORY_META } from '@/composables/useTools';
 import { useCommandPalette } from '@/composables/useCommandPalette';
 
 const route = useRoute();
-const isHome = computed(() => route.path === '/');
-
 const mobileMenuOpen = ref(false);
-const isMobileSearchOpen = ref(false);
-const isSearchFocused = ref(false);
-const searchQuery = ref('');
 
-// Use the theme composable - make sure we're using these variables in the template
+watch(
+    () => route.fullPath,
+    () => {
+        mobileMenuOpen.value = false;
+    }
+);
+
 const { isDark, toggleTheme } = useTheme();
-
 const { open: openPalette } = useCommandPalette();
+const { categories, all, converters } = useTools();
 
-// Delay lets result-link clicks land before the dropdown unmounts
-const onSearchBlur = () => {
-    setTimeout(() => {
-        isSearchFocused.value = false;
-    }, 100);
-};
-
-// Tools data + search/popular derived from data/tools.json (single source of truth)
-const { search, categories } = useTools();
-
-// Mobile menu: full categorized tool list from tools.json
 const categoryList = categories();
+const toolCount = all.length;
+const converterCount = converters.length;
 
-// Filter tools based on search query
-const filteredTools = computed(() => search(searchQuery.value));
+const isFullBleed = computed(() => route.meta.layout === 'fullscreen');
+
+const isToolRoute = computed(
+    () =>
+        route.path.startsWith('/tools/') &&
+        !route.path.startsWith('/tools/convert') &&
+        route.path !== '/tools/resume'
+);
+
+const modKey = ref('Ctrl ');
+onMounted(() => {
+    if (/Mac|iPhone|iPad/.test(navigator.platform || '')) modKey.value = '⌘';
+});
+
+const navLinkBase =
+    'inline-flex items-center gap-1 h-9 px-3 rounded-lg text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800';
 </script>
-
-<style scoped>
-.animate-slideDown {
-    animation: slideDown 0.3s ease-out;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.line-clamp-1 {
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-/* Hide the scrollbar inside the search-result dropdowns only */
-.search-dropdown {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-.search-dropdown::-webkit-scrollbar {
-    display: none;
-}
-</style>

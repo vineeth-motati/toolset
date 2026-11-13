@@ -1,11 +1,11 @@
 <template>
     <div
-        class="flex flex-col justify-center items-center px-4 py-12 text-center"
+        class="flex flex-col justify-center items-center px-6 py-12 text-center rounded-2xl border border-dashed border-gray-300/80 bg-grid-ink dark:border-gray-700"
     >
         <div
-            class="flex justify-center items-center mb-4 w-12 h-12 rounded-full bg-primary-50 dark:bg-primary-900/30"
+            class="flex justify-center items-center mb-4 w-12 h-12 text-gray-500 bg-white rounded-xl border border-gray-200 shadow-xs dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400"
         >
-            <Icon :icon="icon" class="w-6 h-6 text-primary-500" />
+            <Icon :icon="icon" class="w-6 h-6" />
         </div>
         <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
             {{ title }}

@@ -1,7 +1,7 @@
 <template>
     <ToolLayout size="full" class="flex flex-col p-4 h-full">
         <template #actions>
-            <BaseButton icon="tabler:share" size="sm" @click="shareJson">
+            <BaseButton icon="lucide:share-2" size="sm" @click="shareJson">
                 Share
             </BaseButton>
         </template>
@@ -10,12 +10,12 @@
         <div class="flex flex-col flex-1 gap-4 overflow-hidden lg:flex-row">
             <!-- Left side - JSON Editor -->
             <div
-                class="flex flex-col h-full overflow-hidden bg-white rounded-lg shadow lg:w-1/2 dark:bg-gray-800 dark:text-gray-200"
+                class="surface flex flex-col h-full overflow-hidden lg:w-1/2 dark:text-gray-200"
             >
                 <div
-                    class="flex items-center justify-between p-2 border-b bg-gray-50 dark:bg-gray-900/50 dark:border-gray-700"
+                    class="flex flex-wrap items-center justify-between gap-1.5 px-3 py-2 border-b border-gray-200/80 bg-gray-50/60 dark:border-gray-700/70 dark:bg-gray-900/30"
                 >
-                    <div class="flex gap-2">
+                    <div class="flex gap-1.5">
                         <BaseIconButton
                             v-for="action in editorActions"
                             :key="action.id"
@@ -25,20 +25,20 @@
                         />
                     </div>
                     <div class="flex items-center">
-                        <div v-if="isValidJson" class="mr-2 text-green-600">
+                        <div v-if="isValidJson" class="mr-2 inline-flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
                             <Icon
-                                icon="heroicons:check-circle"
-                                class="inline-block"
+                                icon="lucide:circle-check"
+                                class="inline-block w-4 h-4"
                             />
                             Valid JSON
                         </div>
                         <div
                             v-else-if="jsonText.trim().length > 0"
-                            class="mr-2 text-red-600"
+                            class="mr-2 inline-flex items-center gap-1 text-xs font-medium text-red-600 dark:text-red-400"
                         >
                             <Icon
-                                icon="heroicons:exclamation-circle"
-                                class="inline-block"
+                                icon="lucide:circle-alert"
+                                class="inline-block w-4 h-4"
                             />
                             Invalid JSON
                         </div>
@@ -56,33 +56,33 @@
             <!-- Right side - Grid View -->
             <div
                 :key="renderKey"
-                class="flex flex-col h-full overflow-hidden bg-white rounded-lg shadow lg:w-1/2 dark:bg-gray-800 dark:text-gray-200"
+                class="surface flex flex-col h-full overflow-hidden lg:w-1/2 dark:text-gray-200"
             >
                 <div
-                    class="flex items-center justify-between p-2 border-b bg-gray-50 dark:bg-gray-900/50 dark:border-gray-700"
+                    class="flex flex-wrap items-center justify-between gap-1.5 px-3 py-2 border-b border-gray-200/80 bg-gray-50/60 dark:border-gray-700/70 dark:bg-gray-900/30"
                 >
-                    <div class="flex gap-2">
+                    <div class="flex gap-1.5">
                         <input
                             v-model="searchQuery"
                             type="text"
                             placeholder="Search deeply..."
-                            class="px-2 py-1 text-sm bg-white rounded border border-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
+                            class="field !h-8 !w-auto !py-1 !text-sm"
                             @keyup.enter="applySearch"
                         />
                         <BaseIconButton
-                            icon="tabler:search"
+                            icon="lucide:search"
                             label="Deep search through all values"
                             @click="applySearch"
                         />
                     </div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-1.5">
                         <BaseIconButton
-                            icon="heroicons:arrows-pointing-out"
+                            icon="lucide:maximize-2"
                             label="Expand All"
                             @click="expandAll"
                         />
                         <BaseIconButton
-                            icon="heroicons:arrows-pointing-in"
+                            icon="lucide:minimize-2"
                             label="Collapse All"
                             @click="collapseAll"
                         />
@@ -94,17 +94,17 @@
                             class="relative"
                         >
                             <MenuButton
-                                class="inline-flex items-center justify-center p-2 text-gray-600 rounded-full transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                                class="inline-flex items-center justify-center p-2 text-gray-600 rounded-lg transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700/60"
                                 title="Export current view"
                                 aria-label="Export current view"
                             >
-                                <Icon icon="tabler:download" class="w-5 h-5" />
+                                <Icon icon="lucide:download" class="w-4 h-4" />
                             </MenuButton>
                             <MenuItems
-                                class="absolute right-0 z-20 mt-1 w-56 py-1 text-sm bg-white rounded-md shadow-lg ring-1 ring-black/5 focus:outline-none dark:bg-gray-800 dark:ring-white/10"
+                                class="absolute right-0 z-20 mt-1 w-56 py-1 text-sm bg-white rounded-xl border border-gray-200/80 shadow-pop focus:outline-none dark:bg-gray-800 dark:border-gray-700/70"
                             >
                                 <div
-                                    class="px-3 py-1 text-[11px] font-medium tracking-wider text-gray-400 uppercase"
+                                    class="eyebrow px-3 py-1"
                                 >
                                     Copy view
                                 </div>
@@ -115,26 +115,26 @@
                                 >
                                     <button
                                         type="button"
-                                        class="flex items-center w-full gap-2 px-3 py-1.5 text-left"
+                                        class="flex items-center w-full gap-2 px-3 py-1.5 text-left rounded-lg"
                                         :class="
                                             active
-                                                ? 'bg-gray-100 dark:bg-gray-700'
+                                                ? 'bg-gray-50 dark:bg-gray-700/40'
                                                 : ''
                                         "
                                         @click="copyExport(f.id)"
                                     >
                                         <Icon
-                                            icon="tabler:copy"
+                                            icon="lucide:copy"
                                             class="w-4 h-4 text-gray-400"
                                         />
                                         {{ f.label }}
                                     </button>
                                 </MenuItem>
                                 <div
-                                    class="my-1 border-t border-gray-100 dark:border-gray-700"
+                                    class="my-1 border-t border-gray-200/80 dark:border-gray-700/70"
                                 ></div>
                                 <div
-                                    class="px-3 py-1 text-[11px] font-medium tracking-wider text-gray-400 uppercase"
+                                    class="eyebrow px-3 py-1"
                                 >
                                     Download
                                 </div>
@@ -145,16 +145,16 @@
                                 >
                                     <button
                                         type="button"
-                                        class="flex items-center w-full gap-2 px-3 py-1.5 text-left"
+                                        class="flex items-center w-full gap-2 px-3 py-1.5 text-left rounded-lg"
                                         :class="
                                             active
-                                                ? 'bg-gray-100 dark:bg-gray-700'
+                                                ? 'bg-gray-50 dark:bg-gray-700/40'
                                                 : ''
                                         "
                                         @click="downloadExport(f.id)"
                                     >
                                         <Icon
-                                            icon="tabler:file-download"
+                                            icon="lucide:file-down"
                                             class="w-4 h-4 text-gray-400"
                                         />
                                         {{ f.label }}
@@ -169,37 +169,37 @@
                      inside a nested document instead of showing one giant row. -->
                 <div
                     v-if="isValidJson && rootCandidates.length"
-                    class="flex flex-wrap items-center gap-2 px-2 py-1.5 text-xs border-b bg-white dark:bg-gray-800 dark:border-gray-700"
+                    class="flex flex-wrap items-center gap-2 px-3 py-2 text-xs border-b border-gray-200/80 bg-white dark:bg-gray-800 dark:border-gray-700/70"
                 >
                     <span class="text-gray-500 dark:text-gray-400"
                         >Table root</span
                     >
                     <Menu as="div" class="relative">
                         <MenuButton
-                            class="inline-flex items-center gap-1 px-2 py-1 font-mono rounded border border-gray-300 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700"
+                            class="inline-flex items-center gap-1 px-2 py-1 font-mono rounded-lg border border-gray-200/80 hover:bg-gray-50 dark:border-gray-700/70 dark:hover:bg-gray-700/40"
                         >
                             <Icon
-                                icon="tabler:binary-tree"
+                                icon="lucide:list-tree"
                                 class="w-3.5 h-3.5"
                             />
                             <span class="max-w-[16rem] truncate">{{
                                 rootLabel
                             }}</span>
                             <Icon
-                                icon="tabler:chevron-down"
+                                icon="lucide:chevron-down"
                                 class="w-3.5 h-3.5"
                             />
                         </MenuButton>
                         <MenuItems
-                            class="absolute left-0 z-20 mt-1 w-80 max-h-80 overflow-auto py-1 bg-white rounded-md shadow-lg ring-1 ring-black/5 focus:outline-none dark:bg-gray-800 dark:ring-white/10"
+                            class="absolute left-0 z-20 mt-1 w-80 max-h-80 overflow-auto py-1 bg-white rounded-xl border border-gray-200/80 shadow-pop focus:outline-none dark:bg-gray-800 dark:border-gray-700/70"
                         >
                             <MenuItem v-slot="{ active }">
                                 <button
                                     type="button"
-                                    class="flex items-center justify-between w-full px-3 py-1.5 text-left"
+                                    class="flex items-center justify-between w-full px-3 py-1.5 text-left rounded-lg"
                                     :class="[
                                         active
-                                            ? 'bg-gray-100 dark:bg-gray-700'
+                                            ? 'bg-gray-50 dark:bg-gray-700/40'
                                             : '',
                                         rootLabel === '(whole document)'
                                             ? 'text-primary-600 dark:text-primary-400 font-medium'
@@ -217,10 +217,10 @@
                             >
                                 <button
                                     type="button"
-                                    class="flex items-center justify-between w-full gap-3 px-3 py-1.5 text-left"
+                                    class="flex items-center justify-between w-full gap-3 px-3 py-1.5 text-left rounded-lg"
                                     :class="[
                                         active
-                                            ? 'bg-gray-100 dark:bg-gray-700'
+                                            ? 'bg-gray-50 dark:bg-gray-700/40'
                                             : '',
                                         rootLabel === cand.label
                                             ? 'text-primary-600 dark:text-primary-400 font-medium'
@@ -253,15 +253,15 @@
                     v-if="isValidJson && gridData.length > 0"
                     class="flex-1 overflow-auto"
                 >
-                    <table class="min-w-full divide-y divide-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200/80 dark:divide-gray-700/70">
                         <thead
-                            class="sticky top-0 bg-gray-50 dark:bg-gray-900/50"
+                            class="sticky top-0 bg-gray-50 dark:bg-gray-900/40"
                         >
                             <tr>
                                 <th
                                     v-for="col in columns"
                                     :key="col.id"
-                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-300"
+                                    class="px-4 py-2.5 text-xs font-semibold text-left text-gray-500 cursor-pointer select-none hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                                     :title="
                                         'Sort by ' +
                                         col.label +
@@ -298,16 +298,17 @@
                             </tr>
                         </thead>
                         <tbody
-                            class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700"
+                            class="bg-white divide-y divide-gray-200/80 dark:bg-gray-800 dark:divide-gray-700/70"
                         >
                             <tr
                                 v-for="(row, rowIndex) in filteredGridData"
                                 :key="rowIndex"
+                                class="hover:bg-gray-50/70 dark:hover:bg-gray-700/20"
                             >
                                 <td
                                     v-for="header in gridHeaders"
                                     :key="`${rowIndex}-${header}`"
-                                    class="px-6 py-4 text-sm whitespace-nowrap"
+                                    class="px-4 py-3 text-sm text-gray-700 whitespace-nowrap dark:text-gray-300"
                                     :class="{
                                         'pb-0':
                                             isExpanded(
@@ -326,7 +327,7 @@
                                                         `${rowIndex}-${header}`
                                                     )
                                                 "
-                                                class="p-1 mr-1 text-primary-600 rounded hover:bg-primary-100 dark:text-primary-400 dark:hover:bg-primary-900/40"
+                                                class="p-1 mr-1 text-primary-600 rounded-lg hover:bg-primary-50 dark:text-primary-400 dark:hover:bg-primary-500/10"
                                             >
                                                 <Icon
                                                     :icon="
@@ -340,7 +341,7 @@
                                                 />
                                             </button>
                                             <span
-                                                class="font-mono text-gray-500"
+                                                class="font-mono text-gray-500 dark:text-gray-400"
                                             >
                                                 {{
                                                     isArray(row[header])
@@ -357,14 +358,14 @@
                                                     `${rowIndex}-${header}`
                                                 )
                                             "
-                                            class="pl-6 mt-2 border-l-2 border-blue-200 dark:border-blue-900"
+                                            class="pl-6 mt-2 border-l-2 border-primary-200 dark:border-primary-500/30"
                                         >
                                             <div
                                                 v-if="isArray(row[header])"
                                                 class="array-grid"
                                             >
                                                 <table
-                                                    class="w-full text-sm bg-white border-collapse dark:bg-gray-800"
+                                                    class="w-full text-sm border-collapse"
                                                 >
                                                     <tbody>
                                                         <tr
@@ -372,10 +373,10 @@
                                                                 item, itemIndex
                                                             ) in row[header]"
                                                             :key="`${rowIndex}-${header}-${itemIndex}`"
-                                                            class="border-t border-gray-100 dark:border-gray-700"
+                                                            class="border-t border-gray-200/80 dark:border-gray-700/70"
                                                         >
                                                             <td
-                                                                class="w-8 px-2 py-1.5 text-gray-500 font-mono bg-gray-50 text-center dark:bg-gray-900/50 dark:text-gray-400"
+                                                                class="w-8 px-2 py-1.5 text-xs text-gray-500 font-mono bg-gray-50 text-center dark:bg-gray-900/40 dark:text-gray-400"
                                                             >
                                                                 {{
                                                                     itemIndex +
@@ -489,9 +490,9 @@
                     class="flex-1 p-4"
                 >
                     <div
-                        class="p-4 text-red-800 rounded bg-red-50 dark:bg-red-900/30 dark:text-red-300"
+                        class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-200"
                     >
-                        <p class="font-bold">Invalid JSON</p>
+                        <p class="font-semibold">Invalid JSON</p>
                         <p>{{ jsonError }}</p>
                     </div>
                 </div>
@@ -501,9 +502,9 @@
                     class="flex items-center justify-center flex-1 p-4"
                 >
                     <div
-                        class="flex flex-col items-center justify-center text-center text-gray-500"
+                        class="flex flex-col items-center justify-center text-center text-gray-500 dark:text-gray-400"
                     >
-                        <Icon icon="tabler:table" class="mb-2 text-4xl" />
+                        <Icon icon="lucide:table" class="mb-2 text-4xl" />
                         <p>Enter valid JSON data to view in grid format</p>
                         <p class="mt-2 text-sm">
                             The JSON must be an array of objects with consistent

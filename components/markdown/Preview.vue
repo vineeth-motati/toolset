@@ -1,6 +1,6 @@
 <template>
     <div
-        class="overflow-y-auto p-4 max-w-none h-full prose"
+        class="overflow-y-auto p-4 max-w-none h-full prose prose-gray prose-headings:tracking-tight dark:prose-invert"
         ref="markdownContainer"
     ></div>
 </template>

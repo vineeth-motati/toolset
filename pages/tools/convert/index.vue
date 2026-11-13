@@ -3,7 +3,7 @@
         <template #actions>
             <BaseButton
                 variant="secondary"
-                icon="tabler:settings"
+                icon="lucide:settings"
                 size="sm"
                 @click="navigateToSettings"
             >
@@ -11,55 +11,54 @@
             </BaseButton>
         </template>
 
-        <div class="h-[85vh] flex flex-col">
-            <BaseCard class="overflow-auto flex-1">
-                <p class="mb-4 text-xs text-gray-500 dark:text-gray-400">
-                    <span
-                        class="rounded px-1 py-0.5 text-[10px] font-semibold uppercase tracking-wide bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400"
-                        >API</span
+        <div class="flex flex-col gap-8">
+            <p
+                class="rounded-xl border px-4 py-3 text-sm border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200"
+            >
+                <span class="api-tag">API</span>
+                converters run on ConversionTools.io — they upload your file and
+                need an API key from Settings. Everything else converts entirely
+                in your browser.
+            </p>
+
+            <section
+                v-for="(category, index) in conversionCategories"
+                :key="'cat-' + index"
+            >
+                <div class="flex items-baseline gap-2 mb-3">
+                    <h2
+                        class="text-base font-semibold text-gray-900 dark:text-white"
                     >
-                    converters run on ConversionTools.io — they upload your
-                    file and need an API key from Settings. Everything else
-                    converts entirely in your browser.
-                </p>
-                <!-- Conversion categories -->
-                <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                    <div
-                        v-for="(category, index) in conversionCategories"
-                        :key="'cat-' + index"
-                        class="p-4 bg-gray-50 rounded-lg border dark:bg-gray-900/40 dark:border-gray-700"
-                    >
-                        <h2
-                            class="mb-3 text-xl font-semibold text-primary-600 dark:text-primary-400"
-                        >
-                            {{ category.title }}
-                        </h2>
-                        <div class="grid grid-cols-2 gap-2 md:grid-cols-3">
-                            <button
-                                v-for="option in category.options"
-                                :key="option.title"
-                                @click="navigateToConverter(option)"
-                                class="flex items-center px-3 py-2 text-sm rounded-md border transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700"
-                            >
-                                <Icon
-                                    :icon="option.icon"
-                                    class="mr-2 shrink-0 text-primary-600 dark:text-primary-400"
-                                />
-                                <span class="truncate">{{
-                                    option.title
-                                }}</span>
-                                <span
-                                    v-if="option.apiOnly"
-                                    class="ml-auto shrink-0 rounded px-1 py-0.5 text-[10px] font-semibold uppercase tracking-wide bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400"
-                                    title="Runs on the external ConversionTools API — needs an API key and uploads your file"
-                                >
-                                    API
-                                </span>
-                            </button>
-                        </div>
-                    </div>
+                        {{ category.title }}
+                    </h2>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">{{
+                        category.options.length
+                    }}</span>
                 </div>
-            </BaseCard>
+                <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+                    <button
+                        v-for="option in category.options"
+                        :key="option.title"
+                        @click="navigateToConverter(option)"
+                        class="flex items-center gap-2.5 rounded-xl border border-gray-200/80 bg-white px-3 py-2.5 text-left text-sm font-medium text-gray-900 transition hover:border-gray-300 hover:shadow-xs dark:border-gray-700/70 dark:bg-gray-800 dark:text-gray-100 dark:hover:border-gray-600"
+                    >
+                        <ToolIcon
+                            :icon="option.icon"
+                            color="#0D9488"
+                            size="xs"
+                            class="shrink-0"
+                        />
+                        <span class="truncate">{{ option.title }}</span>
+                        <span
+                            v-if="option.apiOnly"
+                            class="api-tag ml-auto shrink-0"
+                            title="Runs on the external ConversionTools API — needs an API key and uploads your file"
+                        >
+                            API
+                        </span>
+                    </button>
+                </div>
+            </section>
         </div>
     </ToolLayout>
 </template>
@@ -67,6 +66,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue';
 import { Icon } from '@iconify/vue';
+import ToolIcon from '@/components/tool/ToolIcon.vue';
 import { useToast } from '@/composables/useToast';
 import { useRouter } from 'vue-router';
 import converters from '@/config/converters';

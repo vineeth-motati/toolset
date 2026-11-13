@@ -3,7 +3,7 @@
         <template #actions>
             <BaseButton
                 variant="secondary"
-                icon="mdi:share-variant"
+                icon="lucide:share-2"
                 size="sm"
                 @click="sharePalette"
             >
@@ -14,36 +14,39 @@
         <div class="mx-auto max-w-4xl">
             <BaseCard>
                 <BaseFormField label="Base Color">
-                    <div class="flex gap-4">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:gap-4">
                         <input
                             v-model="palette.baseColor"
                             type="color"
-                            class="w-20 h-10 rounded border border-gray-300 dark:border-gray-700"
+                            class="w-20 h-10 p-1 rounded-lg border border-gray-200/80 bg-white cursor-pointer dark:border-gray-700/70 dark:bg-gray-900"
                         />
-                        <BaseInput
-                            v-model="palette.baseColor"
-                            placeholder="#000000"
-                            class="flex-1"
-                        />
-                        <BaseButton icon="mdi:refresh" @click="generatePalette">
+                        <div class="flex-1 min-w-0">
+                            <BaseInput
+                                v-model="palette.baseColor"
+                                placeholder="#000000"
+                                class="font-mono"
+                            />
+                        </div>
+                        <BaseButton icon="lucide:refresh-cw" @click="generatePalette">
                             Generate New
                         </BaseButton>
                     </div>
                 </BaseFormField>
 
-                <BaseSelect
-                    v-model="palette.schemeType"
-                    :options="schemeOptions"
-                    label="Scheme Type"
-                    class="mt-4"
-                />
+                <div class="mt-4">
+                    <BaseSelect
+                        v-model="palette.schemeType"
+                        :options="schemeOptions"
+                        label="Scheme Type"
+                    />
+                </div>
 
                 <div
                     class="grid grid-cols-1 gap-4 mt-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
                 >
                     <BaseEmptyState
                         v-if="palette.colors.length === 0"
-                        icon="mdi:palette"
+                        icon="lucide:palette"
                         title="No colors generated"
                         class="col-span-full"
                     />
@@ -53,11 +56,19 @@
                         class="relative group"
                     >
                         <div
-                            class="h-24 rounded-lg shadow-sm cursor-pointer"
+                            class="h-28 rounded-2xl shadow-xs ring-1 ring-inset ring-black/5 cursor-pointer transition group-hover:shadow-lift dark:ring-white/10"
                             :style="{ backgroundColor: color.hex }"
                             @click="copyColor(color.hex)"
-                        ></div>
-                        <div class="mt-2 text-sm text-center text-gray-700 dark:text-gray-300">
+                        >
+                            <span
+                                class="absolute top-2 right-2 inline-flex items-center justify-center w-7 h-7 rounded-lg bg-white/90 text-gray-700 opacity-0 shadow-xs transition group-hover:opacity-100 dark:bg-gray-900/80 dark:text-gray-200"
+                            >
+                                <Icon icon="lucide:copy" class="w-3.5 h-3.5" />
+                            </span>
+                        </div>
+                        <div
+                            class="mt-2 font-mono text-xs text-center text-gray-700 dark:text-gray-300"
+                        >
                             {{ color.hex }}
                         </div>
                     </div>
@@ -68,6 +79,7 @@
 </template>
 
 <script setup>
+import { Icon } from '@iconify/vue';
 import Values from 'values.js';
 import { useLocalStorage } from '@vueuse/core';
 import { useToast } from '@/composables/useToast';
