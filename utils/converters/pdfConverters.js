@@ -2,23 +2,21 @@
  * PDF converters via pdf.js. Text extraction reads the embedded text layer
  * only — no OCR, so scanned/image-only PDFs are rejected with a pointer to
  * the OCR converter. Page rendering (PDF → JPG/PNG) draws each page to a
- * canvas; multi-page documents come back as a zip. The pdf.js worker script
- * is bundled locally (Vite `?url` import), so this needs no CDN and no
- * manual asset copying.
+ * canvas; multi-page documents come back as a zip. pdf.js itself comes from
+ * the shared loader in utils/pdfjs.ts, which bundles the worker locally (no
+ * CDN, no manual asset copying) and installs the Map Upsert polyfill pdf.js
+ * needs on browsers below Chrome 145 / Firefox 144 / Safari 18.4.
  */
 import { canvasToBlob } from './imageConverters';
 import { textResult, replaceExtension } from './shared';
+import { loadPdfjs } from '../pdfjs';
 
 // Opens a PDF and hands the document to `fn`, always destroying the
 // loading task after — pdf.js documents hold worker-side resources that
 // don't get GC'd. (In pdf.js v6, destroy() lives on the loading task,
 // not the document proxy.)
 export const withPdfDocument = async (file, fn) => {
-    const pdfjsLib = await import('pdfjs-dist');
-    const workerSrc = (
-        await import('pdfjs-dist/build/pdf.worker.min.mjs?url')
-    ).default;
-    pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
+    const pdfjsLib = await loadPdfjs();
 
     const buffer = await file.arrayBuffer();
     const loadingTask = pdfjsLib.getDocument({ data: buffer });

@@ -9,6 +9,7 @@
 import { buildDocDefinition } from './templates';
 import { toJsonResume } from './jsonResume';
 import { buildDocxParts } from './docx';
+import { loadPdfjs } from '../pdfjs';
 import type { ResumeDoc } from './types';
 
 export const DOCX_MIME =
@@ -60,9 +61,7 @@ export async function toBlob(doc: ResumeDoc): Promise<Blob> {
 export async function countPages(doc: ResumeDoc): Promise<number> {
     const blob = await toBlob(doc);
     const bytes = new Uint8Array(await blob.arrayBuffer());
-    const pdfjsLib = await import('pdfjs-dist');
-    const workerSrc = (await import('pdfjs-dist/build/pdf.worker.min.mjs?url')).default;
-    pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
+    const pdfjsLib = await loadPdfjs();
     const task = pdfjsLib.getDocument({ data: bytes });
     try {
         const pdf = await task.promise;
