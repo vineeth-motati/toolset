@@ -49,7 +49,13 @@
  * the PDF — `fmtDate()` passes anything it can't parse straight through.
  */
 import { computed, ref } from 'vue';
-import { MONTH_OPTIONS, splitMonthValue, joinMonthValue, yearOptions } from '~/utils/resume/date';
+import {
+    MONTH_OPTIONS,
+    splitMonthValue,
+    joinMonthValue,
+    displayMonth,
+    yearOptions,
+} from '~/utils/resume/date';
 
 const props = defineProps({
     label: { type: String, default: 'Date' },
@@ -64,8 +70,12 @@ const selectClass =
     'w-full rounded-lg border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 transition-colors focus:outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100';
 
 const parts = computed(() => splitMonthValue(model.value));
-const month = computed(() => parts.value.month);
 const year = computed(() => parts.value.year);
+
+// A month with no year isn't storable in "YYYY-MM", so it is parked here until
+// a year arrives to make it representable. See displayMonth() for the rule.
+const pendingMonth = ref('');
+const month = computed(() => displayMonth(model.value, pendingMonth.value));
 
 // Only meaningful for end dates: an empty value renders as "Present".
 const isPresent = computed(() => props.allowPresent && !model.value.trim());
@@ -73,6 +83,7 @@ const isPresent = computed(() => props.allowPresent && !model.value.trim());
 const years = yearOptions(new Date().getFullYear());
 
 function setMonth(value) {
+    pendingMonth.value = value;
     model.value = joinMonthValue(year.value, value);
 }
 function setYear(value) {

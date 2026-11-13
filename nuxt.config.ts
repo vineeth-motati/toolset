@@ -44,6 +44,11 @@ export default defineNuxtConfig({
     vite: {
         build: { target: 'es2022' },
         optimizeDeps: { esbuildOptions: { target: 'es2022' } },
+
+        // workers/pdfjs.js loads the pdf.js worker (an ES module) and uses
+        // top-level await, so the default 'iife' worker format cannot bundle
+        // it. See utils/pdfjs.ts.
+        worker: { format: 'es' },
     },
 
     compatibilityDate: '2024-11-16',

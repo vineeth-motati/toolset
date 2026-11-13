@@ -12,7 +12,10 @@ import {
 } from '@/utils/converters/pdfConverters';
 import { makeFile } from '../helpers';
 
-vi.mock('pdfjs-dist/build/pdf.worker.min.mjs?url', () => ({
+// The worker is our own entry (workers/pdfjs.js) rather than pdf.js's, so it
+// can install the Map Upsert polyfill inside the worker scope first; Vite's
+// ?worker&url gives back the bundled asset's URL.
+vi.mock('~/workers/pdfjs.js?worker&url', () => ({
     default: 'mock-worker-url',
 }));
 

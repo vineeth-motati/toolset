@@ -6,6 +6,7 @@ import { describe, it, expect } from 'vitest';
 import {
     splitMonthValue,
     joinMonthValue,
+    displayMonth,
     yearOptions,
     MONTH_OPTIONS,
     MONTH_NAMES,
@@ -55,6 +56,54 @@ describe('joinMonthValue', () => {
             const { year, month } = splitMonthValue(v);
             expect(joinMonthValue(year, month)).toBe(v);
         }
+    });
+});
+
+describe('displayMonth', () => {
+    it('shows the pending month while no year is stored', () => {
+        expect(displayMonth('', '03')).toBe('03');
+    });
+
+    it('prefers the stored month once a year exists', () => {
+        expect(displayMonth('2021-07', '03')).toBe('07');
+    });
+
+    it('shows no month for a year-only value, ignoring a stale pending month', () => {
+        // Undo/redo or switching entries can replace the model behind the
+        // picker; the stored value must win so a stale month cannot reappear.
+        expect(displayMonth('2021', '03')).toBe('');
+    });
+
+    it('is empty when nothing is stored and nothing is pending', () => {
+        expect(displayMonth('', '')).toBe('');
+        expect(displayMonth('', undefined)).toBe('');
+    });
+
+    describe('month-before-year regression', () => {
+        // Month sits left of year in the picker, so this is the order users
+        // actually fill it in. Picking March first used to yield a bare "2021".
+        it('keeps the month when it is chosen before the year', () => {
+            let model = '';
+            let pending = '';
+
+            // User picks March. Not storable yet — no year.
+            pending = '03';
+            model = joinMonthValue(splitMonthValue(model).year, '03');
+            expect(model).toBe('');
+            expect(displayMonth(model, pending)).toBe('03'); // still on screen
+
+            // User picks 2021. The parked month gets folded back in.
+            model = joinMonthValue('2021', displayMonth(model, pending));
+            expect(model).toBe('2021-03');
+            expect(displayMonth(model, pending)).toBe('03');
+        });
+
+        it('still works in the year-then-month order', () => {
+            let model = joinMonthValue('2021', displayMonth('', ''));
+            expect(model).toBe('2021');
+            model = joinMonthValue(splitMonthValue(model).year, '03');
+            expect(model).toBe('2021-03');
+        });
     });
 });
 

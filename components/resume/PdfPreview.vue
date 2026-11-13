@@ -106,6 +106,7 @@ import { ref, shallowRef, watch, onMounted, onBeforeUnmount, nextTick } from 'vu
 import { Icon } from '@iconify/vue';
 import { useDebounceFn, useResizeObserver } from '@vueuse/core';
 import { toBlob } from '~/utils/resume/export';
+import { loadPdfjs } from '~/utils/pdfjs';
 
 const props = defineProps({
     doc: { type: Object, required: true },
@@ -124,20 +125,9 @@ const zoomIndex = ref(3); // 100%
 const zoom = ref(1);
 const fitMode = ref(true);
 
-let pdfjs = null;
 let generation = 0; // discards stale async renders
 let lastBytes = null; // re-zoom without re-running pdfmake
 const loadingTask = shallowRef(null);
-
-async function getPdfjs() {
-    if (!pdfjs) {
-        const lib = await import('pdfjs-dist');
-        const workerSrc = (await import('pdfjs-dist/build/pdf.worker.min.mjs?url')).default;
-        lib.GlobalWorkerOptions.workerSrc = workerSrc;
-        pdfjs = lib;
-    }
-    return pdfjs;
-}
 
 /**
  * Scale that makes a page fill the available width. Measured from the inner
@@ -154,7 +144,7 @@ function fitScale(unscaledWidth) {
  * built into a fragment first so the user never sees a half-empty document.
  */
 async function paint(bytes) {
-    const lib = await getPdfjs();
+    const lib = await loadPdfjs();
     const mine = ++generation;
 
     // pdf.js transfers the buffer to its worker, so hand it a copy.

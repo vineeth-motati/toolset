@@ -25,6 +25,24 @@ export function splitMonthValue(value: string): MonthYear {
     };
 }
 
+/**
+ * Which month the picker should show, given the stored value and a month the
+ * user picked that isn't storable yet.
+ *
+ * "YYYY-MM" cannot hold a month without a year, so joinMonthValue() drops one.
+ * The month select sits left of the year select — the order people actually
+ * fill them in — so picking "March" then "2021" used to yield a bare "2021"
+ * with the month silently gone. The caller parks the unstorable month and
+ * passes it back here.
+ *
+ * Once a year exists the stored value wins outright, so undo/redo or switching
+ * entries can never resurrect a stale pending month.
+ */
+export function displayMonth(value: string, pendingMonth: string): string {
+    const { year, month } = splitMonthValue(value);
+    return year ? month : pendingMonth || '';
+}
+
 /** Inverse of splitMonthValue. A month without a year is not representable. */
 export function joinMonthValue(year: string, month: string): string {
     const y = (year || '').trim();
