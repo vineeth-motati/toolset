@@ -3,7 +3,7 @@
         <!-- Section header -->
         <div class="flex flex-wrap gap-2 justify-between items-center">
             <div class="min-w-0">
-                <h2 class="flex gap-2 items-center text-base font-semibold text-gray-900 dark:text-gray-100">
+                <h2 class="flex gap-2 items-center text-sm font-semibold text-gray-900 dark:text-white">
                     <Icon :icon="meta.icon" class="w-4.5 h-4.5 text-gray-400" />
                     {{ meta.label }}
                     <BaseBadge v-if="!visible" variant="neutral">Hidden</BaseBadge>
@@ -12,11 +12,11 @@
             </div>
             <div class="flex gap-1.5 items-center shrink-0">
                 <BaseIconButton
-                    :icon="visible ? 'mdi:eye-outline' : 'mdi:eye-off-outline'"
+                    :icon="visible ? 'lucide:eye' : 'lucide:eye-off'"
                     :label="visible ? 'Hide this section from the PDF' : 'Show this section in the PDF'"
                     @click="resume.toggleSection(sectionKey)"
                 />
-                <BaseButton size="sm" icon="mdi:plus" @click="addEntry">
+                <BaseButton size="sm" icon="lucide:plus" @click="addEntry">
                     Add {{ meta.itemNoun }}
                 </BaseButton>
             </div>
@@ -24,9 +24,9 @@
 
         <p
             v-if="!visible"
-            class="flex gap-1.5 items-start px-3 py-2 text-xs rounded-lg text-amber-800 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-300"
+            class="flex gap-1.5 items-start px-4 py-3 text-sm rounded-xl border border-amber-200 text-amber-800 bg-amber-50 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200"
         >
-            <Icon icon="mdi:eye-off-outline" class="mt-px w-4 h-4 shrink-0" />
+            <Icon icon="lucide:eye-off" class="mt-px w-4 h-4 shrink-0" />
             This section is excluded from the PDF and every export. Its content is kept.
         </p>
 
@@ -38,7 +38,7 @@
             :description="meta.empty"
         >
             <template #action>
-                <BaseButton icon="mdi:plus" @click="addEntry">Add {{ meta.itemNoun }}</BaseButton>
+                <BaseButton icon="lucide:plus" @click="addEntry">Add {{ meta.itemNoun }}</BaseButton>
             </template>
         </BaseEmptyState>
 
@@ -74,13 +74,13 @@
                             <ResumeMonthYearField v-model="item.endDate" label="End" allow-present />
                             <BaseInput v-model="item.location" label="Location" placeholder="Remote" />
                         </div>
-                        <BaseTextarea
+                        <div class="mt-3"><BaseTextarea
                             v-model="item.summary"
                             label="Context (optional)"
-                            class="mt-3"
+                           
                             :rows="2"
                             placeholder="One line on the team or scope — skip it if your bullets say enough."
-                        />
+                        /></div>
                         <ResumeBulletList
                             v-model="item.highlights"
                             label="Achievements"
@@ -138,13 +138,13 @@
                             <BaseInput v-model="item.name" label="Project" placeholder="Palette" />
                             <BaseInput v-model="item.url" label="Link" placeholder="https://github.com/…" />
                         </div>
-                        <BaseTextarea
+                        <div class="mt-3"><BaseTextarea
                             v-model="item.description"
                             label="What it is"
-                            class="mt-3"
+                           
                             :rows="2"
                             placeholder="Open-source contrast checker for design systems."
-                        />
+                        /></div>
                         <ResumeBulletList
                             v-model="item.highlights"
                             label="Highlights"
@@ -171,7 +171,7 @@
                             <BaseInput v-model="item.awarder" label="Awarded by" placeholder="Northwind Software" />
                             <ResumeMonthYearField v-model="item.date" label="Date" />
                         </div>
-                        <BaseTextarea v-model="item.summary" label="Why (optional)" class="mt-3" :rows="2" />
+                        <div class="mt-3"><BaseTextarea v-model="item.summary" label="Why (optional)" :rows="2" /></div>
                     </template>
 
                     <!-- ------------------------------------------- languages -->
@@ -202,7 +202,7 @@
                     <!-- ------------------------------------------ references -->
                     <template v-else-if="sectionKey === 'references'">
                         <BaseInput v-model="item.name" label="Name and role" placeholder="Jordan Smith — Engineering Manager, Northwind" />
-                        <BaseTextarea v-model="item.reference" label="Reference" class="mt-3" :rows="3" />
+                        <div class="mt-3"><BaseTextarea v-model="item.reference" label="Reference" :rows="3" /></div>
                     </template>
                 </ResumeEntryCard>
             </template>

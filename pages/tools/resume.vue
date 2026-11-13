@@ -7,9 +7,9 @@
                 aria-live="polite"
             >
                 <Icon
-                    :icon="saveState === 'saving' ? 'mdi:cloud-sync-outline' : 'mdi:check-circle-outline'"
+                    :icon="saveState === 'saving' ? 'lucide:refresh-cw' : 'lucide:circle-check'"
                     class="w-3.5 h-3.5"
-                    :class="saveState === 'saving' ? 'text-amber-500' : 'text-green-500'"
+                    :class="saveState === 'saving' ? 'text-amber-500' : 'text-emerald-500'"
                 />
                 {{ saveState === 'saving' ? 'Saving…' : 'Saved to this browser' }}
             </span>
@@ -17,34 +17,34 @@
             <!-- History is keyboard-driven; on phones the space is better spent
                  on the actions people actually reach for. -->
             <BaseIconButton
-                icon="mdi:undo"
+                icon="lucide:undo-2"
                 label="Undo (Ctrl+Z)"
                 class="hidden sm:inline-flex"
                 :disabled="!resume.canUndo.value"
                 @click="resume.undo"
             />
             <BaseIconButton
-                icon="mdi:redo"
+                icon="lucide:redo-2"
                 label="Redo (Ctrl+Shift+Z)"
                 class="hidden sm:inline-flex"
                 :disabled="!resume.canRedo.value"
                 @click="resume.redo"
             />
 
-            <BaseButton variant="ghost" size="sm" icon="mdi:upload" @click="importInput?.click()">
+            <BaseButton variant="ghost" size="sm" icon="lucide:upload" @click="importInput?.click()">
                 <span class="hidden sm:inline">Import</span>
             </BaseButton>
-            <BaseButton variant="secondary" size="sm" icon="mdi:share-variant" @click="share">
+            <BaseButton variant="secondary" size="sm" icon="lucide:share-2" @click="share">
                 <span class="hidden sm:inline">Share</span>
             </BaseButton>
 
             <Menu as="div" class="relative">
                 <MenuButton
-                    class="inline-flex gap-1.5 justify-center items-center px-3 py-1.5 text-xs font-medium text-white rounded-lg transition-colors bg-primary-600 hover:bg-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900"
+                    class="inline-flex gap-1.5 justify-center items-center px-3 h-8 text-xs font-medium text-white rounded-lg shadow-xs transition-colors bg-primary-600 hover:bg-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900"
                 >
-                    <Icon :icon="exporting ? 'mdi:loading' : 'mdi:download'" class="w-4 h-4" :class="exporting ? 'animate-spin' : ''" />
+                    <Icon :icon="exporting ? 'lucide:loader-circle' : 'lucide:download'" class="w-4 h-4" :class="exporting ? 'animate-spin' : ''" />
                     Download
-                    <Icon icon="mdi:chevron-down" class="w-3.5 h-3.5 opacity-70" />
+                    <Icon icon="lucide:chevron-down" class="w-3.5 h-3.5 opacity-70" />
                 </MenuButton>
                 <transition
                     enter-active-class="transition duration-100 ease-out"
@@ -53,13 +53,13 @@
                     leave-to-class="scale-95 opacity-0"
                 >
                     <MenuItems
-                        class="absolute right-0 z-30 py-1 mt-1.5 w-64 bg-white rounded-lg border border-gray-200 shadow-lg origin-top-right focus:outline-none dark:bg-gray-800 dark:border-gray-700"
+                        class="absolute right-0 z-30 py-1 mt-1.5 w-64 bg-white rounded-xl border border-gray-200/80 shadow-pop origin-top-right focus:outline-none dark:bg-gray-800 dark:border-gray-700/70"
                     >
                         <MenuItem v-for="f in exportFormats" :key="f.id" v-slot="{ active }">
                             <button
                                 type="button"
                                 class="flex gap-2.5 items-start px-3 py-2 w-full text-left"
-                                :class="active ? 'bg-gray-50 dark:bg-gray-700' : ''"
+                                :class="active ? 'bg-gray-50 dark:bg-gray-700/40' : ''"
                                 @click="f.run"
                             >
                                 <Icon :icon="f.icon" class="mt-0.5 w-4 h-4 text-gray-400 shrink-0" />
@@ -78,15 +78,15 @@
 
         <ClientOnly>
             <template #fallback>
-                <div class="flex flex-1 justify-center items-center text-gray-400 rounded-card border border-gray-200 dark:border-gray-700">
-                    <Icon icon="mdi:loading" class="w-6 h-6 animate-spin" />
+                <div class="flex flex-1 justify-center items-center text-gray-400 rounded-2xl border border-gray-200/80 dark:border-gray-700/70">
+                    <Icon icon="lucide:loader-circle" class="w-6 h-6 animate-spin" />
                 </div>
             </template>
 
             <!-- First run -->
             <div
                 v-if="showStart"
-                class="overflow-hidden flex-1 min-h-0 rounded-card border border-gray-200 dark:border-gray-700"
+                class="overflow-hidden flex-1 min-h-0 rounded-2xl border border-gray-200/80 dark:border-gray-700/70"
             >
                 <ResumeStartScreen
                     @scratch="dismissStart"
@@ -98,10 +98,10 @@
             <!-- Workspace -->
             <div
                 v-else
-                class="flex overflow-hidden flex-1 min-h-0 bg-white rounded-card border border-gray-200 dark:bg-gray-800 dark:border-gray-700"
+                class="surface flex overflow-hidden flex-1 min-h-0"
             >
                 <!-- Rail -->
-                <aside class="hidden w-56 border-r border-gray-200 shrink-0 lg:block dark:border-gray-700">
+                <aside class="hidden w-60 border-r border-gray-200/80 shrink-0 lg:block bg-gray-50/40 dark:border-gray-700/70 dark:bg-gray-900/20">
                     <ResumeSectionNav v-model:active="active" :score="score" :job-label="jobLabel" />
                 </aside>
 
@@ -112,21 +112,21 @@
                 >
                     <!-- Editor top bar -->
                     <div
-                        class="flex gap-2 items-center px-3 py-2 border-b border-gray-200 shrink-0 dark:border-gray-700"
+                        class="flex gap-2 items-center px-3 h-11 border-b border-gray-200/80 shrink-0 bg-gray-50/60 dark:border-gray-700/70 dark:bg-gray-900/30"
                     >
                         <BaseIconButton
-                            icon="mdi:menu"
+                            icon="lucide:list"
                             label="Open sections"
                             class="lg:hidden"
                             @click="drawerOpen = true"
                         />
                         <input
                             v-model="docName"
-                            class="flex-1 min-w-0 text-sm font-medium text-gray-900 bg-transparent rounded border-0 focus:outline-none focus:ring-1 focus:ring-primary-400 px-1.5 py-1 dark:text-gray-100"
+                            class="flex-1 min-w-0 text-sm font-semibold text-gray-900 bg-transparent rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-primary-400/60 px-1.5 py-1 dark:text-white"
                             aria-label="Resume name"
                             placeholder="Untitled resume"
                         />
-                        <span class="hidden text-[11px] text-gray-400 sm:inline">
+                        <span class="hidden text-xs text-gray-500 sm:inline dark:text-gray-400">
                             {{ pageCount ? `${pageCount} page${pageCount === 1 ? '' : 's'}` : '' }}
                         </span>
                     </div>
@@ -152,15 +152,15 @@
                     </div>
 
                     <!-- Mobile view switch -->
-                    <div class="flex gap-1 p-2 border-t border-gray-200 lg:hidden shrink-0 dark:border-gray-700">
+                    <div class="flex gap-1 p-2 border-t border-gray-200/80 lg:hidden shrink-0 dark:border-gray-700/70">
                         <button
                             v-for="v in views"
                             :key="v.id"
                             type="button"
                             class="flex flex-1 gap-1.5 justify-center items-center py-1.5 text-xs font-medium rounded-lg transition-colors"
                             :class="view === v.id
-                                ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300'
-                                : 'text-gray-600 dark:text-gray-300'"
+                                ? 'bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-300'
+                                : 'text-gray-500 dark:text-gray-400'"
                             @click="view = v.id"
                         >
                             <Icon :icon="v.icon" class="w-4 h-4" />
@@ -171,19 +171,19 @@
 
                 <!-- Preview -->
                 <aside
-                    class="flex-col w-full border-l border-gray-200 lg:w-[38%] xl:w-[42%] lg:flex shrink-0 dark:border-gray-700"
+                    class="flex-col w-full border-l border-gray-200/80 lg:w-[38%] xl:w-[42%] lg:flex shrink-0 dark:border-gray-700/70"
                     :class="view === 'preview' ? 'flex' : 'hidden'"
                 >
                     <ResumePdfPreview :doc="current" class="flex-1 min-h-0" @pages="pageCount = $event" />
-                    <div class="flex gap-1 p-2 border-t border-gray-200 lg:hidden shrink-0 dark:border-gray-700">
+                    <div class="flex gap-1 p-2 border-t border-gray-200/80 lg:hidden shrink-0 dark:border-gray-700/70">
                         <button
                             v-for="v in views"
                             :key="v.id"
                             type="button"
                             class="flex flex-1 gap-1.5 justify-center items-center py-1.5 text-xs font-medium rounded-lg transition-colors"
                             :class="view === v.id
-                                ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300'
-                                : 'text-gray-600 dark:text-gray-300'"
+                                ? 'bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-300'
+                                : 'text-gray-500 dark:text-gray-400'"
                             @click="view = v.id"
                         >
                             <Icon :icon="v.icon" class="w-4 h-4" />
@@ -213,7 +213,7 @@
                         leave-to="-translate-x-full"
                     >
                         <DialogPanel
-                            class="flex fixed inset-y-0 left-0 flex-col w-64 bg-white shadow-xl dark:bg-gray-800"
+                            class="flex fixed inset-y-0 left-0 flex-col w-64 bg-white shadow-pop dark:bg-gray-900"
                         >
                             <ResumeSectionNav
                                 :active="active"

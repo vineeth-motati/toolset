@@ -1,6 +1,6 @@
 <template>
     <fieldset class="flex flex-col gap-1.5">
-        <legend class="text-xs font-medium text-gray-600 dark:text-gray-400">
+        <legend class="text-[13px] font-medium text-gray-700 dark:text-gray-300">
             {{ label }}
         </legend>
 
@@ -67,7 +67,7 @@ const props = defineProps({
 const model = defineModel({ type: String, default: '' });
 
 const selectClass =
-    'w-full rounded-lg border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 transition-colors focus:outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100';
+    'field w-full';
 
 const parts = computed(() => splitMonthValue(model.value));
 const year = computed(() => parts.value.year);

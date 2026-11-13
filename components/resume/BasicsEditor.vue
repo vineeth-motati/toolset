@@ -1,7 +1,7 @@
 <template>
     <div class="space-y-5">
         <section>
-            <h3 class="mb-2 text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
+            <h3 class="mb-2 text-sm font-semibold text-gray-900 dark:text-white">
                 Identity
             </h3>
             <div class="grid gap-3 sm:grid-cols-2">
@@ -22,7 +22,7 @@
         </section>
 
         <section>
-            <h3 class="mb-2 text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
+            <h3 class="mb-2 text-sm font-semibold text-gray-900 dark:text-white">
                 Contact
             </h3>
             <div class="grid gap-3 sm:grid-cols-2">
@@ -43,7 +43,7 @@
                 <BaseInput
                     v-model="b.url"
                     label="Website"
-                    icon="mdi:web"
+                    icon="lucide:globe"
                     placeholder="https://averychen.dev"
                 />
                 <div class="grid grid-cols-2 gap-1.5 sm:grid-cols-[1.4fr_1fr_0.8fr]">
@@ -56,7 +56,7 @@
 
         <section>
             <div class="flex justify-between items-baseline mb-2">
-                <h3 class="text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
+                <h3 class="text-sm font-semibold text-gray-900 dark:text-white">
                     Professional summary
                 </h3>
                 <span class="text-[11px] tabular-nums" :class="summaryTone">
@@ -74,7 +74,7 @@
                     v-for="s in SUMMARY_STARTERS"
                     :key="s"
                     type="button"
-                    class="px-2 py-0.5 text-[11px] text-gray-600 bg-gray-100 rounded transition-colors hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                    class="px-2 py-0.5 text-[11px] text-gray-600 bg-gray-100 rounded-md transition-colors hover:bg-gray-200 dark:bg-gray-700/60 dark:text-gray-300 dark:hover:bg-gray-700"
                     title="Insert this opener"
                     @click="useStarter(s)"
                 >
@@ -85,10 +85,10 @@
 
         <section>
             <div class="flex justify-between items-center mb-2">
-                <h3 class="text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
+                <h3 class="text-sm font-semibold text-gray-900 dark:text-white">
                     Profiles
                 </h3>
-                <BaseButton size="sm" variant="secondary" icon="mdi:plus" @click="addProfile">
+                <BaseButton size="sm" variant="secondary" icon="lucide:plus" @click="addProfile">
                     Add profile
                 </BaseButton>
             </div>
@@ -105,7 +105,7 @@
                 <select
                     v-model="p.network"
                     aria-label="Network"
-                    class="px-2 py-2 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+                    class="w-full field"
                     @change="syncUrl(p)"
                 >
                     <option v-for="n in NETWORKS" :key="n" :value="n">{{ n }}</option>
@@ -116,13 +116,13 @@
                     @update:model-value="(v) => { p.username = v; syncUrl(p); }"
                 />
                 <BaseIconButton
-                    icon="mdi:close"
+                    icon="lucide:x"
                     label="Remove profile"
                     variant="danger"
                     @click="removeProfile(i)"
                 />
             </div>
-            <p v-if="b.profiles.length" class="text-[11px] text-gray-400">
+            <p v-if="b.profiles.length" class="text-xs text-gray-500 dark:text-gray-400">
                 The link is built for you — LinkedIn, GitHub and X resolve to their canonical URLs.
             </p>
         </section>
@@ -168,7 +168,7 @@ const summaryTone = computed(() => {
     const n = summaryWords.value;
     if (!n) return 'text-gray-400';
     return n >= 30 && n <= 70
-        ? 'text-green-600 dark:text-green-400'
+        ? 'text-emerald-600 dark:text-emerald-400'
         : 'text-amber-600 dark:text-amber-400';
 });
 

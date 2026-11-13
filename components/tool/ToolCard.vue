@@ -1,44 +1,39 @@
 <template>
     <NuxtLink
         :to="tool.path"
-        class="relative p-5 bg-white rounded-card border border-gray-100 shadow-sm transition-all duration-150 group hover:shadow-md hover:-translate-y-0.5 dark:bg-gray-800 dark:border-gray-700"
+        class="flex relative gap-3.5 items-start p-4 bg-white rounded-2xl border transition duration-200 group border-gray-200/80 hover:-translate-y-0.5 hover:shadow-lift hover:border-gray-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:bg-gray-800/60 dark:border-gray-700/70 dark:hover:border-gray-600 dark:hover:bg-gray-800"
     >
-        <div class="flex items-center space-x-4">
-            <div
-                class="p-2 rounded-lg transition-colors shrink-0 bg-primary-100 group-hover:bg-primary-200 dark:bg-primary-900/40 dark:group-hover:bg-primary-900/60"
-            >
-                <Icon
-                    :icon="tool.icon"
-                    class="w-6 h-6 text-primary-600 dark:text-primary-400"
-                />
-            </div>
-            <div class="min-w-0">
-                <div class="flex gap-2 items-center">
-                    <h3
-                        class="text-base font-semibold text-gray-900 truncate dark:text-gray-100"
-                    >
-                        {{ tool.name }}
-                    </h3>
-                    <span
-                        v-if="tool.apiOnly"
-                        class="shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400"
-                        title="Runs on the external ConversionTools API — needs an API key and uploads your file"
-                    >
-                        API
-                    </span>
-                </div>
-                <p
-                    class="text-sm text-gray-600 line-clamp-2 dark:text-gray-400"
+        <ToolIcon :tool="tool" />
+        <div class="flex-1 pr-6 min-w-0">
+            <div class="flex gap-2 items-center">
+                <h3
+                    class="text-[15px] font-semibold leading-5 text-gray-900 truncate dark:text-gray-100"
                 >
-                    {{ tool.description }}
-                </p>
+                    {{ tool.name }}
+                </h3>
+                <span
+                    v-if="tool.apiOnly"
+                    class="api-tag"
+                    title="Runs on the external ConversionTools API — needs an API key and uploads your file"
+                >
+                    API
+                </span>
             </div>
+            <p
+                class="mt-1 text-[13px] leading-5 text-gray-500 line-clamp-2 dark:text-gray-400"
+            >
+                {{ tool.description }}
+            </p>
         </div>
+        <Icon
+            icon="lucide:arrow-up-right"
+            class="absolute right-3.5 bottom-3.5 w-4 h-4 text-gray-300 transition group-hover:text-gray-900 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 dark:text-gray-600 dark:group-hover:text-white"
+        />
         <ClientOnly>
             <button
                 v-if="showFavorite"
-                class="absolute top-2 right-2 p-1.5 rounded-full opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-700"
-                :class="{ 'opacity-100': isFavorite(tool.path) }"
+                class="flex absolute top-2.5 right-2.5 justify-center items-center w-7 h-7 rounded-lg opacity-0 transition group-hover:opacity-100 focus-visible:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-700"
+                :class="{ '!opacity-100': isFavorite(tool.path) }"
                 :aria-label="
                     isFavorite(tool.path)
                         ? `Remove ${tool.name} from favorites`
@@ -62,6 +57,7 @@
 
 <script setup>
 import { Icon } from '@iconify/vue';
+import ToolIcon from '@/components/tool/ToolIcon.vue';
 import { useToolUsage } from '@/composables/useToolUsage';
 
 defineProps({

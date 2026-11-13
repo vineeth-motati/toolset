@@ -1,7 +1,7 @@
 <template>
     <div class="space-y-5">
         <div>
-            <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Tailor to a job</h2>
+            <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Tailor to a job</h2>
             <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                 Paste a posting and see what it asks for that your resume doesn't say yet.
                 Matched entirely in this tab — the job description is never uploaded.
@@ -47,13 +47,13 @@
             </div>
 
             <!-- Result -->
-            <div class="flex gap-4 items-center p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+            <div class="flex gap-4 items-center p-3 rounded-xl border border-gray-200/80 dark:border-gray-700/70">
                 <ResumeScoreRing :value="match.score" :size="56" />
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ verdict.title }}</p>
+                    <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ verdict.title }}</p>
                     <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{{ verdict.blurb }}</p>
                 </div>
-                <BaseButton size="sm" variant="ghost" icon="mdi:refresh" @click="showEditor = !showEditor">
+                <BaseButton size="sm" variant="ghost" icon="lucide:refresh-cw" @click="showEditor = !showEditor">
                     {{ showEditor ? 'Hide' : 'Edit' }} posting
                 </BaseButton>
             </div>
@@ -64,7 +64,7 @@
                     :rows="6"
                     @update:model-value="update('description', $event)"
                 />
-                <BaseButton size="sm" variant="ghost" icon="mdi:delete-outline" @click="clearJob">
+                <BaseButton size="sm" variant="ghost" icon="lucide:trash-2" @click="clearJob">
                     Clear this posting
                 </BaseButton>
             </div>
@@ -72,12 +72,12 @@
             <!-- Gaps -->
             <section v-if="match.missing.length">
                 <div class="flex flex-wrap gap-2 justify-between items-baseline mb-1">
-                    <h3 class="text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
+                    <h3 class="text-sm font-semibold text-gray-900 dark:text-white">
                         Not in your resume
                     </h3>
                     <button
                         type="button"
-                        class="text-[11px] font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400"
+                        class="text-xs font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400"
                         @click="copy(match.missing.map((t) => t.term).join(', '))"
                     >
                         Copy all
@@ -93,7 +93,7 @@
                     <li
                         v-for="term in match.missing"
                         :key="term.key"
-                        class="flex gap-2 items-center py-1.5 px-2 rounded-lg group hover:bg-gray-50 dark:hover:bg-gray-800/60"
+                        class="flex gap-2 items-center py-1.5 px-2 rounded-lg group hover:bg-gray-50 dark:hover:bg-gray-700/40"
                     >
                         <span
                             class="w-1.5 h-1.5 rounded-full shrink-0"
@@ -105,12 +105,12 @@
                         <span class="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
                             <button
                                 type="button"
-                                class="px-1.5 py-0.5 text-[11px] font-medium rounded text-primary-700 bg-primary-50 hover:bg-primary-100 dark:bg-primary-900/30 dark:text-primary-300"
+                                class="px-2 py-0.5 text-[11px] font-medium rounded-md text-primary-700 bg-primary-50 hover:bg-primary-100 dark:bg-primary-500/10 dark:text-primary-300"
                                 @click="addKeyword(term.term)"
                             >
                                 Add to skills
                             </button>
-                            <BaseIconButton icon="mdi:content-copy" label="Copy term" @click="copy(term.term)" />
+                            <BaseIconButton icon="lucide:copy" label="Copy term" @click="copy(term.term)" />
                         </span>
                     </li>
                 </ul>
@@ -118,17 +118,17 @@
 
             <!-- Covered -->
             <section v-if="match.matched.length">
-                <h3 class="mb-2 text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
+                <h3 class="mb-2 text-sm font-semibold text-gray-900 dark:text-white">
                     Already covered ({{ match.matched.length }})
                 </h3>
                 <div class="flex flex-wrap gap-1">
                     <span
                         v-for="term in match.matched"
                         :key="term.key"
-                        class="inline-flex gap-1 items-center px-2 py-0.5 text-xs text-green-800 bg-green-100 rounded dark:bg-green-900/40 dark:text-green-300"
+                        class="inline-flex gap-1 items-center px-2 py-0.5 text-xs text-emerald-800 bg-emerald-50 rounded-md dark:bg-emerald-500/10 dark:text-emerald-300"
                         :title="term.where ? `Found in ${term.where}` : undefined"
                     >
-                        <Icon icon="mdi:check" class="w-3 h-3" />
+                        <Icon icon="lucide:check" class="w-3 h-3" />
                         {{ term.term }}
                         <span v-if="term.where" class="opacity-60">· {{ term.where }}</span>
                     </span>
@@ -141,7 +141,7 @@
         </template>
 
         <!-- ------------------------------------------- optional local AI -->
-        <section class="pt-4 border-t border-gray-200 dark:border-gray-700">
+        <section class="pt-4 border-t border-gray-200/80 dark:border-gray-700/70">
             <button
                 type="button"
                 class="flex gap-2 items-center w-full text-left group"
@@ -149,12 +149,12 @@
                 @click="toggleAi"
             >
                 <Icon
-                    icon="mdi:chevron-right"
+                    icon="lucide:chevron-right"
                     class="w-4 h-4 text-gray-400 transition-transform"
                     :class="showAi ? 'rotate-90' : ''"
                 />
                 <span class="flex-1">
-                    <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    <span class="text-sm font-medium text-gray-900 dark:text-white">
                         Rewrite with a local AI model
                     </span>
                     <span class="block text-xs text-gray-500 dark:text-gray-400">
@@ -189,7 +189,7 @@
                     {{ llm.statusMessage.value }}
                 </p>
 
-                <div v-if="showSettings" class="p-3 space-y-3 rounded-lg border border-gray-200 dark:border-gray-700">
+                <div v-if="showSettings" class="p-3 space-y-3 rounded-xl border border-gray-200/80 dark:border-gray-700/70">
                     <BaseSelect
                         label="Provider"
                         :options="PROVIDERS"
@@ -236,15 +236,15 @@
 
                 <div v-if="aiOutput || aiStreaming">
                     <div
-                        class="p-3 text-sm text-gray-800 whitespace-pre-wrap rounded-lg border border-gray-200 min-h-[3rem] dark:border-gray-700 dark:text-gray-200"
+                        class="p-3 text-sm text-gray-800 whitespace-pre-wrap rounded-xl border border-gray-200/80 min-h-[3rem] dark:border-gray-700/70 dark:text-gray-200"
                     >
                         {{ aiOutput }}<span v-if="aiStreaming" class="text-gray-400 animate-pulse">▍</span>
                     </div>
                     <div v-if="aiOutput && !aiStreaming" class="flex gap-2 mt-2">
-                        <BaseButton v-if="aiMode === 'summary'" size="sm" icon="mdi:check" @click="applySummary">
+                        <BaseButton v-if="aiMode === 'summary'" size="sm" icon="lucide:check" @click="applySummary">
                             Use as my summary
                         </BaseButton>
-                        <BaseButton size="sm" variant="secondary" icon="mdi:content-copy" @click="copy(aiOutput)">
+                        <BaseButton size="sm" variant="secondary" icon="lucide:copy" @click="copy(aiOutput)">
                             Copy
                         </BaseButton>
                     </div>
@@ -373,7 +373,7 @@ const statusDot = computed(
         ({
             idle: 'bg-gray-300',
             connecting: 'bg-amber-400 animate-pulse',
-            connected: 'bg-green-500',
+            connected: 'bg-emerald-500',
             error: 'bg-red-500',
         })[llm.status.value]
 );

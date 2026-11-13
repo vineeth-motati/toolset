@@ -3,6 +3,11 @@ import tailwindTypography from '@tailwindcss/typography';
 export default defineNuxtConfig({
     modules: ['@nuxtjs/tailwindcss'],
 
+    css: [
+        '@fontsource-variable/inter/index.css',
+        '@fontsource-variable/jetbrains-mono/index.css',
+    ],
+
     tailwindcss: {
         config: {
             plugins: [tailwindTypography()],
@@ -18,7 +23,9 @@ export default defineNuxtConfig({
                     name: 'viewport',
                     content: 'width=device-width, initial-scale=1',
                 },
+                { name: 'theme-color', content: '#0C0F17' },
             ],
+            link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
             script: [
                 {
                     // Apply dark mode before first paint. Reads the same

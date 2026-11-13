@@ -1,7 +1,7 @@
 <template>
     <div class="space-y-1.5">
         <div class="flex justify-between items-center">
-            <label class="text-xs font-medium text-gray-600 dark:text-gray-400">
+            <label class="text-[13px] font-medium text-gray-700 dark:text-gray-300">
                 {{ label }}
             </label>
             <span
@@ -30,7 +30,7 @@
                             :aria-label="`Reorder bullet ${index + 1}`"
                             tabindex="-1"
                         >
-                            <Icon icon="mdi:drag-vertical" class="w-4 h-4" />
+                            <Icon icon="lucide:grip-vertical" class="w-4 h-4" />
                         </button>
 
                         <div class="relative flex-1 min-w-0">
@@ -39,7 +39,7 @@
                                 v-model="model[index]"
                                 rows="1"
                                 :placeholder="placeholder"
-                                class="px-2.5 py-1.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 resize-none focus:outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+                                class="w-full resize-none field"
                                 :style="{ height: heights[index] }"
                                 @input="onInput($event, index)"
                                 @keydown.enter.exact.prevent="insertAfter(index)"
@@ -56,7 +56,7 @@
                         </div>
 
                         <BaseIconButton
-                            icon="mdi:close"
+                            icon="lucide:x"
                             :label="`Remove bullet ${index + 1}`"
                             variant="danger"
                             class="mt-0.5 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
@@ -72,7 +72,7 @@
                         <span
                             v-for="h in hintsFor(index)"
                             :key="h"
-                            class="px-1.5 py-0.5 text-[10px] font-medium text-amber-700 rounded bg-amber-50 dark:bg-amber-900/25 dark:text-amber-300"
+                            class="px-1.5 py-0.5 text-[10px] font-medium text-amber-700 rounded-md bg-amber-50 dark:bg-amber-500/10 dark:text-amber-300"
                         >
                             {{ h }}
                         </span>
@@ -87,7 +87,7 @@
                 class="inline-flex gap-1 items-center text-xs font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400"
                 @click="add"
             >
-                <Icon icon="mdi:plus" class="w-4 h-4" />
+                <Icon icon="lucide:plus" class="w-4 h-4" />
                 {{ addLabel }}
             </button>
             <span class="text-[11px] text-gray-400">
@@ -139,11 +139,11 @@ function hintsFor(i) {
 }
 
 const strengthTone = (v) =>
-    v >= 75 ? 'text-green-600 dark:text-green-400'
+    v >= 75 ? 'text-emerald-600 dark:text-emerald-400'
     : v >= 50 ? 'text-amber-600 dark:text-amber-400'
     : 'text-gray-400';
 const strengthBg = (v) =>
-    v >= 75 ? 'bg-green-400' : v >= 50 ? 'bg-amber-400' : 'bg-gray-300 dark:bg-gray-600';
+    v >= 75 ? 'bg-emerald-400' : v >= 50 ? 'bg-amber-400' : 'bg-gray-300 dark:bg-gray-600';
 
 function setRef(el, i) {
     if (el) {

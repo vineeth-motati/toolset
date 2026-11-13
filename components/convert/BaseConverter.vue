@@ -1,7 +1,6 @@
 <template>
-    <div class="bg-white rounded-lg shadow dark:bg-gray-800">
-        <div class="p-6">
-            <!-- Only show header when not embedded in sidebar layout -->
+    <div class="surface">
+        <div class="p-4 sm:p-5">
             <div
                 v-if="showSidebar"
                 class="flex items-center justify-between mb-4"
@@ -9,14 +8,14 @@
                 <div class="flex items-center">
                     <button
                         @click="goBack"
-                        class="p-2 mr-3 text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+                        class="p-2 mr-3 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
                         title="Back to converters"
                     >
-                        <Icon icon="tabler:arrow-left" class="text-xl" />
+                        <Icon icon="lucide:arrow-left" class="w-5 h-5" />
                     </button>
                     <div>
-                        <h1 class="text-2xl font-bold">{{ title }}</h1>
-                        <p class="text-gray-600 dark:text-gray-400">{{ description }}</p>
+                        <h1 class="text-base font-semibold text-gray-900 dark:text-white">{{ title }}</h1>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ description }}</p>
                     </div>
                 </div>
                 <div class="flex gap-2">
@@ -30,7 +29,7 @@
                     </BaseButton>
                     <BaseButton
                         v-if="state.result"
-                        icon="tabler:download"
+                        icon="lucide:download"
                         @click="downloadResult"
                     >
                         Download
@@ -38,7 +37,6 @@
                 </div>
             </div>
 
-            <!-- API Key Modal -->
             <Modal
                 :is-open="showApiKeyModal"
                 title="API Key Required"
@@ -47,27 +45,26 @@
                 @close="closeApiKeyModal"
                 @confirm="saveApiKey"
             >
-                <p class="mb-4 text-gray-600 dark:text-gray-400">
+                <p class="mb-4 text-sm text-gray-700 dark:text-gray-300">
                     To use the conversion tools, you need to provide an API key
                     from ConversionTools.io
                 </p>
                 <div class="mb-4">
-                    <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label class="block mb-1 text-[13px] font-medium text-gray-700 dark:text-gray-300">
                         API Key
                     </label>
                     <input
                         v-model="tempApiKey"
                         type="text"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
+                        class="field"
                         placeholder="Enter your API key"
                     />
                 </div>
 
-                <!-- API Key Information -->
                 <div
-                    class="p-3 mt-6 border border-blue-200 rounded-md bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20"
+                    class="mt-6 rounded-xl border px-4 py-3 text-sm border-primary-200 bg-primary-50 text-primary-800 dark:border-primary-500/20 dark:bg-primary-500/10 dark:text-primary-200"
                 >
-                    <h3 class="mb-2 text-sm font-medium text-blue-700 dark:text-blue-300">
+                    <h3 class="mb-2 text-sm font-semibold">
                         How to get an API Key
                     </h3>
                     <ol
@@ -78,7 +75,7 @@
                             <a
                                 href="https://conversiontools.io"
                                 target="_blank"
-                                class="text-blue-600 hover:underline"
+                                class="text-primary-600 hover:underline dark:text-primary-400"
                                 >ConversionTools.io</a
                             >
                         </li>
@@ -94,244 +91,224 @@
                 </div>
             </Modal>
 
-            <div>
-                <div class="grid grid-cols-1 gap-6">
-                    <!-- Source Section -->
-                    <div class="p-4 border rounded-lg dark:border-gray-700">
-                        <h2 class="mb-2 text-lg font-medium">
-                            Source {{ sourceFormat }}
-                        </h2>
-                        <div class="mb-4">
-                            <label
-                                class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300"
-                            >
-                                {{
-                                    sourceFormat === 'URL'
-                                        ? 'Enter URL'
-                                        : `Upload ${sourceFormat} file`
-                                }}
-                            </label>
+            <div class="grid grid-cols-1 gap-6">
+                <section>
+                    <h2 class="mb-3 text-sm font-semibold text-gray-900 dark:text-white">
+                        Source {{ sourceFormat }}
+                    </h2>
+                    <div class="mb-4">
+                        <label
+                            class="block mb-1.5 text-[13px] font-medium text-gray-700 dark:text-gray-300"
+                        >
+                            {{
+                                sourceFormat === 'URL'
+                                    ? 'Enter URL'
+                                    : `Upload ${sourceFormat} file`
+                            }}
+                        </label>
 
-                            <!-- URL Input for website converters -->
-                            <div v-if="sourceFormat === 'URL'" class="mb-4">
-                                <input
-                                    v-model="sourceUrl"
-                                    type="url"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
-                                    placeholder="https://example.com"
-                                />
-                            </div>
-
-                            <!-- File Upload for other converters -->
-                            <div
-                                v-else
-                                @dragover.prevent="dragOver = true"
-                                @dragleave.prevent="dragOver = false"
-                                @drop.prevent="onFileDrop"
-                                @click="$refs.fileInput.click()"
-                                class="flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-md cursor-pointer"
-                                :class="{
-                                    'border-blue-500 bg-blue-50 dark:bg-blue-900/20': dragOver,
-                                    'border-gray-300 hover:border-blue-500 dark:border-gray-600':
-                                        !dragOver,
-                                }"
-                            >
-                                <Icon
-                                    :icon="
-                                        sourceFile
-                                            ? 'tabler:file-check'
-                                            : sourceIcon
-                                    "
-                                    class="mb-2 text-4xl"
-                                    :class="
-                                        sourceFile
-                                            ? 'text-green-500'
-                                            : 'text-gray-400'
-                                    "
-                                />
-                                <p
-                                    v-if="sourceFile"
-                                    class="mb-1 text-green-600 dark:text-green-400"
-                                >
-                                    {{ sourceFile.name }}
-                                </p>
-                                <p v-else class="mb-1 text-gray-500 dark:text-gray-400">
-                                    Drag and drop or click to upload
-                                </p>
-                                <p
-                                    v-if="!sourceFile"
-                                    class="text-xs text-gray-400 dark:text-gray-500"
-                                >
-                                    Max file size: {{ fileSizeLimit }}
-                                </p>
-                                <input
-                                    ref="fileInput"
-                                    type="file"
-                                    class="hidden"
-                                    :accept="sourceAccept"
-                                    @change="handleFileUpload"
-                                />
-                            </div>
+                        <div v-if="sourceFormat === 'URL'">
+                            <input
+                                v-model="sourceUrl"
+                                type="url"
+                                class="field"
+                                placeholder="https://example.com"
+                            />
                         </div>
 
-                        <!-- Additional options depending on converter type -->
-                        <div v-if="showOptions && hasParams" class="mb-4">
-                            <h3 class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Conversion Options
-                            </h3>
-                            <div class="space-y-2">
-                                <!-- Slot for parameters from parent component -->
-                                <slot name="options"></slot>
-                            </div>
+                        <div
+                            v-else
+                            @dragover.prevent="dragOver = true"
+                            @dragleave.prevent="dragOver = false"
+                            @drop.prevent="onFileDrop"
+                            @click="$refs.fileInput.click()"
+                            class="flex flex-col items-center justify-center gap-1 px-4 py-8 text-center transition cursor-pointer rounded-2xl border-2 border-dashed"
+                            :class="
+                                dragOver
+                                    ? 'border-primary-400 bg-primary-50/40 dark:border-primary-500/60 dark:bg-primary-500/10'
+                                    : 'border-gray-300 bg-gray-50/50 hover:border-primary-400 hover:bg-primary-50/40 dark:border-gray-700 dark:bg-gray-900/30 dark:hover:border-primary-500/60'
+                            "
+                        >
+                            <ToolIcon
+                                :icon="
+                                    sourceFile ? 'tabler:file-check' : sourceIcon
+                                "
+                                :color="sourceFile ? '#059669' : '#0D9488'"
+                                size="lg"
+                                class="mb-2"
+                            />
+                            <p
+                                v-if="sourceFile"
+                                class="text-sm font-medium text-gray-900 break-all dark:text-white"
+                            >
+                                {{ sourceFile.name }}
+                            </p>
+                            <p
+                                v-else
+                                class="text-sm font-medium text-gray-900 dark:text-white"
+                            >
+                                Drag and drop or click to upload
+                            </p>
+                            <p
+                                v-if="sourceFile"
+                                class="text-xs text-gray-500 dark:text-gray-400"
+                            >
+                                {{ (sourceFile.size / 1024).toFixed(1) }} KB
+                            </p>
+                            <p
+                                v-else
+                                class="text-xs text-gray-500 dark:text-gray-400"
+                            >
+                                Max file size: {{ fileSizeLimit }}
+                            </p>
+                            <input
+                                ref="fileInput"
+                                type="file"
+                                class="hidden"
+                                :accept="sourceAccept"
+                                @change="handleFileUpload"
+                            />
                         </div>
                     </div>
 
-                    <!-- Target Section -->
-                    <div class="p-4 border rounded-lg dark:border-gray-700">
-                        <h2 class="mb-2 text-lg font-medium">Output</h2>
+                    <div v-if="showOptions && hasParams">
+                        <h3 class="mb-2 text-sm font-semibold text-gray-900 dark:text-white">
+                            Conversion Options
+                        </h3>
+                        <div class="grid grid-cols-1 gap-x-4 sm:grid-cols-2">
+                            <slot name="options"></slot>
+                        </div>
+                    </div>
+                </section>
 
-                        <!-- Conversion Status -->
+                <section class="pt-6 border-t border-gray-200/80 dark:border-gray-700/70">
+                    <h2 class="mb-3 text-sm font-semibold text-gray-900 dark:text-white">Output</h2>
+
+                    <div
+                        v-if="state.isConverting || state.progress"
+                        class="mb-4"
+                    >
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[13px] font-medium text-gray-700 dark:text-gray-300"
+                                >Conversion Status</span
+                            >
+                            <span
+                                class="px-2 py-0.5 text-xs font-medium rounded-md"
+                                :class="{
+                                    'bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-300':
+                                        [
+                                            'STARTING',
+                                            'UPLOADING',
+                                            'PREPARING',
+                                            'PENDING',
+                                            'RUNNING',
+                                            'SUCCESS',
+                                            'DOWNLOADING',
+                                        ].includes(state.progress),
+                                    'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300':
+                                        state.progress === 'COMPLETE',
+                                    'bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-300':
+                                        state.progress === 'ERROR',
+                                }"
+                            >
+                                {{ formatProgress(state.progress) }}
+                            </span>
+                        </div>
                         <div
-                            v-if="state.isConverting || state.progress"
-                            class="mb-4"
+                            class="w-full h-1.5 overflow-hidden bg-gray-200 rounded-full dark:bg-gray-700"
                         >
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300"
-                                    >Conversion Status</span
-                                >
-                                <span
-                                    class="px-2 py-1 text-xs rounded"
-                                    :class="{
-                                        'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300':
-                                            [
-                                                'STARTING',
-                                                'UPLOADING',
-                                                'PREPARING',
-                                                'PENDING',
-                                                'RUNNING',
-                                                'SUCCESS',
-                                                'DOWNLOADING',
-                                            ].includes(state.progress),
-                                        'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300':
-                                            state.progress === 'COMPLETE',
-                                        'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300':
-                                            state.progress === 'ERROR',
-                                    }"
-                                >
-                                    {{ formatProgress(state.progress) }}
+                            <div
+                                class="h-full transition-all duration-500"
+                                :class="{
+                                    'bg-primary-600':
+                                        state.progress !== 'COMPLETE' &&
+                                        state.progress !== 'ERROR',
+                                    'bg-emerald-500':
+                                        state.progress === 'COMPLETE',
+                                    'bg-red-500': state.progress === 'ERROR',
+                                }"
+                                :style="{ width: getProgressWidth() }"
+                            ></div>
+                        </div>
+                    </div>
+
+                    <div
+                        v-if="state.error"
+                        class="mb-4 rounded-xl border px-4 py-3 text-sm border-red-200 bg-red-50 text-red-800 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-200"
+                    >
+                        {{ state.error }}
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="relative overflow-hidden rounded-xl border border-gray-200/80 dark:border-gray-700/70">
+                            <div
+                                class="flex flex-wrap items-center gap-1.5 px-3 py-2 border-b border-gray-200/80 bg-gray-50/60 dark:border-gray-700/70 dark:bg-gray-900/30"
+                            >
+                                <span class="text-[13px] font-medium text-gray-700 dark:text-gray-300">
+                                    {{ targetFormat }} Output
                                 </span>
                             </div>
                             <div
-                                class="w-full h-2 overflow-hidden bg-gray-200 rounded-full dark:bg-gray-700"
+                                v-if="isImageOutput && previewUrl"
+                                class="h-64 p-4 overflow-auto bg-gray-50/50 dark:bg-gray-900/30"
                             >
-                                <div
-                                    class="h-full transition-all duration-500"
-                                    :class="{
-                                        'bg-blue-500':
-                                            state.progress !== 'COMPLETE' &&
-                                            state.progress !== 'ERROR',
-                                        'bg-green-500':
-                                            state.progress === 'COMPLETE',
-                                        'bg-red-500':
-                                            state.progress === 'ERROR',
-                                    }"
-                                    :style="{ width: getProgressWidth() }"
-                                ></div>
-                            </div>
-                        </div>
-
-                        <!-- Error Message -->
-                        <div
-                            v-if="state.error"
-                            class="p-3 mb-4 text-sm text-red-700 border border-red-200 rounded-md bg-red-50 dark:text-red-300 dark:border-red-900 dark:bg-red-900/30"
-                        >
-                            {{ state.error }}
-                        </div>
-
-                        <!-- Output Display -->
-                        <div class="mb-4">
-                            <label
-                                class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300"
-                            >
-                                {{ targetFormat }} Output
-                            </label>
-                            <div class="relative">
-                                <!-- Preview for Images -->
-                                <div
-                                    v-if="isImageOutput && previewUrl"
-                                    class="h-64 p-4 overflow-auto border border-gray-300 rounded-md bg-gray-50 dark:border-gray-600 dark:bg-gray-900/50"
-                                >
-                                    <img
-                                        :src="previewUrl"
-                                        alt="Converted image"
-                                        class="h-auto max-w-full"
-                                    />
-                                </div>
-
-                                <!-- Preview for Text -->
-                                <div
-                                    v-else-if="isTextOutput && outputText"
-                                    class="h-64 p-4 overflow-auto font-mono text-sm border border-gray-300 rounded-md bg-gray-50 dark:border-gray-600 dark:bg-gray-900/50"
-                                >
-                                    {{ outputText }}
-                                </div>
-
-                                <!-- Generic output placeholder -->
-                                <div
-                                    v-else
-                                    class="h-64 p-4 overflow-auto border border-gray-300 rounded-md bg-gray-50 dark:border-gray-600 dark:bg-gray-900/50"
-                                >
-                                    <p
-                                        v-if="state.result"
-                                        class="text-green-600 dark:text-green-400"
-                                    >
-                                        Conversion complete! Click the Download
-                                        button to save the file.
-                                    </p>
-                                    <p v-else class="text-gray-500 dark:text-gray-400">
-                                        Converted output will appear here
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Actions -->
-                        <div class="flex justify-between">
-                            <div>
-                                <BaseButton
-                                    v-if="state.result"
-                                    variant="secondary"
-                                    icon="tabler:download"
-                                    @click="downloadResult"
-                                >
-                                    Download Result
-                                </BaseButton>
-                            </div>
-                            <button
-                                @click="handleConvert"
-                                class="px-4 py-2 text-white bg-primary-600 rounded-md hover:bg-primary-700 disabled:bg-gray-400"
-                                :disabled="!canConvert || state.isConverting"
-                            >
-                                <Icon
-                                    :icon="
-                                        state.isConverting
-                                            ? 'tabler:loader'
-                                            : 'tabler:exchange'
-                                    "
-                                    class="inline-block mr-1"
-                                    :class="{
-                                        'animate-spin': state.isConverting,
-                                    }"
+                                <img
+                                    :src="previewUrl"
+                                    alt="Converted image"
+                                    class="h-auto max-w-full"
                                 />
-                                {{
-                                    state.isConverting
-                                        ? 'Converting...'
-                                        : 'Convert'
-                                }}
-                            </button>
+                            </div>
+
+                            <div
+                                v-else-if="isTextOutput && outputText"
+                                class="h-64 p-4 overflow-auto font-mono text-[13px] leading-6 text-gray-800 whitespace-pre-wrap bg-white dark:bg-gray-900/30 dark:text-gray-200"
+                            >
+                                {{ outputText }}
+                            </div>
+
+                            <div
+                                v-else
+                                class="h-64 p-4 overflow-auto bg-gray-50/50 dark:bg-gray-900/30"
+                            >
+                                <div
+                                    v-if="state.result"
+                                    class="rounded-xl border px-4 py-3 text-sm border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-200"
+                                >
+                                    Conversion complete! Click the Download
+                                    button to save the file.
+                                </div>
+                                <p v-else class="text-sm text-gray-500 dark:text-gray-400">
+                                    Converted output will appear here
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <BaseButton
+                                v-if="state.result"
+                                variant="secondary"
+                                icon="lucide:download"
+                                @click="downloadResult"
+                            >
+                                Download Result
+                            </BaseButton>
+                        </div>
+                        <BaseButton
+                            icon="tabler:exchange"
+                            :loading="state.isConverting"
+                            :disabled="!canConvert || state.isConverting"
+                            @click="handleConvert"
+                        >
+                            {{
+                                state.isConverting
+                                    ? 'Converting...'
+                                    : 'Convert'
+                            }}
+                        </BaseButton>
+                    </div>
+                </section>
             </div>
         </div>
     </div>
@@ -352,6 +329,7 @@ import {
     LOCAL_PERSIST_MAX_CHARS,
 } from '@/utils/localConverters';
 import Modal from '@/components/ui/Modal.vue';
+import ToolIcon from '@/components/tool/ToolIcon.vue';
 
 const props = defineProps({
     title: {

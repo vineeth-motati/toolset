@@ -3,7 +3,7 @@
         <template #actions>
             <BaseButton
                 variant="secondary"
-                icon="mdi:share-variant"
+                icon="lucide:share-2"
                 size="sm"
                 @click="shareTranscript"
             >
@@ -14,27 +14,27 @@
         <div class="mx-auto max-w-7xl">
             <!-- Input Section -->
             <BaseCard class="mb-4">
-                <div class="flex flex-col gap-4 md:flex-row">
+                <div class="flex flex-col gap-3 md:flex-row">
                     <div class="relative flex-grow">
                         <input
                             v-model="transcriptorState.youtubeUrl"
                             type="text"
                             placeholder="Enter YouTube URL or Video ID"
-                            class="px-4 py-2 pr-10 w-full text-gray-900 bg-white rounded-md border focus:outline-none focus:ring-1 focus:ring-primary-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+                            class="pr-10 w-full field"
                             @keyup.enter="fetchTranscript"
                         />
                         <button
                             v-if="transcriptorState.youtubeUrl"
                             @click="clearInputField"
                             type="button"
-                            class="absolute right-2 top-1/2 text-gray-500 -translate-y-1/2 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                            class="absolute right-2 top-1/2 p-1 text-gray-400 rounded-lg -translate-y-1/2 hover:text-gray-700 dark:hover:text-gray-200"
                             title="Clear input"
                         >
-                            <Icon icon="mdi:close-circle" />
+                            <Icon icon="lucide:x" />
                         </button>
                     </div>
                     <div class="flex gap-2">
-                        <BaseButton icon="mdi:play" :loading="loading" @click="fetchTranscript">
+                        <BaseButton icon="lucide:play" :loading="loading" @click="fetchTranscript">
                             {{ loading ? 'Loading...' : 'Get Transcript' }}
                         </BaseButton>
                         <BaseButton variant="danger" @click="clearTranscript">
@@ -52,7 +52,7 @@
 
             <div
                 v-if="error"
-                class="p-4 my-4 text-red-700 bg-red-100 rounded-lg dark:bg-red-900/30 dark:text-red-300"
+                class="px-4 py-3 my-4 text-sm text-red-800 bg-red-50 rounded-xl border border-red-200 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-200"
             >
                 {{ error }}
             </div>
@@ -64,17 +64,17 @@
             >
                 <!-- Video Player Section -->
                 <BaseCard class="lg:col-span-1">
-                    <h2 class="mb-4 text-lg font-medium text-gray-900 dark:text-gray-100">Video</h2>
-                    <div class="relative mb-4 aspect-video">
+                    <h2 class="mb-4 text-sm font-semibold text-gray-900 dark:text-white">Video</h2>
+                    <div class="relative overflow-hidden mb-4 rounded-xl aspect-video">
                         <div id="youtube-player"></div>
                     </div>
 
                     <!-- Video Details Section -->
                     <div
                         v-if="transcriptorState.videoDetails"
-                        class="pt-3 mt-3 border-t dark:border-gray-700"
+                        class="pt-3 mt-3 border-t border-gray-200/80 dark:border-gray-700/70"
                     >
-                        <h3 class="text-lg font-bold line-clamp-2 text-gray-900 dark:text-gray-100">
+                        <h3 class="text-sm font-semibold line-clamp-2 text-gray-900 dark:text-white">
                             {{ transcriptorState.videoDetails.title }}
                         </h3>
                         <div
@@ -138,13 +138,13 @@
                 </BaseCard>
 
                 <!-- Transcript Section -->
-                <BaseCard class="lg:col-span-2">
+                <BaseCard padding="none" class="overflow-hidden lg:col-span-2">
                     <div
-                        class="flex flex-wrap gap-2 justify-between items-center mb-4"
+                        class="flex flex-wrap gap-2 justify-between items-center px-3 py-2 border-b border-gray-200/80 bg-gray-50/60 dark:border-gray-700/70 dark:bg-gray-900/30"
                     >
-                        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Transcript</h2>
+                        <h2 class="pl-1 text-sm font-semibold text-gray-900 dark:text-white">Transcript</h2>
                         <div class="flex flex-wrap gap-2 items-center">
-                            <label class="flex items-center text-gray-700 dark:text-gray-300">
+                            <label class="flex items-center text-[13px] font-medium text-gray-700 dark:text-gray-300">
                                 <input
                                     v-model="transcriptorState.showTimestamps"
                                     type="checkbox"
@@ -156,7 +156,7 @@
                                 <BaseButton
                                     variant="secondary"
                                     size="sm"
-                                    icon="mdi:content-copy"
+                                    icon="lucide:copy"
                                     @click="copyTranscript"
                                 >
                                     Copy
@@ -164,7 +164,7 @@
                                 <BaseButton
                                     variant="secondary"
                                     size="sm"
-                                    icon="mdi:file-pdf-box"
+                                    icon="lucide:file-down"
                                     @click="exportPdf"
                                 >
                                     PDF
@@ -172,7 +172,7 @@
                                 <BaseButton
                                     variant="secondary"
                                     size="sm"
-                                    icon="mdi:file-document-outline"
+                                    icon="lucide:file-text"
                                     @click="exportAsText"
                                 >
                                     Text
@@ -180,11 +180,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="overflow-y-auto max-h-[60vh]">
+                    <div class="overflow-y-auto p-4 max-h-[60vh] sm:p-5">
                         <div
                             v-if="transcriptorState.transcript.length > 0"
                             key="segments"
-                            class="space-y-2"
+                            class="space-y-1 text-sm leading-7"
                         >
                             <div
                                 v-for="(
@@ -192,19 +192,19 @@
                                 ) in transcriptorState.transcript"
                                 :key="index"
                                 @click="jumpToTimestamp(segment.offset)"
-                                class="p-2 rounded transition-colors cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                                class="px-2 rounded-lg transition-colors cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/40"
                                 :class="{
-                                    'bg-primary-50 dark:bg-primary-900/20':
+                                    'bg-primary-50 dark:bg-primary-500/10':
                                         isCurrentSegment(segment),
                                 }"
                             >
                                 <span
                                     v-if="transcriptorState.showTimestamps"
-                                    class="mr-2 font-mono text-xs text-gray-500 dark:text-gray-400"
+                                    class="mr-2 font-mono text-xs text-gray-400"
                                 >
                                     {{ formatTime(segment.offset) }}
                                 </span>
-                                <span class="text-gray-800 dark:text-gray-200">{{ segment.text }}</span>
+                                <span class="text-gray-700 dark:text-gray-300">{{ segment.text }}</span>
                             </div>
                         </div>
                         <BaseEmptyState

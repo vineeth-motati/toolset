@@ -2,70 +2,50 @@
     <ToolLayout
         title="Converter Settings"
         description="Manage API keys and conversion preferences"
-        icon="tabler:settings"
+        icon="lucide:settings"
     >
-        <template #leading>
-            <BaseIconButton
-                icon="tabler:arrow-left"
-                label="Back to converters"
-                @click="goBack"
-            />
-        </template>
 
-        <div>
-            <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-                <!-- Left sidebar with settings navigation -->
-                <div class="col-span-1">
-                    <BaseCard padding="none">
-                        <div class="p-4 border-b dark:border-gray-700">
-                            <h2 class="font-medium text-gray-900 dark:text-gray-100">Settings</h2>
-                        </div>
-                        <div class="p-2">
-                            <button
-                                class="px-4 py-2 w-full text-left rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
-                                :class="{
-                                    'bg-primary-50 text-primary-700 dark:bg-gray-700 dark:text-primary-400':
-                                        activeTab === 'apikeys',
-                                    'text-gray-700 dark:text-gray-300': activeTab !== 'apikeys',
-                                }"
-                                @click="activeTab = 'apikeys'"
-                            >
-                                <Icon
-                                    icon="tabler:key"
-                                    class="inline-block mr-2"
-                                />
-                                API Keys
-                            </button>
-                            <button
-                                class="px-4 py-2 w-full text-left rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
-                                :class="{
-                                    'bg-primary-50 text-primary-700 dark:bg-gray-700 dark:text-primary-400':
-                                        activeTab === 'debug',
-                                    'text-gray-700 dark:text-gray-300': activeTab !== 'debug',
-                                }"
-                                @click="activeTab = 'debug'"
-                            >
-                                <Icon
-                                    icon="tabler:bug"
-                                    class="inline-block mr-2"
-                                />
-                                Debug
-                            </button>
-                        </div>
-                    </BaseCard>
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div class="col-span-1">
+                <BaseCard padding="none">
+                    <div class="p-4 border-b border-gray-200/80 dark:border-gray-700/70">
+                        <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Settings</h2>
+                    </div>
+                    <div class="p-2 flex flex-col gap-1">
+                        <button
+                            class="flex items-center gap-2 px-3 py-2 w-full text-left text-sm font-medium rounded-lg transition"
+                            :class="
+                                activeTab === 'apikeys'
+                                    ? 'bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-300'
+                                    : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700/40'
+                            "
+                            @click="activeTab = 'apikeys'"
+                        >
+                            <Icon icon="lucide:key-round" class="w-4 h-4" />
+                            API Keys
+                        </button>
+                        <button
+                            class="flex items-center gap-2 px-3 py-2 w-full text-left text-sm font-medium rounded-lg transition"
+                            :class="
+                                activeTab === 'debug'
+                                    ? 'bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-300'
+                                    : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700/40'
+                            "
+                            @click="activeTab = 'debug'"
+                        >
+                            <Icon icon="tabler:bug" class="w-4 h-4" />
+                            Debug
+                        </button>
+                    </div>
+                </BaseCard>
+            </div>
+
+            <div class="col-span-1 lg:col-span-2">
+                <div v-if="activeTab === 'apikeys'">
+                    <ApiKeyManager />
                 </div>
-
-                <!-- Right content area -->
-                <div class="col-span-1 lg:col-span-2">
-                    <!-- API Keys Tab -->
-                    <div v-if="activeTab === 'apikeys'">
-                        <ApiKeyManager />
-                    </div>
-
-                    <!-- Debug Tab -->
-                    <div v-if="activeTab === 'debug'">
-                        <Debugger />
-                    </div>
+                <div v-if="activeTab === 'debug'">
+                    <Debugger />
                 </div>
             </div>
         </div>

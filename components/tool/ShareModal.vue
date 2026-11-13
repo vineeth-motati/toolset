@@ -10,7 +10,7 @@
                 leave-from="opacity-100"
                 leave-to="opacity-0"
             >
-                <div class="fixed inset-0 bg-gray-900/40" aria-hidden="true" />
+                <div class="fixed inset-0 bg-gray-950/40 backdrop-blur-[2px]" aria-hidden="true" />
             </TransitionChild>
 
             <div class="flex fixed inset-0 justify-center items-center p-4">
@@ -24,10 +24,10 @@
                     leave-to="opacity-0 scale-95"
                 >
                     <DialogPanel
-                        class="p-6 w-full max-w-md bg-white rounded-xl border border-gray-200 shadow-2xl dark:bg-gray-800 dark:border-gray-700"
+                        class="p-6 w-full max-w-md bg-white rounded-2xl border border-gray-200/80 shadow-pop dark:bg-gray-800 dark:border-gray-700"
                     >
                         <DialogTitle
-                            class="text-lg font-semibold text-gray-900 dark:text-gray-100"
+                            class="text-lg font-semibold tracking-tight text-gray-900 dark:text-white"
                         >
                             Share link
                         </DialogTitle>
@@ -42,7 +42,7 @@
                             <img
                                 :src="qrDataUrl"
                                 alt="QR code for the share link"
-                                class="w-36 h-36 rounded-lg border border-gray-200 dark:border-gray-700"
+                                class="p-2 w-40 h-40 bg-white rounded-xl border border-gray-200 shadow-xs dark:border-gray-700"
                             />
                         </div>
 
@@ -50,13 +50,13 @@
                             <input
                                 :value="link"
                                 readonly
-                                class="flex-1 px-3 py-2 min-w-0 text-sm text-gray-700 bg-gray-50 rounded-lg border border-gray-300 focus:outline-none focus:border-primary-400 dark:bg-gray-900 dark:border-gray-600 dark:text-gray-200"
+                                class="flex-1 min-w-0 font-mono !text-[13px] field !bg-gray-50 dark:!bg-gray-900/60"
                                 aria-label="Share link URL"
                                 @focus="$event.target.select()"
                             />
                             <BaseButton
                                 :icon="
-                                    copied ? 'mdi:check' : 'mdi:content-copy'
+                                    copied ? 'lucide:check' : 'lucide:copy'
                                 "
                                 :variant="copied ? 'secondary' : 'primary'"
                                 @click="onCopy"
@@ -109,15 +109,15 @@
                                     <input
                                         :value="memorableLink"
                                         readonly
-                                        class="flex-1 px-3 py-2 min-w-0 text-sm text-gray-700 bg-gray-50 rounded-lg border border-gray-300 focus:outline-none focus:border-primary-400 dark:bg-gray-900 dark:border-gray-600 dark:text-gray-200"
+                                        class="flex-1 min-w-0 font-mono !text-[13px] field !bg-gray-50 dark:!bg-gray-900/60"
                                         aria-label="Memorable share link URL"
                                         @focus="$event.target.select()"
                                     />
                                     <BaseButton
                                         :icon="
                                             memorableCopied
-                                                ? 'mdi:check'
-                                                : 'mdi:content-copy'
+                                                ? 'lucide:check'
+                                                : 'lucide:copy'
                                         "
                                         :variant="
                                             memorableCopied

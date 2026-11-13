@@ -1,6 +1,10 @@
 <template>
     <div>
-        <label v-if="label" class="block mb-2 font-medium">{{ label }}</label>
+        <label
+            v-if="label"
+            class="block mb-1.5 text-[13px] font-medium text-gray-700 dark:text-gray-300"
+            >{{ label }}</label
+        >
         <div class="flex items-center">
             <div class="relative flex flex-1 min-w-0">
                 <input
@@ -8,17 +12,16 @@
                     type="number"
                     min="0"
                     :disabled="selectedUnit === 'auto'"
-                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
+                    class="h-8 py-0 rounded-r-none field"
                     :class="{
-                        'opacity-50 bg-gray-50 dark:bg-gray-900':
-                            selectedUnit === 'auto',
+                        'opacity-50': selectedUnit === 'auto',
                     }"
                     :placeholder="placeholder"
                     @input="updateValue"
                 />
                 <select
                     v-model="selectedUnit"
-                    class="w-16 px-2 py-2 text-sm font-medium border border-l-0 border-gray-300 rounded-r-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-900 dark:border-gray-600 dark:text-gray-100"
+                    class="h-8 w-16 py-0 rounded-l-none border-l-0 px-2 font-medium field"
                     @change="updateValue"
                 >
                     <option value="px">px</option>

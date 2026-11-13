@@ -24,13 +24,64 @@ export interface Tool {
     apiOnly?: boolean;
 }
 
-export const CATEGORY_LABELS: Record<string, string> = {
-    dev: 'Developer Tools',
-    productivity: 'Productivity',
-    convert: 'Converters',
-    design: 'Design',
-    media: 'Media',
+export interface CategoryMeta {
+    label: string;
+    short: string;
+    icon: string;
+    color: string;
+    blurb: string;
+}
+
+export const CATEGORY_META: Record<string, CategoryMeta> = {
+    dev: {
+        label: 'Developer Tools',
+        short: 'Developer',
+        icon: 'lucide:braces',
+        color: '#2563EB',
+        blurb: 'Format, inspect and test JSON, code and APIs',
+    },
+    productivity: {
+        label: 'Productivity',
+        short: 'Productivity',
+        icon: 'lucide:layout-dashboard',
+        color: '#7C3AED',
+        blurb: 'Boards, notes, sheets and a resume builder',
+    },
+    design: {
+        label: 'Design',
+        short: 'Design',
+        icon: 'lucide:pen-tool',
+        color: '#DB2777',
+        blurb: 'Palettes, layouts, animations and a canvas',
+    },
+    media: {
+        label: 'Media',
+        short: 'Media',
+        icon: 'lucide:image',
+        color: '#EA580C',
+        blurb: 'Images, QR codes and video transcripts',
+    },
+    convert: {
+        label: 'Converters',
+        short: 'Convert',
+        icon: 'lucide:repeat',
+        color: '#0D9488',
+        blurb: 'Documents, data, images, audio and video',
+    },
 };
+
+export const CATEGORY_LABELS: Record<string, string> = Object.fromEntries(
+    Object.entries(CATEGORY_META).map(([key, meta]) => [key, meta.label])
+);
+
+const CATEGORY_ORDER = Object.keys(CATEGORY_META);
+const categoryRank = (key: string) => {
+    const i = CATEGORY_ORDER.indexOf(key);
+    return i === -1 ? CATEGORY_ORDER.length : i;
+};
+
+export const categoryColor = (key?: string): string =>
+    (key && CATEGORY_META[key]?.color) || '#2447E6';
 
 const tools = toolsData as Tool[];
 
@@ -76,11 +127,13 @@ export function useTools() {
             if (!map.has(tool.category)) map.set(tool.category, []);
             map.get(tool.category)!.push(tool);
         }
-        return Array.from(map.entries()).map(([key, items]) => ({
-            key,
-            label: CATEGORY_LABELS[key] || key,
-            items,
-        }));
+        return Array.from(map.entries())
+            .sort(([a], [b]) => categoryRank(a) - categoryRank(b))
+            .map(([key, items]) => ({
+                key,
+                label: CATEGORY_LABELS[key] || key,
+                items,
+            }));
     };
 
     const search = (query: string): Tool[] => {

@@ -12,7 +12,7 @@
                 :r="r"
                 fill="none"
                 stroke-width="3"
-                class="stroke-gray-200 dark:stroke-gray-700"
+                class="stroke-gray-200/80 dark:stroke-gray-700"
             />
             <circle
                 :cx="c"
@@ -59,7 +59,7 @@ const tone = computed(() =>
 const strokeClass = computed(
     () =>
         ({
-            green: 'stroke-green-500',
+            green: 'stroke-emerald-500',
             primary: 'stroke-primary-500',
             amber: 'stroke-amber-500',
             red: 'stroke-red-500',
@@ -68,7 +68,7 @@ const strokeClass = computed(
 const textClass = computed(
     () =>
         ({
-            green: 'text-green-600 dark:text-green-400',
+            green: 'text-emerald-600 dark:text-emerald-400',
             primary: 'text-primary-600 dark:text-primary-400',
             amber: 'text-amber-600 dark:text-amber-400',
             red: 'text-red-600 dark:text-red-400',

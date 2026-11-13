@@ -3,31 +3,31 @@
         <!-- Score summary -->
         <button
             type="button"
-            class="flex gap-3 items-center px-3 py-3 w-full text-left border-b border-gray-200 transition-colors hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800/60"
-            :class="active === 'review' ? 'bg-gray-50 dark:bg-gray-800/60' : ''"
+            class="flex gap-3 items-center px-3 py-3 w-full text-left border-b border-gray-200/80 transition-colors hover:bg-gray-50 dark:border-gray-700/70 dark:hover:bg-gray-700/40"
+            :class="active === 'review' ? 'bg-primary-50 dark:bg-primary-500/10' : ''"
             @click="select('review')"
         >
             <ResumeScoreRing :value="score.total" :size="42" />
             <span class="min-w-0">
-                <span class="block text-sm font-semibold text-gray-900 dark:text-gray-100">
+                <span class="block text-sm font-semibold text-gray-900 dark:text-white">
                     Resume score
                 </span>
                 <span class="block text-[11px] text-gray-500 truncate dark:text-gray-400">
                     {{ issueSummary }}
                 </span>
             </span>
-            <Icon icon="mdi:chevron-right" class="ml-auto w-4 h-4 text-gray-400 shrink-0" />
+            <Icon icon="lucide:chevron-right" class="ml-auto w-4 h-4 text-gray-400 shrink-0" />
         </button>
 
         <div class="overflow-y-auto flex-1 px-2 py-3 space-y-4">
             <!-- Content -->
             <div>
-                <p class="px-2 mb-1 text-[10px] font-semibold tracking-wider text-gray-400 uppercase">
+                <p class="px-2 mb-1 eyebrow">
                     Content
                 </p>
 
                 <button type="button" :class="itemClass('basics')" @click="select('basics')">
-                    <Icon icon="mdi:account-outline" class="w-4 h-4 shrink-0" />
+                    <Icon icon="lucide:type" class="w-4 h-4 shrink-0" />
                     <span class="flex-1 truncate">Personal details</span>
                     <ResumeProgressDot :value="basicsPct" />
                 </button>
@@ -46,7 +46,7 @@
                                     class="nav-handle -ml-1 cursor-grab text-gray-300 opacity-0 transition-opacity group-hover:opacity-100 dark:text-gray-600"
                                     aria-hidden="true"
                                 >
-                                    <Icon icon="mdi:drag-vertical" class="w-3.5 h-3.5" />
+                                    <Icon icon="lucide:grip-vertical" class="w-3.5 h-3.5" />
                                 </span>
                                 <Icon
                                     :icon="SECTION_META[key].icon"
@@ -66,12 +66,12 @@
                             </button>
                             <button
                                 type="button"
-                                class="absolute right-1 top-1/2 p-1 text-gray-400 rounded opacity-0 transition-opacity -translate-y-1/2 group-hover:opacity-100 focus-visible:opacity-100 hover:bg-gray-200 dark:hover:bg-gray-700"
+                                class="absolute right-1 top-1/2 p-1 text-gray-400 rounded-lg opacity-0 transition-opacity -translate-y-1/2 group-hover:opacity-100 focus-visible:opacity-100 hover:bg-gray-200/70 dark:hover:bg-gray-700/60"
                                 :aria-label="hidden(key) ? `Show ${SECTION_META[key].label}` : `Hide ${SECTION_META[key].label}`"
                                 :title="hidden(key) ? 'Show in PDF' : 'Hide from PDF'"
                                 @click.stop="resume.toggleSection(key)"
                             >
-                                <Icon :icon="hidden(key) ? 'mdi:eye-off-outline' : 'mdi:eye-outline'" class="w-3.5 h-3.5" />
+                                <Icon :icon="hidden(key) ? 'lucide:eye-off' : 'lucide:eye'" class="w-3.5 h-3.5" />
                             </button>
                         </div>
                     </template>
@@ -84,32 +84,32 @@
                     :class="itemClass(`custom:${cs.id}`)"
                     @click="select(`custom:${cs.id}`)"
                 >
-                    <Icon icon="mdi:shape-outline" class="w-4 h-4 shrink-0" />
+                    <Icon icon="lucide:layout-grid" class="w-4 h-4 shrink-0" />
                     <span class="flex-1 truncate">{{ cs.title || 'Untitled section' }}</span>
                     <span class="text-[10px] tabular-nums text-gray-400">{{ cs.items.length }}</span>
                 </button>
 
                 <button
                     type="button"
-                    class="flex gap-2 items-center px-2 py-1.5 mt-0.5 w-full text-xs font-medium rounded-lg transition-colors text-primary-600 hover:bg-primary-50 dark:text-primary-400 dark:hover:bg-primary-900/20"
+                    class="flex gap-2 items-center px-2 py-1.5 mt-0.5 w-full text-xs font-medium rounded-lg transition-colors text-primary-600 hover:bg-primary-50 dark:text-primary-400 dark:hover:bg-primary-500/10"
                     @click="addCustom"
                 >
-                    <Icon icon="mdi:plus" class="w-4 h-4" />
+                    <Icon icon="lucide:plus" class="w-4 h-4" />
                     Add custom section
                 </button>
             </div>
 
             <!-- Tools -->
             <div>
-                <p class="px-2 mb-1 text-[10px] font-semibold tracking-wider text-gray-400 uppercase">
+                <p class="px-2 mb-1 eyebrow">
                     Refine
                 </p>
                 <button type="button" :class="itemClass('design')" @click="select('design')">
-                    <Icon icon="mdi:palette-outline" class="w-4 h-4 shrink-0" />
+                    <Icon icon="lucide:palette" class="w-4 h-4 shrink-0" />
                     <span class="flex-1 truncate">Template &amp; design</span>
                 </button>
                 <button type="button" :class="itemClass('tailor')" @click="select('tailor')">
-                    <Icon icon="mdi:target" class="w-4 h-4 shrink-0" />
+                    <Icon icon="lucide:sparkles" class="w-4 h-4 shrink-0" />
                     <span class="min-w-0">
                         <span class="block truncate">Tailor to a job</span>
                         <span
@@ -121,7 +121,7 @@
                     </span>
                 </button>
                 <button type="button" :class="itemClass('manage')" @click="select('manage')">
-                    <Icon icon="mdi:folder-multiple-outline" class="w-4 h-4 shrink-0" />
+                    <Icon icon="lucide:files" class="w-4 h-4 shrink-0" />
                     <span class="flex-1 truncate">My resumes</span>
                     <span class="text-[10px] tabular-nums text-gray-400">{{ resume.resumes.value.length }}</span>
                 </button>
@@ -176,8 +176,8 @@ const select = (id) => emit('update:active', id);
 const itemClass = (id) => [
     'flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm transition-colors text-left',
     props.active === id
-        ? 'bg-primary-50 font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-300'
-        : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800',
+        ? 'bg-primary-50 font-medium text-primary-700 dark:bg-primary-500/10 dark:text-primary-300'
+        : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700/40',
 ];
 
 function addCustom() {

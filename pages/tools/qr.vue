@@ -4,7 +4,7 @@
             <BaseButton
                 v-if="qrCodeDataUrl"
                 variant="secondary"
-                icon="mdi:download"
+                icon="lucide:download"
                 size="sm"
                 @click="downloadQRCode"
             >
@@ -13,7 +13,7 @@
             <BaseButton
                 v-if="qrCodeDataUrl"
                 variant="secondary"
-                icon="mdi:share-variant"
+                icon="lucide:share-2"
                 size="sm"
                 @click="shareQRCode"
             >
@@ -29,16 +29,17 @@
             />
 
             <div v-if="qrCodeDataUrl" key="qr" class="flex justify-center mt-6">
-                <img
-                    :src="qrCodeDataUrl"
-                    alt="QR Code"
-                    class="rounded-lg border border-gray-100 dark:border-gray-700"
-                />
+                <div
+                    class="p-4 bg-white rounded-2xl border border-gray-200/80 shadow-xs dark:border-gray-700/70"
+                >
+                    <img :src="qrCodeDataUrl" alt="QR Code" class="rounded-lg" />
+                </div>
             </div>
             <BaseEmptyState
                 v-else
                 key="empty"
-                icon="mdi:qrcode"
+                class="mt-6"
+                icon="lucide:qr-code"
                 title="No QR code yet"
                 description="Type a URL or text above to generate one."
             />

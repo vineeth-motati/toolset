@@ -10,7 +10,7 @@
             <div class="relative">
                 <ListboxButton
                     :id="id"
-                    class="flex justify-between items-center px-3 py-2 w-full text-sm text-left text-gray-900 bg-white rounded-lg border border-gray-300 focus:outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+                    class="flex justify-between items-center text-left field"
                     v-bind="$attrs"
                 >
                     <span>{{ selectedLabel }}</span>
@@ -25,7 +25,7 @@
                     leave-to-class="opacity-0"
                 >
                     <ListboxOptions
-                        class="overflow-auto absolute z-20 py-1 mt-1 w-full max-h-60 text-sm bg-white rounded-lg border border-gray-200 shadow-lg focus:outline-none dark:bg-gray-800 dark:border-gray-700"
+                        class="overflow-auto absolute z-20 p-1 mt-1.5 w-full max-h-60 text-sm bg-white rounded-xl border border-gray-200 shadow-pop focus:outline-none dark:bg-gray-800 dark:border-gray-700"
                     >
                         <ListboxOption
                             v-for="opt in normalizedOptions"
@@ -36,20 +36,20 @@
                         >
                             <li
                                 :class="[
-                                    'flex items-center justify-between px-3 py-2 cursor-pointer',
+                                    'flex items-center justify-between px-2.5 py-1.5 rounded-lg cursor-pointer',
                                     active
-                                        ? 'bg-primary-50 dark:bg-gray-700'
+                                        ? 'bg-gray-100 dark:bg-gray-700/70'
                                         : '',
                                     selected
-                                        ? 'font-medium text-primary-700 dark:text-primary-400'
+                                        ? 'font-medium text-gray-900 dark:text-white'
                                         : 'text-gray-700 dark:text-gray-200',
                                 ]"
                             >
                                 {{ opt.label }}
                                 <Icon
                                     v-if="selected"
-                                    icon="mdi:check"
-                                    class="w-4 h-4"
+                                    icon="lucide:check"
+                                    class="w-4 h-4 text-primary-600 dark:text-primary-400"
                                 />
                             </li>
                         </ListboxOption>

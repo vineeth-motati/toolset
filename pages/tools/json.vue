@@ -7,63 +7,61 @@
         </template>
 
         <div class="mx-auto max-w-7xl">
-            <BaseCard padding="none">
-                <!-- Tabs -->
-                <div class="border-b dark:border-gray-700">
-                    <nav class="flex">
+            <BaseCard padding="none" class="overflow-hidden">
+                <div class="flex flex-wrap items-center gap-1.5 px-3 py-2 border-b border-gray-200/80 bg-gray-50/60 dark:border-gray-700/70 dark:bg-gray-900/30">
+                    <nav class="inline-flex gap-1 p-1 bg-gray-100 rounded-xl dark:bg-gray-800/80">
                         <button
                             v-for="tab in tabs"
                             :key="tab.id"
                             @click="activeTab = tab.id"
                             :class="[
-                                'px-4 py-2 text-sm font-medium',
+                                'h-8 px-3.5 rounded-lg text-sm font-medium transition',
                                 activeTab === tab.id
-                                    ? 'border-b-2 border-primary-500 text-primary-600 dark:text-primary-400'
-                                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200',
+                                    ? 'bg-white text-gray-900 shadow-xs ring-1 ring-gray-200/80 dark:bg-gray-700 dark:text-white dark:ring-gray-600/60'
+                                    : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white',
                             ]"
                         >
                             {{ tab.name }}
                         </button>
                     </nav>
+                    <template v-if="activeTab === 'text'">
+                        <span class="hidden mx-1.5 w-px h-5 bg-gray-200 sm:block dark:bg-gray-700"></span>
+                        <BaseButton
+                            v-for="action in actions"
+                            :key="action.id"
+                            variant="ghost"
+                            size="sm"
+                            :icon="action.icon"
+                            @click="handleAction(action.id)"
+                        >
+                            {{ action.name }}
+                        </BaseButton>
+                    </template>
                 </div>
 
                 <!-- Text Tab -->
-                <div v-if="activeTab === 'text'" class="p-4">
-                    <div class="mb-4 border-b dark:border-gray-700">
-                        <div class="flex flex-wrap gap-2 pb-2">
-                            <BaseButton
-                                v-for="action in actions"
-                                :key="action.id"
-                                variant="ghost"
-                                size="sm"
-                                :icon="action.icon"
-                                @click="handleAction(action.id)"
-                            >
-                                {{ action.name }}
-                            </BaseButton>
-                        </div>
-                    </div>
-
+                <div v-if="activeTab === 'text'" class="p-3 sm:p-4">
                     <textarea
                         v-model="jsonText"
                         rows="20"
-                        class="w-full h-[500px] px-3 py-2 font-mono text-sm text-gray-900 bg-white rounded-md border focus:outline-none focus:ring-1 focus:ring-primary-400 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
+                        class="field w-full min-h-[320px] h-[500px] font-mono text-[13px] leading-6"
                         placeholder="Paste your JSON here..."
                     ></textarea>
                 </div>
 
                 <!-- Viewer Tab -->
-                <div v-else class="grid grid-cols-2 gap-4 p-4">
+                <div v-else class="grid grid-cols-1 gap-4 p-3 md:grid-cols-2 sm:p-4">
                     <!-- Tree View -->
-                    <div class="p-4 rounded-lg border dark:border-gray-700">
+                    <div class="p-4 surface-muted">
                         <div class="flex gap-2 items-center mb-4">
-                            <BaseInput
-                                v-model="searchQuery"
-                                icon="mdi:magnify"
-                                placeholder="Search..."
-                                class="flex-1"
-                                @keyup.enter="search"
-                            />
+                            <div class="flex-1 min-w-0">
+                                <BaseInput
+                                    v-model="searchQuery"
+                                    icon="mdi:magnify"
+                                    placeholder="Search..."
+                                    @keyup.enter="search"
+                                />
+                            </div>
                             <BaseIconButton
                                 icon="mdi:chevron-up"
                                 label="Previous result"
@@ -82,12 +80,15 @@
                             <div
                                 v-for="(item, index) in parsedItems"
                                 :key="index"
-                                :class="{
-                                    'bg-primary-50 dark:bg-primary-900/20': isSelected(item),
-                                }"
+                                class="rounded-lg"
+                                :class="
+                                    isSelected(item)
+                                        ? 'bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-300'
+                                        : ''
+                                "
                             >
                                 <div
-                                    class="flex items-center py-1 cursor-pointer"
+                                    class="flex items-center px-1.5 py-1 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/40"
                                     @click="toggleItem(item)"
                                 >
                                     <Icon
@@ -98,10 +99,10 @@
                                         "
                                         class="w-5 h-5 text-gray-500 dark:text-gray-400"
                                     />
-                                    <span class="font-mono text-gray-900 dark:text-gray-100">{{ item.key }}: </span>
+                                    <span class="font-mono text-[13px] text-gray-900 dark:text-gray-100">{{ item.key }}: </span>
                                     <span
                                         v-if="!item.isObject"
-                                        class="ml-2 text-gray-600 dark:text-gray-400"
+                                        class="ml-2 text-[13px] text-gray-500 dark:text-gray-400"
                                     >
                                         {{ item.value }}
                                     </span>
@@ -114,12 +115,12 @@
                                     <div
                                         v-for="child in item.children"
                                         :key="child.key"
-                                        class="py-1"
+                                        class="px-1.5 py-1 text-[13px]"
                                     >
                                         <span class="font-mono text-gray-900 dark:text-gray-100"
                                             >{{ child.key }}:
                                         </span>
-                                        <span class="text-gray-600 dark:text-gray-400">
+                                        <span class="text-gray-500 dark:text-gray-400">
                                             {{ child.value }}
                                         </span>
                                     </div>
@@ -129,13 +130,13 @@
                     </div>
 
                     <!-- Details View -->
-                    <div class="p-4 rounded-lg border dark:border-gray-700" v-if="selectedItem">
-                        <h3 class="mb-4 text-lg font-medium text-gray-900 dark:text-gray-100">Details</h3>
-                        <table class="w-full">
+                    <div class="p-4 surface-muted" v-if="selectedItem">
+                        <h3 class="mb-3 text-sm font-semibold text-gray-900 dark:text-white">Details</h3>
+                        <table class="w-full text-[13px]">
                             <thead>
-                                <tr class="border-b dark:border-gray-700">
-                                    <th class="py-2 text-left text-gray-900 dark:text-gray-100">Name</th>
-                                    <th class="py-2 text-left text-gray-900 dark:text-gray-100">Value</th>
+                                <tr class="border-b border-gray-200/80 dark:border-gray-700/70">
+                                    <th class="py-2 text-left text-gray-900 dark:text-white">Name</th>
+                                    <th class="py-2 text-left text-gray-900 dark:text-white">Value</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -144,7 +145,7 @@
                                     :key="key"
                                 >
                                     <td class="py-2 font-mono text-gray-900 dark:text-gray-100">{{ key }}</td>
-                                    <td class="py-2 text-gray-600 dark:text-gray-400">
+                                    <td class="py-2 text-gray-500 dark:text-gray-400">
                                         {{ value }}
                                     </td>
                                 </tr>
@@ -173,7 +174,7 @@
                         type="file"
                         accept="application/json"
                         @change="handleFileUpload"
-                        class="block px-3 py-2 mt-2 w-full rounded-md border"
+                        class="block mt-2 w-full field"
                     />
                 </div>
 
@@ -187,7 +188,7 @@
                         v-model="loadJsonUrl"
                         type="text"
                         placeholder="Enter JSON URL"
-                        class="block px-3 py-2 mt-2 w-full rounded-md border"
+                        class="block mt-2 w-full field"
                     />
                 </div>
             </div>

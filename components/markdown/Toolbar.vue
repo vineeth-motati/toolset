@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex gap-2 p-2 bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+        class="flex flex-wrap items-center gap-1.5 px-3 py-2 border-b border-gray-200/80 bg-gray-50/60 dark:border-gray-700/70 dark:bg-gray-900/30"
     >
         <BaseIconButton
             v-for="action in actions"
@@ -20,12 +20,12 @@ const emit = defineEmits(['action']);
 const actions = [
     {
         label: 'Bold',
-        icon: 'mdi:format-bold',
+        icon: 'lucide:bold',
         markdown: { prefix: '**', suffix: '**' },
     },
     {
         label: 'Italic',
-        icon: 'mdi:format-italic',
+        icon: 'lucide:italic',
         markdown: { prefix: '_', suffix: '_' },
     },
     {
@@ -35,17 +35,17 @@ const actions = [
     },
     {
         label: 'Link',
-        icon: 'mdi:link',
+        icon: 'lucide:link',
         markdown: { prefix: '[', suffix: '](url)' },
     },
     {
         label: 'Code',
-        icon: 'mdi:code-tags',
+        icon: 'lucide:code',
         markdown: { prefix: '```\n', suffix: '\n```' },
     },
     {
         label: 'List',
-        icon: 'mdi:format-list-bulleted',
+        icon: 'lucide:list',
         markdown: { prefix: '- ', suffix: '' },
     },
 ];

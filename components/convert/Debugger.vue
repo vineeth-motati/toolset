@@ -1,26 +1,26 @@
 <template>
-    <div class="p-6 bg-white rounded-lg shadow dark:bg-gray-800">
+    <div class="surface p-4 sm:p-5">
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <!-- Left column -->
             <div>
-                <h2 class="mb-4 text-xl font-semibold">
+                <h2 class="mb-4 text-sm font-semibold text-gray-900 dark:text-white">
                     Path Configuration Check
                 </h2>
 
                 <div class="mb-4">
-                    <label class="block mb-2 text-sm font-medium"
+                    <label class="block mb-1.5 text-[13px] font-medium text-gray-700 dark:text-gray-300"
                         >Enter converter path to test:</label
                     >
                     <div class="flex">
                         <input
                             v-model="testPath"
                             type="text"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-l-md dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
+                            class="field rounded-r-none"
                             placeholder="/tools/convert/xml-to-json"
                         />
                         <button
                             @click="testConverter"
-                            class="px-4 py-2 text-white bg-primary-600 rounded-r-md hover:bg-primary-700"
+                            class="px-4 text-sm font-medium text-white transition bg-primary-600 rounded-r-lg hover:bg-primary-700"
                         >
                             Test
                         </button>
@@ -29,16 +29,16 @@
 
                 <div
                     v-if="testResult"
-                    class="p-4 border rounded-md"
+                    class="rounded-xl border px-4 py-3 text-sm"
                     :class="
                         testResult.found
-                            ? 'border-green-300 bg-green-50 dark:border-green-900 dark:bg-green-900/20'
-                            : 'border-red-300 bg-red-50 dark:border-red-900 dark:bg-red-900/20'
+                            ? 'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-200'
+                            : 'border-red-200 bg-red-50 text-red-800 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-200'
                     "
                 >
                     <p
                         :class="
-                            testResult.found ? 'text-green-700' : 'text-red-700'
+                            testResult.found ? 'font-medium' : 'font-medium'
                         "
                     >
                         {{
@@ -57,24 +57,24 @@
                     </div>
                 </div>
 
-                <h2 class="mt-8 mb-4 text-xl font-semibold">
+                <h2 class="mt-8 mb-4 text-sm font-semibold text-gray-900 dark:text-white">
                     API Conversion Test
                 </h2>
 
                 <div class="mb-4">
-                    <label class="block mb-2 text-sm font-medium"
+                    <label class="block mb-1.5 text-[13px] font-medium text-gray-700 dark:text-gray-300"
                         >Test API conversion type:</label
                     >
                     <div class="flex mb-3">
                         <input
                             v-model="apiTestType"
                             type="text"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-l-md dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
+                            class="field rounded-r-none"
                             placeholder="convert.website_to_jpg"
                         />
                         <button
                             @click="findConverterByApiType"
-                            class="px-4 py-2 text-white bg-primary-600 rounded-r-md hover:bg-primary-700"
+                            class="px-4 text-sm font-medium text-white transition bg-primary-600 rounded-r-lg hover:bg-primary-700"
                         >
                             Find
                         </button>
@@ -82,18 +82,18 @@
 
                     <div
                         v-if="apiTypeResult"
-                        class="p-4 border rounded-md"
+                        class="rounded-xl border px-4 py-3 text-sm"
                         :class="
                             apiTypeResult.found
-                                ? 'border-green-300 bg-green-50 dark:border-green-900 dark:bg-green-900/20'
-                                : 'border-red-300 bg-red-50 dark:border-red-900 dark:bg-red-900/20'
+                                ? 'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-200'
+                                : 'border-red-200 bg-red-50 text-red-800 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-200'
                         "
                     >
                         <p
                             :class="
                                 apiTypeResult.found
-                                    ? 'text-green-700'
-                                    : 'text-red-700'
+                                    ? 'font-medium'
+                                    : 'font-medium'
                             "
                         >
                             {{
@@ -114,18 +114,18 @@
 
             <!-- Right column -->
             <div>
-                <h2 class="mb-4 text-xl font-semibold">Available Converters</h2>
+                <h2 class="mb-4 text-sm font-semibold text-gray-900 dark:text-white">Available Converters</h2>
                 <div>
                     <input
                         v-model="filterText"
                         type="text"
-                        class="w-full px-3 py-2 mb-4 border border-gray-300 rounded-md dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
+                        class="field mb-4"
                         placeholder="Filter converters..."
                     />
                 </div>
-                <div class="overflow-auto border rounded-md max-h-96">
+                <div class="overflow-auto border rounded-xl border-gray-200/80 max-h-96 dark:border-gray-700/70">
                     <table class="w-full text-sm">
-                        <thead class="sticky top-0 bg-gray-100 dark:bg-gray-900">
+                        <thead class="sticky top-0 bg-gray-50 dark:bg-gray-900">
                             <tr>
                                 <th class="px-2 py-3 text-left">Path</th>
                                 <th class="px-2 py-3 text-left">API Type</th>
@@ -135,7 +135,7 @@
                             <tr
                                 v-for="converter in filteredConverters"
                                 :key="converter.path"
-                                class="border-t hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-700/50"
+                                class="border-t border-gray-200/80 hover:bg-gray-50 dark:border-gray-700/70 dark:hover:bg-gray-700/40"
                             >
                                 <td class="px-2 py-3">
                                     {{ converter.path }}

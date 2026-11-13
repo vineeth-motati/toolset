@@ -4,7 +4,7 @@
         <div class="flex gap-4 items-center">
             <ResumeScoreRing :value="score.total" :size="72" />
             <div class="min-w-0">
-                <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                <h2 class="text-sm font-semibold text-gray-900 dark:text-white">
                     {{ GRADE_COPY[score.grade].title }}
                 </h2>
                 <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
@@ -18,7 +18,7 @@
             <div
                 v-for="cat in score.categories"
                 :key="cat.key"
-                class="p-2.5 rounded-lg border border-gray-200 dark:border-gray-700"
+                class="p-3 rounded-xl border border-gray-200/80 dark:border-gray-700/70"
             >
                 <div class="flex justify-between items-baseline">
                     <span class="text-xs font-medium text-gray-700 dark:text-gray-300">{{ cat.label }}</span>
@@ -38,9 +38,9 @@
 
         <!-- Stats strip -->
         <dl class="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <div v-for="s in stats" :key="s.label" class="p-2.5 rounded-lg bg-gray-50 dark:bg-gray-800/60">
+            <div v-for="s in stats" :key="s.label" class="p-3 surface-muted">
                 <dt class="text-[11px] text-gray-500 dark:text-gray-400">{{ s.label }}</dt>
-                <dd class="text-sm font-semibold tabular-nums text-gray-900 dark:text-gray-100">
+                <dd class="text-sm font-semibold tabular-nums text-gray-900 dark:text-white">
                     {{ s.value }}
                 </dd>
             </div>
@@ -49,7 +49,7 @@
         <!-- Issues -->
         <div>
             <div class="flex justify-between items-center mb-2">
-                <h3 class="text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
+                <h3 class="text-sm font-semibold text-gray-900 dark:text-white">
                     What to fix
                 </h3>
                 <div class="flex gap-1">
@@ -59,8 +59,8 @@
                         type="button"
                         class="px-2 py-0.5 text-[11px] font-medium rounded-full transition-colors"
                         :class="filter === f.value
-                            ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900'
-                            : 'text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'"
+                            ? 'bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-300'
+                            : 'text-gray-500 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-700/40'"
                         @click="filter = f.value"
                     >
                         {{ f.label }}
@@ -71,9 +71,9 @@
 
             <div
                 v-if="!visibleIssues.length"
-                class="flex gap-2 items-center px-3 py-4 text-sm rounded-lg text-green-800 bg-green-50 dark:bg-green-900/20 dark:text-green-300"
+                class="flex gap-2 items-center px-4 py-3 text-sm rounded-xl border border-emerald-200 text-emerald-800 bg-emerald-50 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-200"
             >
-                <Icon icon="mdi:check-circle-outline" class="w-5 h-5 shrink-0" />
+                <Icon icon="lucide:circle-check" class="w-5 h-5 shrink-0" />
                 <span>
                     {{ filter === 'all' ? 'Nothing flagged. This resume is ready to send.' : 'Nothing in this category.' }}
                 </span>
@@ -83,18 +83,18 @@
                 <li
                     v-for="issue in visibleIssues"
                     :key="issue.id"
-                    class="flex gap-2.5 items-start p-2.5 rounded-lg border transition-colors"
+                    class="flex gap-2.5 items-start p-3 rounded-xl border transition-colors"
                     :class="severityBox(issue.severity)"
                 >
                     <Icon :icon="severityIcon(issue.severity)" class="mt-0.5 w-4 h-4 shrink-0" :class="severityIconTone(issue.severity)" />
                     <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ issue.message }}</p>
+                        <p class="text-sm font-medium text-gray-900 dark:text-white">{{ issue.message }}</p>
                         <p class="mt-0.5 text-xs text-gray-600 dark:text-gray-400">{{ issue.fix }}</p>
                     </div>
                     <button
                         v-if="issue.target"
                         type="button"
-                        class="px-2 py-1 text-xs font-medium rounded transition-colors shrink-0 text-primary-700 bg-primary-50 hover:bg-primary-100 dark:bg-primary-900/30 dark:text-primary-300 dark:hover:bg-primary-900/50"
+                        class="px-2.5 py-1 text-xs font-medium rounded-lg transition-colors shrink-0 text-primary-700 bg-primary-50 hover:bg-primary-100 dark:bg-primary-500/10 dark:text-primary-300 dark:hover:bg-primary-500/20"
                         @click="$emit('jump', issue.target)"
                     >
                         Fix
@@ -104,12 +104,12 @@
         </div>
 
         <!-- Phrase bank: the remedy belongs next to the criticism -->
-        <details class="rounded-lg border border-gray-200 group dark:border-gray-700">
+        <details class="rounded-xl border border-gray-200/80 group dark:border-gray-700/70">
             <summary
-                class="flex gap-2 items-center px-3 py-2 text-sm font-medium text-gray-900 cursor-pointer select-none dark:text-gray-100"
+                class="flex gap-2 items-center px-3 py-2 text-sm font-medium text-gray-900 cursor-pointer select-none dark:text-white"
             >
                 <Icon
-                    icon="mdi:chevron-right"
+                    icon="lucide:chevron-right"
                     class="w-4 h-4 text-gray-400 transition-transform group-open:rotate-90"
                 />
                 Phrase bank
@@ -117,7 +117,7 @@
                     — verbs and bullet patterns to fix the above
                 </span>
             </summary>
-            <div class="px-3 pt-1 pb-3 space-y-3 border-t border-gray-100 dark:border-gray-700/60">
+            <div class="px-3 pt-1 pb-3 space-y-3 border-t border-gray-200/80 dark:border-gray-700/70">
                 <div>
                     <p class="mb-1.5 text-xs text-gray-500 dark:text-gray-400">
                         Strong openers — click to copy.
@@ -127,7 +127,7 @@
                             v-for="v in ACTION_VERBS"
                             :key="v"
                             type="button"
-                            class="px-2 py-0.5 text-xs text-gray-700 bg-gray-100 rounded transition-colors hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                            class="px-2 py-0.5 text-xs text-gray-700 bg-gray-100 rounded-md transition-colors hover:bg-gray-200 dark:bg-gray-700/60 dark:text-gray-200 dark:hover:bg-gray-700"
                             @click="copy(v)"
                         >
                             {{ v }}
@@ -135,12 +135,12 @@
                     </div>
                 </div>
                 <div v-for="(list, group) in PHRASE_LIBRARY" :key="group">
-                    <p class="text-xs font-medium text-gray-600 dark:text-gray-400">{{ group }}</p>
+                    <p class="text-[13px] font-medium text-gray-700 dark:text-gray-300">{{ group }}</p>
                     <button
                         v-for="(p, i) in list"
                         :key="i"
                         type="button"
-                        class="block py-0.5 w-full text-xs text-left text-gray-600 hover:text-primary-600 dark:text-gray-400"
+                        class="block py-0.5 w-full text-xs text-left text-gray-600 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-300"
                         @click="copy(p)"
                     >
                         • {{ p }}
@@ -149,8 +149,8 @@
             </div>
         </details>
 
-        <p class="flex gap-1.5 items-start text-[11px] text-gray-400">
-            <Icon icon="mdi:shield-lock-outline" class="mt-px w-3.5 h-3.5 shrink-0" />
+        <p class="flex gap-1.5 items-start text-xs text-gray-500 dark:text-gray-400">
+            <Icon icon="lucide:lock" class="mt-px w-3.5 h-3.5 shrink-0" />
             Every check above runs in this browser tab. Nothing is uploaded, scored remotely, or stored on a server.
         </p>
     </div>
@@ -230,21 +230,21 @@ const stats = computed(() => {
 });
 
 const tone = (v) =>
-    v >= 80 ? 'text-green-600 dark:text-green-400'
+    v >= 80 ? 'text-emerald-600 dark:text-emerald-400'
     : v >= 55 ? 'text-amber-600 dark:text-amber-400'
     : 'text-red-600 dark:text-red-400';
-const bar = (v) => (v >= 80 ? 'bg-green-500' : v >= 55 ? 'bg-amber-500' : 'bg-red-500');
+const bar = (v) => (v >= 80 ? 'bg-emerald-500' : v >= 55 ? 'bg-amber-500' : 'bg-red-500');
 
 const severityBox = (s) =>
     ({
-        error: 'border-red-200 bg-red-50/60 dark:border-red-900/40 dark:bg-red-900/10',
-        warning: 'border-amber-200 bg-amber-50/60 dark:border-amber-900/40 dark:bg-amber-900/10',
+        error: 'border-red-200 bg-red-50/60 dark:border-red-500/20 dark:bg-red-500/10',
+        warning: 'border-amber-200 bg-amber-50/60 dark:border-amber-500/20 dark:bg-amber-500/10',
         tip: 'border-gray-200 dark:border-gray-700',
     })[s];
 const severityIcon = (s) =>
     ({
-        error: 'mdi:alert-circle-outline',
-        warning: 'mdi:alert-outline',
+        error: 'lucide:circle-alert',
+        warning: 'lucide:triangle-alert',
         tip: 'mdi:lightbulb-outline',
     })[s];
 const severityIconTone = (s) =>

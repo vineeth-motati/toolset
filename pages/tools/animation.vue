@@ -3,7 +3,7 @@
         <template #actions>
             <BaseButton
                 variant="secondary"
-                icon="mdi:share-variant"
+                icon="lucide:share-2"
                 size="sm"
                 @click="shareAnimation"
             >
@@ -14,28 +14,32 @@
         <!-- Main Grid -->
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <!-- Controls Panel -->
-            <BaseCard class="space-y-6 lg:col-span-1">
-                <!-- Preset Selector -->
-                <AnimationPresetSelector
-                    @apply-preset="applyPreset"
-                    :onApply="applyPreset"
-                />
+            <BaseCard class="space-y-5 lg:col-span-1">
+                <div class="space-y-3">
+                    <div class="eyebrow">Presets</div>
+                    <AnimationPresetSelector
+                        @apply-preset="applyPreset"
+                        :onApply="applyPreset"
+                    />
+                </div>
+
+                <div class="eyebrow">Animation</div>
 
                 <!-- Animation Properties Controls -->
                 <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label class="block mb-1.5 text-[13px] font-medium text-gray-700 dark:text-gray-300">
                         Animation Name
                     </label>
                     <input
                         v-model="animation.animationName"
                         type="text"
-                        class="px-3 py-2 w-full bg-white rounded-md border border-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
+                        class="py-0 h-8 field"
                         placeholder="myAnimation"
                     />
                 </div>
 
                 <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label class="block mb-1.5 text-[13px] font-medium text-gray-700 dark:text-gray-300">
                         Duration (seconds)
                     </label>
                     <input
@@ -43,17 +47,17 @@
                         type="number"
                         step="0.1"
                         min="0"
-                        class="px-3 py-2 w-full bg-white rounded-md border border-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
+                        class="py-0 h-8 field"
                     />
                 </div>
 
                 <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label class="block mb-1.5 text-[13px] font-medium text-gray-700 dark:text-gray-300">
                         Timing Function
                     </label>
                     <select
                         v-model="animation.timingFunction"
-                        class="px-3 py-2 w-full bg-white rounded-md border border-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
+                        class="py-0 h-8 field"
                     >
                         <option
                             v-for="timing in timingFunctions"
@@ -69,17 +73,17 @@
                     v-if="animation.timingFunction === 'cubic-bezier'"
                     class="space-y-2"
                 >
-                    <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label class="block mb-1.5 text-[13px] font-medium text-gray-700 dark:text-gray-300">
                         Cubic-Bezier Points
                     </label>
-                    <div class="flex space-x-2">
+                    <div class="flex gap-2">
                         <input
                             v-model.number="animation.cubicBezier[0]"
                             type="number"
                             step="0.01"
                             min="0"
                             max="1"
-                            class="px-3 py-1 w-1/4 text-sm bg-white rounded-md border border-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
+                            class="py-0 px-2 h-8 w-1/4 field"
                             placeholder="P1x"
                         />
                         <input
@@ -88,7 +92,7 @@
                             step="0.01"
                             min="0"
                             max="1"
-                            class="px-3 py-1 w-1/4 text-sm bg-white rounded-md border border-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
+                            class="py-0 px-2 h-8 w-1/4 field"
                             placeholder="P1y"
                         />
                         <input
@@ -97,7 +101,7 @@
                             step="0.01"
                             min="0"
                             max="1"
-                            class="px-3 py-1 w-1/4 text-sm bg-white rounded-md border border-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
+                            class="py-0 px-2 h-8 w-1/4 field"
                             placeholder="P2x"
                         />
                         <input
@@ -106,19 +110,19 @@
                             step="0.01"
                             min="0"
                             max="1"
-                            class="px-3 py-1 w-1/4 text-sm bg-white rounded-md border border-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
+                            class="py-0 px-2 h-8 w-1/4 field"
                             placeholder="P2y"
                         />
                     </div>
                 </div>
 
                 <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label class="block mb-1.5 text-[13px] font-medium text-gray-700 dark:text-gray-300">
                         Iteration Count
                     </label>
                     <select
                         v-model="animation.iterationCount"
-                        class="px-3 py-2 w-full bg-white rounded-md border border-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
+                        class="py-0 h-8 field"
                     >
                         <option :value="1">1</option>
                         <option :value="2">2</option>
@@ -128,12 +132,12 @@
                 </div>
 
                 <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label class="block mb-1.5 text-[13px] font-medium text-gray-700 dark:text-gray-300">
                         Direction
                     </label>
                     <select
                         v-model="animation.direction"
-                        class="px-3 py-2 w-full bg-white rounded-md border border-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
+                        class="py-0 h-8 field"
                     >
                         <option value="normal">Normal</option>
                         <option value="reverse">Reverse</option>
@@ -146,9 +150,7 @@
 
                 <!-- Keyframe Properties -->
                 <div class="space-y-4">
-                    <h3 class="font-medium text-gray-900 dark:text-gray-100">
-                        Keyframe Timeline
-                    </h3>
+                    <div class="eyebrow">Keyframe Timeline</div>
                     <!-- Timeline visualization -->
                     <div class="relative mb-8">
                         <div
@@ -197,11 +199,11 @@
                     <!-- Selected keyframe editor -->
                     <div
                         v-if="selectedKeyframe"
-                        class="p-4 bg-gray-50 rounded-lg border border-gray-200 dark:bg-gray-900/40 dark:border-gray-700"
+                        class="p-3 rounded-xl surface-muted"
                     >
                         <div class="flex justify-between items-center mb-4">
                             <span
-                                class="font-medium text-gray-900 dark:text-gray-100"
+                                class="text-sm font-semibold text-gray-900 dark:text-white"
                             >
                                 Keyframe at {{ selectedKeyframe.percentage }}%
                             </span>
@@ -209,7 +211,7 @@
                                 <BaseIconButton
                                     v-if="animation.keyframes.length > 2"
                                     variant="danger"
-                                    icon="mdi:delete"
+                                    icon="lucide:trash-2"
                                     label="Remove keyframe"
                                     @click="
                                         removeKeyframe(
@@ -220,7 +222,7 @@
                                     "
                                 />
                                 <BaseIconButton
-                                    icon="mdi:close"
+                                    icon="lucide:x"
                                     label="Deselect keyframe"
                                     @click="selectedKeyframe = null"
                                 />
@@ -233,7 +235,7 @@
                                 :key="prop.name"
                             >
                                 <label
-                                    class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300"
+                                    class="block mb-1.5 text-[13px] font-medium text-gray-700 dark:text-gray-300"
                                 >
                                     {{ prop.label }}
                                 </label>
@@ -255,7 +257,7 @@
                                             )
                                         "
                                         type="color"
-                                        class="w-16 h-8"
+                                        class="w-12 h-8 bg-white rounded-lg border cursor-pointer border-gray-200/80 dark:border-gray-700/70 dark:bg-gray-900/60"
                                     />
                                     <input
                                         v-else
@@ -276,7 +278,7 @@
                                         :type="prop.type"
                                         :step="prop.step"
                                         :placeholder="prop.placeholder"
-                                        class="flex-1 px-3 py-1 text-sm bg-white rounded-md border border-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
+                                        class="flex-1 py-0 h-8 field"
                                     />
                                     <select
                                         v-if="prop.units"
@@ -285,7 +287,7 @@
                                                 `${prop.name}Unit`
                                             ]
                                         "
-                                        class="px-2 py-1 w-20 text-sm bg-white rounded-md border border-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
+                                        class="py-0 px-2 w-20 h-8 field"
                                     >
                                         <option
                                             v-for="unit in prop.units"
@@ -303,7 +305,7 @@
                     <!-- Add keyframe input -->
                     <div>
                         <label
-                            class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+                            class="block mb-1.5 text-[13px] font-medium text-gray-700 dark:text-gray-300"
                         >
                             Add Keyframe at Percentage
                         </label>
@@ -314,12 +316,13 @@
                                 min="0"
                                 max="100"
                                 step="1"
-                                class="px-3 py-2 w-1/2 bg-white rounded-md border border-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
+                                class="py-0 w-1/2 h-8 field"
                                 placeholder="Enter percentage (e.g., 25)"
                             />
                             <BaseButton
+                                size="sm"
                                 class="flex-1"
-                                icon="mdi:plus"
+                                icon="lucide:plus"
                                 @click="addKeyframe(customPercentage)"
                             >
                                 Add Keyframe
@@ -332,14 +335,31 @@
             <!-- Preview and Code Panel -->
             <div class="space-y-6 lg:col-span-2">
                 <!-- Preview -->
-                <BaseCard>
-                    <h2
-                        class="mb-4 text-lg font-medium text-gray-900 dark:text-gray-100"
-                    >
-                        Preview
-                    </h2>
+                <BaseCard padding="none" class="overflow-hidden">
                     <div
-                        class="flex justify-center items-center h-64 bg-gray-100 rounded-lg dark:bg-gray-900/50"
+                        class="flex flex-wrap gap-1.5 justify-between items-center px-3 py-2 border-b border-gray-200/80 bg-gray-50/60 dark:border-gray-700/70 dark:bg-gray-900/30"
+                    >
+                        <div class="eyebrow">Preview</div>
+                        <div class="flex gap-1.5">
+                            <BaseButton
+                                variant="ghost"
+                                size="sm"
+                                icon="lucide:rotate-ccw"
+                                @click="resetAnimation"
+                            >
+                                Reset
+                            </BaseButton>
+                            <BaseButton
+                                size="sm"
+                                icon="lucide:play"
+                                @click="playAnimation"
+                            >
+                                Play
+                            </BaseButton>
+                        </div>
+                    </div>
+                    <div
+                        class="flex justify-center items-center h-64 bg-gray-50 bg-grid-ink dark:bg-gray-900/50"
                     >
                         <div
                             ref="previewElement"
@@ -347,43 +367,30 @@
                             :style="previewStyles"
                         ></div>
                     </div>
-                    <div class="flex gap-2 justify-end mt-4">
-                        <BaseButton
-                            variant="secondary"
-                            icon="mdi:restore"
-                            @click="resetAnimation"
-                        >
-                            Reset
-                        </BaseButton>
-                        <BaseButton icon="mdi:play" @click="playAnimation">
-                            Play
-                        </BaseButton>
-                    </div>
                 </BaseCard>
 
                 <!-- Generated Code -->
-                <BaseCard>
-                    <div class="flex justify-between items-center mb-4">
-                        <h2
-                            class="text-lg font-medium text-gray-900 dark:text-gray-100"
-                        >
-                            Generated CSS
-                        </h2>
+                <div
+                    class="overflow-hidden bg-gray-900 rounded-xl border border-gray-800"
+                >
+                    <div
+                        class="flex justify-between items-center px-4 py-2 border-b border-gray-800"
+                    >
+                        <span class="font-mono text-xs text-gray-400">css</span>
                         <BaseButton
-                            variant="secondary"
+                            variant="ghost"
                             size="sm"
-                            icon="mdi:content-copy"
+                            icon="lucide:copy"
+                            class="!text-gray-300 hover:!bg-gray-800"
                             @click="copyCode"
                         >
                             Copy Code
                         </BaseButton>
                     </div>
                     <pre
-                        class="overflow-x-auto p-4 text-sm bg-gray-100 rounded-lg dark:bg-gray-900/50 dark:text-gray-200"
-                    >
-                        {{ generatedCSS }}
-                    </pre>
-                </BaseCard>
+                        class="overflow-x-auto p-4 font-mono text-[13px] leading-6 text-gray-100"
+                    >{{ generatedCSS.trim() }}</pre>
+                </div>
             </div>
         </div>
     </ToolLayout>
